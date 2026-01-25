@@ -13,4 +13,8 @@ public class TestData {
                 new UserDto(15, "Nina", Gender.FEMALE),
                 new UserDto(30, "Ivan", Gender.MALE));
     }
+
+    public static UserDto getSingleValidUser() {
+        return new UserDto(10, "Volodymyr", Gender.MALE);
+    }
 }
