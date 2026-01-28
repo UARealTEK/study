@@ -17,4 +17,8 @@ public class TestData {
     public static UserDto getSingleValidUser() {
         return new UserDto(10, "Volodymyr", Gender.MALE);
     }
+
+    public static UserDto getSingleUserWithEmptyName() {
+        return new UserDto(10, "",Gender.FEMALE);
+    }
 }

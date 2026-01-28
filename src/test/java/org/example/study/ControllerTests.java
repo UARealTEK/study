@@ -15,8 +15,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
-import static org.example.study.testData.TestData.getSingleValidUser;
-import static org.example.study.testData.TestData.getValidUsers;
+import static org.example.study.testData.TestData.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -30,15 +29,18 @@ class ControllerTests {
     ObjectMapper mapper;
     List<UserDto> users;
     UserDto user;
+    UserDto invalidUser;
     String usersEndpoint;
     String usersJson;
     String singleUserJson;
+    String singleInvalidUserJson;
 
     @BeforeEach
     void initValidUsers() {
         mapper = new ObjectMapper();
         users = getValidUsers();
         user = getSingleValidUser();
+        invalidUser = getSingleUserWithEmptyName();
         usersEndpoint = "/users";
         usersJson = mapper.writeValueAsString(users);
         singleUserJson = mapper.writeValueAsString(user);
@@ -102,6 +104,15 @@ class ControllerTests {
         );
 
         verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    void checkSaveInvalidUser() {
+        //given
+
+        //when
+
+        //then
     }
 
 }
