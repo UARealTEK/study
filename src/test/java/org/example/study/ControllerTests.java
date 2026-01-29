@@ -1,27 +1,19 @@
 package org.example.study;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import org.example.study.DTOs.UserDto;
 import org.example.study.controller.UserController;
 import org.example.study.service.UserService;
-import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.example.study.testData.TestData.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -126,10 +118,12 @@ class ControllerTests {
                         .contentType(MediaType.APPLICATION_JSON).content(singleInvalidUserJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.statusCode").value("400 BAD_REQUEST"))
-                .andExpect(jsonPath("$.exceptionMessage").value(Matchers.anyOf(
-                        Matchers.containsString("field -> fullName, reason -> name should not be blank"),
-                        Matchers.containsString("field -> fullName, reason -> name is mandatory and its length should be in range of 1 - 100")
-                )));
+                .andExpect(jsonPath("$.type").value("Validation error"))
+                .andExpect(jsonPath("$.message").value("Incorrect method arguments provided"))
+                .andExpect(jsonPath("$.exceptionMessage").isArray())
+                .andExpect(jsonPath("$.exceptionMessage.length()").value(1))
+                .andExpect(jsonPath("$.exceptionMessage[0].error").value("fullName"))
+                .andExpect(jsonPath("$.exceptionMessage[0].message").value("name should not be blank"));
         //then
 
         verifyNoInteractions(service);

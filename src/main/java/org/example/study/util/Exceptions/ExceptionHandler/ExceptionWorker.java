@@ -1,6 +1,5 @@
 package org.example.study.util.Exceptions.ExceptionHandler;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -12,13 +11,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @ControllerAdvice
 public class ExceptionWorker {
 
-    //Just a generic attempt at working with exceptions
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionDto> handleRuntimeException(RuntimeException e) {
         return ResponseEntity.internalServerError().body(new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", "Something went wrong on the server side", null));
@@ -33,25 +29,27 @@ public class ExceptionWorker {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ExceptionDto> handleGetNoUsersException(UserNotFoundException e) {
-        ExceptionDto dto = new ExceptionDto(HttpStatus.NOT_FOUND, e.getMessage());
-        return new ResponseEntity<>(dto, dto.statusCode());
+        ExceptionDto dto = new ExceptionDto(HttpStatus.NOT_FOUND, "Not found", "User was NOT found", null);
+        return new ResponseEntity<>(dto, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ExceptionDto> handleArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
-        ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST, "incorrect argument for -> " + e.getParameter().getParameterName());
-        return new ResponseEntity<>(dto, dto.statusCode());
+        List<FieldErrorDto> list = List.of(new FieldErrorDto(e.getName(),e.getMessage()));
+        ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST, "Argument mismatch", "Incorrect body arguments", list);
+        return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ExceptionDto> handleIncorrectEndpointPath(NoHandlerFoundException e) {
-        ExceptionDto dto = new ExceptionDto(HttpStatus.NOT_FOUND, "haven't found a method in controller to handle this request. -> " + e.getMessage());
+        ExceptionDto dto = new ExceptionDto(HttpStatus.NOT_FOUND, "No handler found","haven't found a method in controller to handle this request. -> " + e.getMessage(), null);
         return new ResponseEntity<>(dto, dto.statusCode());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ExceptionDto> handleConstraintViolation(ConstraintViolationException e) {
-        ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST, e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining("\n , ")));
+        List<FieldErrorDto> list = e.getConstraintViolations().stream().map(violation -> FieldErrorDto.of(violation.getMessageTemplate(),violation.getMessage())).toList();
+        ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST, "Constraint violation", null, list);
         return new ResponseEntity<>(dto, dto.statusCode());
     }
 
