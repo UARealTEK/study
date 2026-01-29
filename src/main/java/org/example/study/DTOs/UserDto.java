@@ -9,12 +9,12 @@ import lombok.*;
 @Setter
 public class UserDto {
 
-    @Min(value = 1, message = "Age should be bigger than 1")
+    @NotNull(message = "Age should NOT be null")
     @Max(value = 200, message = "Age should be less than 200 :)")
     private Integer age;
 
     @NotBlank(message = "name should not be blank")
-    @Size(min = 1, max = 100, message = "name is mandatory and its length should be in range of 1 - 100")
+    @Size(max = 100, message = "name is mandatory and its length should be in range of 1 - 100")
     private String fullName;
 
     @NotNull

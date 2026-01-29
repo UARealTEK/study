@@ -11,26 +11,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
-@SuppressWarnings("unused")
 @ControllerAdvice
 public class ExceptionWorker {
 
     //Just a generic attempt at working with exceptions
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionDto> handleRuntimeException(RuntimeException e) {
-        ExceptionDto dto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        return new ResponseEntity<>(dto, dto.statusCode());
+        return ResponseEntity.internalServerError().body(new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", "Something went wrong on the server side", null));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleBodyException(MethodArgumentNotValidException e) {
-        String message = "field -> %s, reason -> %s".formatted(Objects.requireNonNull(e.getFieldError()).getField(), Objects.requireNonNull(e.getFieldError()).getDefaultMessage());
-        ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST,message);
-        return new ResponseEntity<>(dto, dto.statusCode());
+        List<FieldErrorDto> message = e.getBindingResult().getFieldErrors().stream()
+                .map(err -> new FieldErrorDto(err.getField(), err.getDefaultMessage())).toList();
+        return ResponseEntity.badRequest().body(new ExceptionDto(HttpStatus.BAD_REQUEST, "Validation error", "Incorrect method arguments provided", message));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
