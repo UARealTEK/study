@@ -1,19 +1,27 @@
 package org.example.study;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.example.study.DTOs.UserDto;
 import org.example.study.controller.UserController;
 import org.example.study.service.UserService;
+import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.example.study.testData.TestData.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -44,6 +52,7 @@ class ControllerTests {
         usersEndpoint = "/users";
         usersJson = mapper.writeValueAsString(users);
         singleUserJson = mapper.writeValueAsString(user);
+        singleInvalidUserJson = mapper.writeValueAsString(invalidUser);
     }
 
     @Autowired
@@ -106,13 +115,24 @@ class ControllerTests {
         verifyNoMoreInteractions(service);
     }
 
+    // Test that exception is thrown
+    // in this case - MethodArgumentNotValid. Because I validate request body at Controller level
+    // So validation does not reach the service at all
+    // As for whether the correct exception was thrown - I assert on the MESSAGES that are returned to the user as the result of this call
     @Test
-    void checkSaveInvalidUser() {
-        //given
-
+    void checkSaveInvalidUserValidation() throws Exception {
         //when
-
+        mvc.perform(post(usersEndpoint)
+                        .contentType(MediaType.APPLICATION_JSON).content(singleInvalidUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.statusCode").value("400 BAD_REQUEST"))
+                .andExpect(jsonPath("$.exceptionMessage").value(Matchers.anyOf(
+                        Matchers.containsString("field -> fullName, reason -> name should not be blank"),
+                        Matchers.containsString("field -> fullName, reason -> name is mandatory and its length should be in range of 1 - 100")
+                )));
         //then
+
+        verifyNoInteractions(service);
     }
 
 }

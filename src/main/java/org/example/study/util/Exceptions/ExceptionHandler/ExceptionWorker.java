@@ -29,7 +29,7 @@ public class ExceptionWorker {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleBodyException(MethodArgumentNotValidException e) {
         String message = "field -> %s, reason -> %s".formatted(Objects.requireNonNull(e.getFieldError()).getField(), Objects.requireNonNull(e.getFieldError()).getDefaultMessage());
-        ExceptionDto dto = new ExceptionDto(e.getStatusCode(),message);
+        ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST,message);
         return new ResponseEntity<>(dto, dto.statusCode());
     }
 
