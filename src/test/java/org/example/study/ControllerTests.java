@@ -1,8 +1,11 @@
 package org.example.study;
 
+import org.example.study.DTOs.Gender;
 import org.example.study.DTOs.UserDto;
+import org.example.study.DTOs.UserEntity;
 import org.example.study.controller.UserController;
 import org.example.study.service.UserService;
+import org.example.study.util.Converters.Converter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -15,12 +18,12 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
+import static org.example.study.DTOs.UserDto.copyOf;
 import static org.example.study.testData.TestData.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
@@ -127,6 +130,22 @@ class ControllerTests {
         //then
 
         verifyNoInteractions(service);
+    }
+
+    @Test
+    void checkValidUpdateUser() throws Exception {
+        UserDto updatedUser = copyOf(user);
+        updatedUser.setAge(user.getAge() + 10);
+
+        when(service.updateUser(any(UserDto.class), eq(100L))).thenReturn(updatedUser);
+
+        mvc.perform(put(usersEndpoint + "/" + 100L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(updatedUser)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.age").value(updatedUser.getAge()));
+
+        verify(service, times(1)).updateUser(any(UserDto.class), eq(100L));
     }
 
 }

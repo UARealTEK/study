@@ -42,13 +42,13 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto updateUser(UserDto body, @NotNull Long id) {
+    public UserDto updateUser(UserDto body, Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         UserEntity updatedEntity = updateUserData(entity, body);
         return Converter.toUserDto(updatedEntity);
     }
 
-    public void deleteUser(@NotNull Long id) {
+    public void deleteUser(Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         repository.deleteById(entity.getId());
     }

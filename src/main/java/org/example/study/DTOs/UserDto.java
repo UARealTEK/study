@@ -19,4 +19,8 @@ public class UserDto {
 
     @NotNull
     private Gender gender;
+
+    public static UserDto copyOf(UserDto dtoToCopy) {
+        return new UserDto(dtoToCopy.getAge(),dtoToCopy.getFullName(),dtoToCopy.getGender());
+    }
 }

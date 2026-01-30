@@ -5,6 +5,7 @@ import lombok.*;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class UserEntity {

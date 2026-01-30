@@ -1,6 +1,7 @@
 package org.example.study.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.example.study.DTOs.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.service.UserService;
@@ -45,13 +46,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto body, @PathVariable Long id) {
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto body, @PathVariable @NotNull Long id) {
         UserDto dto = service.updateUser(body,id);
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable @NotNull Long id) {
         service.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
