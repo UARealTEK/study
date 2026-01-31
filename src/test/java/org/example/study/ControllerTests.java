@@ -1,12 +1,12 @@
 package org.example.study;
 
 import org.example.study.DTOs.UserDto;
+import org.example.study.Util.BaseControllerTest;
 import org.example.study.controller.UserController;
 import org.example.study.service.UserService;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import tools.jackson.databind.ObjectMapper;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,28 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
-class ControllerTests {
-
-    ObjectMapper mapper;
-    List<UserDto> users;
-    UserDto user;
-    UserDto invalidUser;
-    String usersEndpoint;
-    String usersJson;
-    String singleUserJson;
-    String singleInvalidUserJson;
-
-    @BeforeEach
-    void initValidUsers() {
-        mapper = new ObjectMapper();
-        users = getValidUsers();
-        user = getSingleValidUser();
-        invalidUser = getSingleUserWithEmptyName();
-        usersEndpoint = "/users";
-        usersJson = mapper.writeValueAsString(users);
-        singleUserJson = mapper.writeValueAsString(user);
-        singleInvalidUserJson = mapper.writeValueAsString(invalidUser);
-    }
+class ControllerTests extends BaseControllerTest {
 
     @Autowired
     MockMvc mvc;
@@ -214,6 +193,17 @@ class ControllerTests {
         );
 
         verify(service, times(1)).deleteUser(any(Long.class));
+    }
+
+    //Checking this method by trying to perform a GET request without /users endpoint
+    @Test
+    void checkNoHandlerFound() throws Exception {
+        //when
+        mvc.perform(get("/"))
+                .andExpect(status().isNotFound())
+                .andExpect(i -> assertInstanceOf(NoHandlerFoundException.class, i.getResolvedException()));
+        //then
+        verifyNoInteractions(service);
     }
 
 }
