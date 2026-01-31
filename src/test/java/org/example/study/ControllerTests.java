@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.example.study.DTOs.UserDto.copyOf;
 import static org.example.study.testData.TestData.*;
@@ -174,6 +175,8 @@ class ControllerTests {
                         new FieldErrorDto("fullName", "name should not be blank")
                 ), response.exceptionMessage())
         );
+
+        verifyNoInteractions(service);
     }
 
     @Test
@@ -186,7 +189,7 @@ class ControllerTests {
                 .andExpect(status().isNoContent());
         //then
 
-        verify(service, times(1)).deleteUser(any(Long.class));
+        verify(service, times(1)).deleteUser(eq(1L));
     }
 
     @Test
@@ -194,7 +197,8 @@ class ControllerTests {
         //given
         doThrow(new UserNotFoundException()).when(service).deleteUser(any(Long.class));
         //when
-        MvcResult result = mvc.perform(delete(usersEndpoint + "/" + any(Long.class)))
+        MvcResult result = mvc.perform(delete(usersEndpoint + "/" + 1L))
+                .andExpect(i -> assertEquals(UserNotFoundException.class, Objects.requireNonNull(i.getResolvedException()).getClass()))
                 .andReturn();
 
         //then
@@ -206,6 +210,8 @@ class ControllerTests {
                 () -> assertEquals("User was NOT found", dto.message()),
                 () -> assertNull(dto.exceptionMessage())
         );
+
+        verify(service, times(1)).deleteUser(any(Long.class));
     }
 
 }
