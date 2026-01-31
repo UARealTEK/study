@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -163,6 +164,7 @@ class ControllerTests {
         MvcResult result = mvc.perform(put(usersEndpoint + "/" + 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(updatedUser)))
+                .andExpect(i -> assertInstanceOf(MethodArgumentNotValidException.class, i.getResolvedException()))
                 .andReturn();
 
         ExceptionDto response = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
