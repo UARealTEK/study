@@ -1,27 +1,28 @@
 package org.example.study;
 
-import org.example.study.DTOs.Gender;
 import org.example.study.DTOs.UserDto;
-import org.example.study.DTOs.UserEntity;
 import org.example.study.controller.UserController;
 import org.example.study.service.UserService;
-import org.example.study.util.Converters.Converter;
+import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
+import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
+import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
 import static org.example.study.DTOs.UserDto.copyOf;
 import static org.example.study.testData.TestData.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -117,17 +118,21 @@ class ControllerTests {
     @Test
     void checkSaveInvalidUserValidation() throws Exception {
         //when
-        mvc.perform(post(usersEndpoint)
+        MvcResult result = mvc.perform(post(usersEndpoint)
                         .contentType(MediaType.APPLICATION_JSON).content(singleInvalidUserJson))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.statusCode").value("400 BAD_REQUEST"))
-                .andExpect(jsonPath("$.type").value("Validation error"))
-                .andExpect(jsonPath("$.message").value("Incorrect method arguments provided"))
-                .andExpect(jsonPath("$.exceptionMessage").isArray())
-                .andExpect(jsonPath("$.exceptionMessage.length()").value(1))
-                .andExpect(jsonPath("$.exceptionMessage[0].error").value("fullName"))
-                .andExpect(jsonPath("$.exceptionMessage[0].message").value("name should not be blank"));
+                .andReturn();
         //then
+
+        ExceptionDto exceptionDto = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
+
+        assertAll(
+                () -> assertEquals(HttpStatus.BAD_REQUEST.toString(), exceptionDto.statusCode().toString()),
+                () -> assertEquals("Validation error", exceptionDto.type()),
+                () -> assertEquals("Incorrect method arguments provided", exceptionDto.message()),
+                () -> assertEquals(List.of(
+                        new FieldErrorDto("fullName", "name should not be blank")
+                ), exceptionDto.exceptionMessage())
+        );
 
         verifyNoInteractions(service);
     }
@@ -146,6 +151,61 @@ class ControllerTests {
                 .andExpect(jsonPath("$.age").value(updatedUser.getAge()));
 
         verify(service, times(1)).updateUser(any(UserDto.class), eq(100L));
+    }
+
+    @Test
+    void checkUpdateUserUsingInvalidDto() throws Exception {
+        UserDto updatedUser = copyOf(user);
+        updatedUser.setFullName("");
+
+        //using PUT on user with ID 1 but that's not ideal. User might not exist and then the test will die
+        MvcResult result = mvc.perform(put(usersEndpoint + "/" + 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(updatedUser)))
+                .andReturn();
+
+        ExceptionDto response = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
+
+        assertAll(
+                () -> assertEquals(HttpStatus.BAD_REQUEST.toString(), response.statusCode().toString()),
+                () -> assertEquals("Validation error", response.type()),
+                () -> assertEquals("Incorrect method arguments provided", response.message()),
+                () -> assertEquals(List.of(
+                        new FieldErrorDto("fullName", "name should not be blank")
+                ), response.exceptionMessage())
+        );
+    }
+
+    @Test
+    void checkDeleteValidUser() throws Exception {
+        //given
+        doNothing().when(service).deleteUser(any(Long.class));
+        //when
+
+        mvc.perform(delete(usersEndpoint + "/" + 1L))
+                .andExpect(status().isNoContent());
+        //then
+
+        verify(service, times(1)).deleteUser(any(Long.class));
+    }
+
+    @Test
+    void checkDeleteInvalidUser() throws Exception {
+        //given
+        doThrow(new UserNotFoundException()).when(service).deleteUser(any(Long.class));
+        //when
+        MvcResult result = mvc.perform(delete(usersEndpoint + "/" + any(Long.class)))
+                .andReturn();
+
+        //then
+        ExceptionDto dto = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
+
+        assertAll(
+                () -> assertEquals(HttpStatus.NOT_FOUND.toString(), dto.statusCode().toString()),
+                () -> assertEquals("Not found", dto.type()),
+                () -> assertEquals("User was NOT found", dto.message()),
+                () -> assertNull(dto.exceptionMessage())
+        );
     }
 
 }

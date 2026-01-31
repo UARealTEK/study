@@ -1,10 +1,10 @@
 package org.example.study.util.Exceptions.ExceptionHandler;
 
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-public record ExceptionDto(HttpStatusCode statusCode,
+public record ExceptionDto(HttpStatus statusCode,
                            String type,
                            String message,
                            List<FieldErrorDto> exceptionMessage) {

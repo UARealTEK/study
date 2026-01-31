@@ -47,6 +47,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto body, @PathVariable @NotNull Long id) {
+        System.out.println("controller HIT");
         UserDto dto = service.updateUser(body,id);
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
