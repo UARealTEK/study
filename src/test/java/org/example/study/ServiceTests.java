@@ -4,6 +4,7 @@ import org.example.study.DTOs.UserDto;
 import org.example.study.Util.BaseServiceTest;
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
+import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -54,6 +56,20 @@ public class ServiceTests extends BaseServiceTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void checkUserNotFoundException() {
+        //given
+        when(repository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        //then
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class,
+                () -> service.getUserByID(1L));
+
+        assertEquals("The user with the following id -> " + 1L + " was not found", ex.getMessage());
+        verify(repository, times(1)).findById(1L);
+    }
+
 
 
 }
