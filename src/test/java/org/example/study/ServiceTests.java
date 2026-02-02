@@ -70,6 +70,11 @@ public class ServiceTests extends BaseServiceTest {
         verify(repository, times(1)).findById(1L);
     }
 
+    @Test
+    void checkSaveUser() {
+
+    }
+
 
 
 }
