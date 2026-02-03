@@ -8,6 +8,7 @@ import org.example.study.service.UserService;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -73,17 +74,32 @@ public class ServiceTests extends BaseServiceTest {
 
     //rewrite using captors
     //learn how they work
+
+    /**
+     * TODO: figure out how captor works
+     */
     @Test
     void checkSaveUser() {
         //given
+        ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         when(repository.save(any(UserEntity.class))).thenReturn(user);
+
         //when
-
         UserDto userDto = service.saveUser(userCopy);
+
+        verify(repository, times(1)).save(captor.capture());
+        UserEntity captorValue = captor.getValue();
+
         //then
+        // verifying that the DTO value which was passed to the service was mapped correctly to the entity which was passed further to the repository
+        assertAll(
+                () -> assertEquals(captorValue.getFullName(), userCopy.getFullName()),
+                () -> assertEquals(captorValue.getAge(), userCopy.getAge()),
+                () -> assertEquals(captorValue.getGender(), userCopy.getGender()),
+                () -> assertNull(captorValue.getId())
+        );
 
-        verify(repository, times(1)).save(any(UserEntity.class));
-
+        //Verify that the entity which was returned by the mocked repository matches with the actual returned value returned by the service
         assertAll(
                 () -> assertEquals(user.getAge(), userDto.getAge()),
                 () -> assertEquals(user.getGender(), userDto.getGender()),
