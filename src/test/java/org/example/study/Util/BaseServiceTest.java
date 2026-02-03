@@ -1,6 +1,8 @@
 package org.example.study.Util;
 
+import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.UserEntity;
+import org.example.study.util.Converters.Converter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -12,6 +14,7 @@ public class BaseServiceTest extends BaseTest {
 
     protected List<UserEntity> users;
     protected UserEntity user;
+    protected UserDto userCopy;
     protected UserEntity invalidUser;
 
     @BeforeEach
@@ -19,6 +22,7 @@ public class BaseServiceTest extends BaseTest {
         users = getValidEntities();
         user = getSingleValidEntity();
         invalidUser = getSingleEntityWithEmptyName();
+        userCopy = Converter.toUserDto(user);
     }
 
     @AfterEach

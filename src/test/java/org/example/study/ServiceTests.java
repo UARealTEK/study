@@ -1,6 +1,7 @@
 package org.example.study;
 
 import org.example.study.DTOs.UserDto;
+import org.example.study.DTOs.UserEntity;
 import org.example.study.Util.BaseServiceTest;
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
@@ -70,9 +71,24 @@ public class ServiceTests extends BaseServiceTest {
         verify(repository, times(1)).findById(1L);
     }
 
+    //rewrite using captors
+    //learn how they work
     @Test
     void checkSaveUser() {
+        //given
+        when(repository.save(any(UserEntity.class))).thenReturn(user);
+        //when
 
+        UserDto userDto = service.saveUser(userCopy);
+        //then
+
+        verify(repository, times(1)).save(any(UserEntity.class));
+
+        assertAll(
+                () -> assertEquals(user.getAge(), userDto.getAge()),
+                () -> assertEquals(user.getGender(), userDto.getGender()),
+                () -> assertEquals(user.getFullName(), userDto.getFullName())
+        );
     }
 
 
