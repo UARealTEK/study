@@ -99,6 +99,7 @@ public class ServiceTests extends BaseServiceTest {
                 () -> assertNull(captorValue.getId())
         );
 
+
         //Verify that the entity which was returned by the mocked repository matches with the actual returned value returned by the service
         assertAll(
                 () -> assertEquals(user.getAge(), userDto.getAge()),
