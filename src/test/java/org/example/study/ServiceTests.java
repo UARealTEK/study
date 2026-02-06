@@ -62,7 +62,7 @@ public class ServiceTests extends BaseServiceTest {
     @Test
     void checkUserNotFoundException() {
         //given
-        when(repository.findById(any(Long.class))).thenReturn(Optional.empty());
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
         //then
         UserNotFoundException ex = assertThrows(UserNotFoundException.class,
@@ -72,12 +72,20 @@ public class ServiceTests extends BaseServiceTest {
         verify(repository, times(1)).findById(1L);
     }
 
-    //rewrite using captors
-    //learn how they work
+    @Test
+    void checkGetUser() {
+        when(repository.findById(anyLong())).thenReturn(Optional.of(user));
 
-    /**
-     * TODO: figure out how captor works
-     */
+        UserDto dto = service.getUserByID(user.getId());
+
+        verify(repository, times(1)).findById(user.getId());
+        assertAll(
+                () -> assertEquals(dto.getAge(), user.getAge()),
+                () -> assertEquals(dto.getGender(), user.getGender()),
+                () -> assertEquals(dto.getFullName(), user.getFullName())
+        );
+    }
+
     @Test
     void checkSaveUser() {
         //given
@@ -107,6 +115,18 @@ public class ServiceTests extends BaseServiceTest {
                 () -> assertEquals(user.getFullName(), userDto.getFullName())
         );
     }
+
+    @Test
+    void checkDeleteUser() {
+        //given
+        doNothing().when(repository).deleteById(anyLong());
+
+        //when
+
+        //then
+    }
+
+
 
 
 
