@@ -119,11 +119,42 @@ public class ServiceTests extends BaseServiceTest {
     @Test
     void checkDeleteUser() {
         //given
+        ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+        when(repository.findById(anyLong())).thenReturn(Optional.of(user));
         doNothing().when(repository).deleteById(anyLong());
 
         //when
+        service.deleteUser(user.getId());
 
         //then
+        verify(repository, times(1)).findById(captor.capture());
+        verify(repository, times(1)).deleteById(captor.capture());
+        verifyNoMoreInteractions(repository);
+
+        assertAll(
+                () -> assertEquals(captor.getAllValues().get(0), user.getId()),
+                () -> assertEquals(captor.getAllValues().get(1), user.getId())
+        );
+    }
+
+    @Test
+    void checkInvalidDelete() {
+        //given
+        String expectedError = "The user with the following id -> " + 1L + " was not found";
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+
+        //when
+        Exception ex = assertThrows(UserNotFoundException.class, () -> service.deleteUser(1L));
+
+        //then
+        verify(repository, times(1)).findById(1L);
+        verifyNoMoreInteractions(repository);
+        assertEquals(expectedError, ex.getMessage());
+    }
+
+    @Test
+    void checkUpdateUser() {
+
     }
 
 
