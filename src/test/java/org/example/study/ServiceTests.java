@@ -1,5 +1,6 @@
 package org.example.study;
 
+import org.example.study.DTOs.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.UserEntity;
 import org.example.study.Util.BaseServiceTest;
@@ -152,10 +153,48 @@ public class ServiceTests extends BaseServiceTest {
         assertEquals(expectedError, ex.getMessage());
     }
 
-    //TODO: TBD
     @Test
     void checkUpdateUser() {
+        //given
+        UserDto body = new UserDto();
+        body.setAge(10);
+        body.setFullName("TestName");
+        body.setGender(Gender.MALE);
 
+        when(repository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        //need to return the passed in argument because if not stubbed -> method returns null
+        when(repository.save(any(UserEntity.class))).thenAnswer( i -> i.getArgument(0));
+        ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
+
+        //when
+        UserDto returnedUser = service.updateUser(body,user.getId());
+
+        //then
+
+        verify(repository, times(1)).findById(user.getId());
+        verify(repository, times(1)).save(captor.capture());
+        verifyNoMoreInteractions(repository);
+
+        UserEntity capturedData = captor.getValue();
+
+        //check that the passed in input for the repository.save() is matched with the pre-created dto body
+        assertAll(
+                () -> assertEquals(user.getId(), capturedData.getId()),
+                () -> assertEquals(body.getGender(), capturedData.getGender()),
+                () -> assertEquals(body.getFullName(), capturedData.getFullName()),
+                () -> assertEquals(body.getAge(), capturedData.getAge())
+        );
+
+        //check that returned DTO matches with saved entity
+        assertAll(
+                () -> assertEquals(returnedUser.getFullName(), capturedData.getFullName()),
+                () -> assertEquals(returnedUser.getAge(), capturedData.getAge()),
+                () -> assertEquals(returnedUser.getGender(), capturedData.getGender())
+        );
+
+        //proves that Entity was modified IN PLACE
+        assertSame(capturedData, user);
     }
 
 
