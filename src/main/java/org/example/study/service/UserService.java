@@ -45,6 +45,7 @@ public class UserService {
     public UserDto updateUser(UserDto body, Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         UserEntity updatedEntity = updateUserData(entity, body);
+        repository.save(updatedEntity);
         return Converter.toUserDto(updatedEntity);
     }
 
