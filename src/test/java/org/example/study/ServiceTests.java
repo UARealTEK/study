@@ -197,6 +197,26 @@ public class ServiceTests extends BaseServiceTest {
         assertSame(capturedData, user);
     }
 
+    @Test
+    void checkInvalidUpdate() {
+        //given
+        String expectedError = "The user with the following id -> " + user.getId() + " was not found";
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+
+        //when
+        Exception ex = assertThrows(UserNotFoundException.class, () -> service.updateUser(userCopy, user.getId()));
+
+        //then
+        verify(repository, times(1)).findById(user.getId());
+        verify(repository, never()).save(any());
+        assertEquals(ex.getMessage(),expectedError);
+    }
+
+    @Test
+    void checkValidSearchByAgeAndGender() {
+
+    }
+
 
 
 
