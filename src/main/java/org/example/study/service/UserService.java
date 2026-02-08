@@ -60,7 +60,6 @@ public class UserService {
         return userToUpdate;
     }
 
-    @Transactional
     public List<UserDto> findUserByAgeAndGender(Integer age, Gender gender) {
         List<UserEntity> list = repository.findByAgeAndGender(age,gender);
         if (list.isEmpty()) {

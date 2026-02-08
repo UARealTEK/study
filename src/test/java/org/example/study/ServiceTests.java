@@ -214,7 +214,38 @@ public class ServiceTests extends BaseServiceTest {
 
     @Test
     void checkValidSearchByAgeAndGender() {
+        //given
+        when(repository.findByAgeAndGender(anyInt(), any(Gender.class))).thenReturn(users);
 
+        //when
+        /*
+        whatever is passed inside as params -does not matter. Since we are returning stubbed value anyway
+        As long as the datatype matches - its fine
+         */
+        List<UserDto> list = service.findUserByAgeAndGender(10,Gender.MALE);
+
+        //then
+        verify(repository, times(1)).findByAgeAndGender(10, Gender.MALE);
+        verifyNoMoreInteractions(repository);
+        assertNotNull(list);
+        assertFalse(list.isEmpty());
+        assertEquals(list.size(), users.size());
+    }
+
+    @Test
+    void checkNoMatchForAgeOrGender() {
+        //given
+        when(repository.findByAgeAndGender(anyInt(), any(Gender.class))).thenReturn(List.of());
+
+        //when
+        Exception ex = assertThrows(UserNotFoundException.class, () -> service.findUserByAgeAndGender(1, Gender.FEMALE));
+
+        //then
+        verify(repository, times(1))
+                .findByAgeAndGender(1, Gender.FEMALE);
+        verifyNoMoreInteractions(repository);
+        assertEquals("The users were not found", ex.getMessage());
+        assertInstanceOf(UserNotFoundException.class, ex);
     }
 
 
