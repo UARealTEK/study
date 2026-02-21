@@ -1,9 +1,9 @@
 package org.example.study.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.study.DTOs.Gender;
+import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
-import org.example.study.DTOs.UserEntity;
+import org.example.study.Entities.UserEntity;
 import org.example.study.repository.UserRepository;
 import org.example.study.util.Converters.Converter;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.example.study.util.Converters.Converter.toEntity;
 
 @Slf4j
 @Service
@@ -36,7 +38,7 @@ public class UserService {
     }
 
     public UserDto saveUser(UserDto dto) {
-        UserEntity entity = repository.save(Converter.toEntity(dto));
+        UserEntity entity = repository.save(toEntity(dto));
         return Converter.toUserDto(entity);
     }
 

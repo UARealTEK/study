@@ -1,7 +1,7 @@
 package org.example.study.util.Converters;
 
 import org.example.study.DTOs.UserDto;
-import org.example.study.DTOs.UserEntity;
+import org.example.study.Entities.UserEntity;
 
 @SuppressWarnings("unused")
 public class Converter {

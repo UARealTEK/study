@@ -1,8 +1,8 @@
 package org.example.study;
 
-import org.example.study.DTOs.Gender;
+import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
-import org.example.study.DTOs.UserEntity;
+import org.example.study.Entities.UserEntity;
 import org.example.study.Util.BaseServiceTest;
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;

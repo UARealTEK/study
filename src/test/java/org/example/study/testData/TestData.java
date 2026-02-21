@@ -1,8 +1,8 @@
 package org.example.study.testData;
 
-import org.example.study.DTOs.Gender;
+import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
-import org.example.study.DTOs.UserEntity;
+import org.example.study.Entities.UserEntity;
 
 import java.util.List;
 

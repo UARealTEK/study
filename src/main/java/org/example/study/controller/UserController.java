@@ -2,7 +2,7 @@ package org.example.study.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.example.study.DTOs.Gender;
+import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -13,9 +13,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 2️⃣ Create custom exceptions
  * 3️⃣ Add pagination & filtering
- * 4️⃣ Write controller tests
+ * Also Add:
+ * - PATCH request (PATCH /id)
+ * - Look into Global Exception handling (RestControllerAdvice)
+ * - API Response wrapper
+ * - Sorting support + dynamic filtering (Specifications)
+ * - Swagger
+ *
+ * LATER:
+ * - ReadME
+ * - Caching (@Cachable)
+ * - Security
+ * - Integration tests ? (Testcontainers)
+ * - Database migrations (?)
  */
 
 @Validated
@@ -47,7 +58,6 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto body, @PathVariable @NotNull Long id) {
-        System.out.println("controller HIT");
         UserDto dto = service.updateUser(body,id);
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }

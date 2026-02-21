@@ -1,7 +1,7 @@
 package org.example.study.Util;
 
 import org.example.study.DTOs.UserDto;
-import org.example.study.DTOs.UserEntity;
+import org.example.study.Entities.UserEntity;
 import org.example.study.util.Converters.Converter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

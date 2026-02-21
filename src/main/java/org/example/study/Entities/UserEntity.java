@@ -1,7 +1,8 @@
-package org.example.study.DTOs;
+package org.example.study.Entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.study.enums.Gender;
 
 @Entity
 @NoArgsConstructor

@@ -1,7 +1,7 @@
 package org.example.study.repository;
 
-import org.example.study.DTOs.Gender;
-import org.example.study.DTOs.UserEntity;
+import org.example.study.enums.Gender;
+import org.example.study.Entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

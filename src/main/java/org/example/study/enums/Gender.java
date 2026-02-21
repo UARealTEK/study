@@ -1,4 +1,4 @@
-package org.example.study.DTOs;
+package org.example.study.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
