@@ -5,6 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +33,7 @@ import java.util.List;
  * - Database migrations (?)
  */
 
+@SuppressWarnings("unused")
 @Validated
 @RestController
 @RequestMapping("/users")
@@ -41,8 +46,8 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return service.getAllUsers();
+    public Page<UserDto> getAllUsers(@PageableDefault(size = 5, sort = "age") Pageable page) {
+        return service.getAllUsers(page);
     }
 
     @GetMapping("/{id}")

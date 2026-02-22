@@ -3,8 +3,13 @@ package org.example.study.testData;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
+import org.junit.jupiter.params.provider.Arguments;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class TestData {
 
@@ -15,11 +20,26 @@ public class TestData {
                 new UserDto(30, "Ivan", Gender.MALE));
     }
 
+    public static Page<UserDto> getValidUserDtoPage() {
+        List<UserDto> list = getValidUsers();
+        return new PageImpl<>(list, PageRequest.of(0,list.size()), list.size());
+    }
+
+    public static Stream<Arguments> getValidUserDtoPageStream() {
+        List<UserDto> list = getValidUsers();
+        return Stream.of(Arguments.of(new PageImpl<>(list, PageRequest.of(0,list.size()), list.size())));
+    }
+
     public static List<UserEntity> getValidEntities() {
         return List.of(
                 new UserEntity(1L,10, "Vova", Gender.MALE),
                 new UserEntity(2L,15, "Nina", Gender.FEMALE),
                 new UserEntity(3L,30, "Ivan", Gender.MALE));
+    }
+
+    public static Page<UserEntity> getValidUserEntityPage() {
+        List<UserEntity> list = getValidEntities();
+        return new PageImpl<>(list, PageRequest.of(0,list.size()), list.size());
     }
 
     public static UserDto getSingleValidUser() {

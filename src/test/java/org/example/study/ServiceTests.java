@@ -13,6 +13,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,30 +36,37 @@ public class ServiceTests extends BaseServiceTest {
     @Test
     void checkGetAllUsers() {
         //given
-        when(repository.findAll()).thenReturn(users);
-        //when
+        Pageable pageable = PageRequest.of(0,10);
+        Page<UserEntity> mockedEntityPage = new PageImpl<>(users);
 
-        List<UserDto> result = service.getAllUsers();
+        //when
+        when(repository.findAll(any(Pageable.class))).thenReturn(mockedEntityPage);
+
+        Page<UserDto> result = service.getAllUsers(pageable);
         //then
 
-        verify(repository, times(1)).findAll();
-        assertEquals(result.size(), users.size());
+        verify(repository, times(1)).findAll(pageable);
+        assertEquals(result.getContent().size(), users.size());
 
-        for (int i = 0; i < result.size(); i++) {
-            assertEquals(result.get(i).getFullName(), users.get(i).getFullName());
-            assertEquals(result.get(i).getAge(), users.get(i).getAge());
-            assertEquals(result.get(i).getGender(), users.get(i).getGender());
+        for (int i = 0; i < result.getContent().size(); i++) {
+            assertEquals(result.getContent().get(i).getFullName(), users.get(i).getFullName());
+            assertEquals(result.getContent().get(i).getAge(), users.get(i).getAge());
+            assertEquals(result.getContent().get(i).getGender(), users.get(i).getGender());
         }
     }
 
     @Test
     void checkGetAllUsersWhenRepositoryIsEmpty() {
         //given
-        when(repository.findAll()).thenReturn(List.of());
+        Pageable pageable = PageRequest.of(0,1);
+        Page<UserEntity> mockedUserEntities = new PageImpl<>(List.of());
+
         //when
-        var result = service.getAllUsers();
+        when(repository.findAll(any(Pageable.class))).thenReturn(mockedUserEntities);
+        var result = service.getAllUsers(pageable);
+
         //then
-        verify(repository, times(1)).findAll();
+        verify(repository, times(1)).findAll(pageable);
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }

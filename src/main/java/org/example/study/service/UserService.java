@@ -7,6 +7,8 @@ import org.example.study.Entities.UserEntity;
 import org.example.study.repository.UserRepository;
 import org.example.study.util.Converters.Converter;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +27,8 @@ public class UserService {
         this.repository = repository;
     }
 
-    public List<UserDto> getAllUsers() {
-        List<UserEntity> list = repository.findAll();
-        return list.isEmpty() ?
-                new ArrayList<>()
-                : list.stream().map(Converter::toUserDto).toList();
+    public Page<UserDto> getAllUsers(Pageable pageable) {
+        return repository.findAll(pageable).map(Converter::toUserDto);
     }
 
     public UserDto getUserByID(Long id) {

@@ -1,5 +1,6 @@
 package org.example.study;
 
+import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Util.BaseControllerTest;
 import org.example.study.controller.UserController;
@@ -8,9 +9,14 @@ import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -18,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import tools.jackson.core.type.TypeReference;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,14 +48,52 @@ class ControllerTests extends BaseControllerTest {
     @Test
     void testFindAllUsers() throws Exception {
         //given
-        when(service.getAllUsers()).thenReturn(users);
+        when(service.getAllUsers(any(Pageable.class))).thenReturn(users);
 
         //when
         mvc.perform(get(usersEndpoint))
                 .andExpect(status().isOk())
                 .andExpect(content().json(usersJson));
         //then
-        verify(service, times(1)).getAllUsers();
+        verify(service, times(1)).getAllUsers(any(Pageable.class));
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.example.study.testData.TestData#getValidUserDtoPageStream")
+    void checkPagination(Page<UserDto> dto) throws Exception {
+
+        //when
+        when(service.getAllUsers(any(Pageable.class))).thenReturn(dto);
+
+        MvcResult result = mvc.perform(get(usersEndpoint)
+                .param("page", String.valueOf(dto.getNumber()))
+                .param("size", String.valueOf(dto.getSize()))
+        ).andReturn();
+
+        PageResponseDTO<UserDto> resultPage = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+
+        verify(service).getAllUsers(argThat(
+                i -> i.getPageNumber() == dto.getNumber() &&
+                        i.getPageSize() == dto.getSize()));
+
+        assertAll(
+                () -> assertEquals(dto.getNumber(), resultPage.number()), // current page Number
+                () -> assertEquals(dto.getSize(), resultPage.size()), // declared size of the page (not the amount of displayed content elements)
+                () -> assertEquals(resultPage.totalElements(), dto.getTotalElements()), // total amount of elements in DB
+                () -> assertEquals(resultPage.totalPages(), dto.getTotalPages()), // calculated value (total elements / size)
+
+                () -> assertEquals(resultPage.content().get(0).getAge(), dto.getContent().get(0).getAge()),
+                () -> assertEquals(resultPage.content().get(0).getFullName(), dto.getContent().get(0).getFullName()),
+                () -> assertEquals(resultPage.content().get(0).getGender(), dto.getContent().get(0).getGender()),
+
+                () -> assertEquals(resultPage.content().get(1).getAge(), dto.getContent().get(1).getAge()),
+                () -> assertEquals(resultPage.content().get(1).getFullName(), dto.getContent().get(1).getFullName()),
+                () -> assertEquals(resultPage.content().get(1).getGender(), dto.getContent().get(1).getGender()),
+
+                () -> assertEquals(resultPage.content().get(2).getAge(), dto.getContent().get(2).getAge()),
+                () -> assertEquals(resultPage.content().get(2).getFullName(), dto.getContent().get(2).getFullName()),
+                () -> assertEquals(resultPage.content().get(2).getGender(), dto.getContent().get(2).getGender())
+        );
     }
 
     @Test
