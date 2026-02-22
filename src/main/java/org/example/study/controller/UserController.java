@@ -2,11 +2,11 @@ package org.example.study.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.service.UserService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.example.study.util.Converters.Converter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,6 @@ import java.util.List;
  * - API Response wrapper
  * - Sorting support + dynamic filtering (Specifications)
  * - Swagger
- *
  * LATER:
  * - ReadME
  * - Caching (@Cachable)
@@ -46,8 +45,8 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<UserDto> getAllUsers(@PageableDefault(size = 5, sort = "age") Pageable page) {
-        return service.getAllUsers(page);
+    public PageResponseDTO<UserDto> getAllUsers(@PageableDefault(size = 5, sort = "age") Pageable page) {
+        return Converter.from(service.getAllUsers(page));
     }
 
     @GetMapping("/{id}")

@@ -7,12 +7,13 @@ import org.example.study.Entities.UserEntity;
 import org.example.study.repository.UserRepository;
 import org.example.study.util.Converters.Converter;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.study.util.Converters.Converter.toEntity;

@@ -1,7 +1,9 @@
 package org.example.study.util.Converters;
 
+import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
+import org.springframework.data.domain.Page;
 
 @SuppressWarnings("unused")
 public class Converter {
@@ -20,5 +22,15 @@ public class Converter {
         userToReturn.setFullName(dto.getFullName());
         userToReturn.setGender(dto.getGender());
         return userToReturn;
+    }
+
+    public static <T> PageResponseDTO<T> from(Page<T> page) {
+        return new PageResponseDTO<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }

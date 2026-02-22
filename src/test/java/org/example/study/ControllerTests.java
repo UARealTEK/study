@@ -60,7 +60,6 @@ class ControllerTests extends BaseControllerTest {
     @ParameterizedTest
     @MethodSource("org.example.study.testData.TestData#getValidUserDtoPageStream")
     void checkPagination(Page<UserDto> dto) throws Exception {
-
         //when
         when(service.getAllUsers(any(Pageable.class))).thenReturn(dto);
 
@@ -74,6 +73,9 @@ class ControllerTests extends BaseControllerTest {
         verify(service).getAllUsers(argThat(
                 i -> i.getPageNumber() == dto.getNumber() &&
                         i.getPageSize() == dto.getSize()));
+
+        verify(service, times(1)).getAllUsers(any(Pageable.class));
+        verifyNoMoreInteractions(service);
 
         assertAll(
                 () -> assertEquals(dto.getNumber(), resultPage.number()), // current page Number
