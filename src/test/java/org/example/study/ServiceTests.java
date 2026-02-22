@@ -37,21 +37,25 @@ public class ServiceTests extends BaseServiceTest {
     void checkGetAllUsers() {
         //given
         Pageable pageable = PageRequest.of(0,10);
-        Page<UserEntity> mockedEntityPage = new PageImpl<>(users);
+        Page<UserEntity> mockedEntityPage = new PageImpl<>(users.getContent(), pageable, 50);
 
         //when
-        when(repository.findAll(any(Pageable.class))).thenReturn(mockedEntityPage);
+        when(repository.findAll(pageable)).thenReturn(mockedEntityPage);
 
         Page<UserDto> result = service.getAllUsers(pageable);
         //then
 
         verify(repository, times(1)).findAll(pageable);
-        assertEquals(result.getContent().size(), users.size());
+        assertEquals(result.getContent().size(), users.getContent().size());
+        assertEquals(0, result.getNumber());
+        assertEquals(10, result.getSize());
+        assertEquals(50, result.getTotalElements());
+
 
         for (int i = 0; i < result.getContent().size(); i++) {
-            assertEquals(result.getContent().get(i).getFullName(), users.get(i).getFullName());
-            assertEquals(result.getContent().get(i).getAge(), users.get(i).getAge());
-            assertEquals(result.getContent().get(i).getGender(), users.get(i).getGender());
+            assertEquals(result.getContent().get(i).getFullName(), users.getContent().get(i).getFullName());
+            assertEquals(result.getContent().get(i).getAge(), users.getContent().get(i).getAge());
+            assertEquals(result.getContent().get(i).getGender(), users.getContent().get(i).getGender());
         }
     }
 
@@ -59,7 +63,7 @@ public class ServiceTests extends BaseServiceTest {
     void checkGetAllUsersWhenRepositoryIsEmpty() {
         //given
         Pageable pageable = PageRequest.of(0,1);
-        Page<UserEntity> mockedUserEntities = new PageImpl<>(List.of());
+        Page<UserEntity> mockedUserEntities = new PageImpl<>(List.of(), pageable, 0);
 
         //when
         when(repository.findAll(any(Pageable.class))).thenReturn(mockedUserEntities);
@@ -226,34 +230,37 @@ public class ServiceTests extends BaseServiceTest {
     @Test
     void checkValidSearchByAgeAndGender() {
         //given
-        when(repository.findByAgeAndGender(anyInt(), any(Gender.class))).thenReturn(users);
+        Pageable pageable = PageRequest.of(0,5);
+        when(repository.findByAgeAndGender(any(Pageable.class), anyInt(), any(Gender.class))).thenReturn(users);
 
         //when
         /*
         whatever is passed inside as params -does not matter. Since we are returning stubbed value anyway
         As long as the datatype matches - its fine
          */
-        List<UserDto> list = service.findUserByAgeAndGender(10,Gender.MALE);
+        Page<UserDto> list = service.findUserByAgeAndGender(pageable, 10,Gender.MALE);
 
         //then
-        verify(repository, times(1)).findByAgeAndGender(10, Gender.MALE);
+        verify(repository, times(1)).findByAgeAndGender(pageable, 10, Gender.MALE);
         verifyNoMoreInteractions(repository);
         assertNotNull(list);
         assertFalse(list.isEmpty());
-        assertEquals(list.size(), users.size());
+        assertEquals(list.getContent().size(), users.getContent().size());
     }
 
     @Test
     void checkNoMatchForAgeOrGender() {
+        Pageable pageable = PageRequest.of(0,1);
+        PageImpl<UserEntity> page = new PageImpl<>(List.of(), pageable, 0);
         //given
-        when(repository.findByAgeAndGender(anyInt(), any(Gender.class))).thenReturn(List.of());
+        when(repository.findByAgeAndGender(any(Pageable.class), anyInt(), any(Gender.class))).thenReturn(page);
 
         //when
-        Exception ex = assertThrows(UserNotFoundException.class, () -> service.findUserByAgeAndGender(1, Gender.FEMALE));
+        Exception ex = assertThrows(UserNotFoundException.class, () -> service.findUserByAgeAndGender(pageable, 1, Gender.FEMALE));
 
         //then
         verify(repository, times(1))
-                .findByAgeAndGender(1, Gender.FEMALE);
+                .findByAgeAndGender(pageable,1, Gender.FEMALE);
         verifyNoMoreInteractions(repository);
         assertEquals("The users were not found", ex.getMessage());
         assertInstanceOf(UserNotFoundException.class, ex);

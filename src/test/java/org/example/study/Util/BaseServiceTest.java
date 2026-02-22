@@ -14,14 +14,14 @@ import static org.example.study.testData.TestData.*;
 
 public class BaseServiceTest extends BaseTest {
 
-    protected List<UserEntity> users;
+    protected Page<UserEntity> users;
     protected UserEntity user;
     protected UserDto userCopy;
     protected UserEntity invalidUser;
 
     @BeforeEach
     protected void init() {
-        users = getValidEntities();
+        users = getValidUserEntityPage();
         user = getSingleValidEntity();
         invalidUser = getSingleEntityWithEmptyName();
         userCopy = Converter.toUserDto(user);

@@ -61,10 +61,10 @@ public class UserService {
         return userToUpdate;
     }
 
-    public List<UserDto> findUserByAgeAndGender(Integer age, Gender gender) {
-        List<UserEntity> list = repository.findByAgeAndGender(age,gender);
+    public Page<UserDto> findUserByAgeAndGender(Pageable page, Integer age, Gender gender) {
+        Page<UserEntity> list = repository.findByAgeAndGender(page, age,gender);
         if (list.isEmpty()) {
             throw new UserNotFoundException();
-        } else return list.stream().map(Converter::toUserDto).toList();
+        } else return list.map(Converter::toUserDto);
     }
 }

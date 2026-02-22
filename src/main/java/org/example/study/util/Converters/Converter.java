@@ -24,7 +24,7 @@ public class Converter {
         return userToReturn;
     }
 
-    public static <T> PageResponseDTO<T> from(Page<T> page) {
+    public static <T> PageResponseDTO<T> toPageObj(Page<T> page) {
         return new PageResponseDTO<>(
                 page.getContent(),
                 page.getNumber(),

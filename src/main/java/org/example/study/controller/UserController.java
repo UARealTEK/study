@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * 3️⃣ Add pagination & filtering
  * Also Add:
@@ -46,7 +44,7 @@ public class UserController {
 
     @GetMapping
     public PageResponseDTO<UserDto> getAllUsers(@PageableDefault(size = 5, sort = "age") Pageable page) {
-        return Converter.from(service.getAllUsers(page));
+        return Converter.toPageObj(service.getAllUsers(page));
     }
 
     @GetMapping("/{id}")
@@ -73,7 +71,9 @@ public class UserController {
     }
 
     @GetMapping(params = {"age", "gender"})
-    public List<UserDto> findUsersByAgeAndGender(@RequestParam Integer age, @RequestParam Gender gender) {
-        return service.findUserByAgeAndGender(age,gender);
+    public PageResponseDTO<UserDto> findUsersByAgeAndGender(@PageableDefault(size = 5, sort = "age") Pageable pageable,
+                                                            @RequestParam Integer age,
+                                                            @RequestParam Gender gender) {
+        return Converter.toPageObj(service.findUserByAgeAndGender(pageable, age, gender));
     }
 }
