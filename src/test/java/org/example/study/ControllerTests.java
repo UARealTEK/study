@@ -25,13 +25,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import tools.jackson.core.type.TypeReference;
 
-import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
 import static org.example.study.testData.TestData.*;
-import static org.hamcrest.Matchers.anyOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
