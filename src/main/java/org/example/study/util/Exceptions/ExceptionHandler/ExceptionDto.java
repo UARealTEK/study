@@ -8,5 +8,4 @@ public record ExceptionDto(HttpStatus statusCode,
                            String type,
                            String message,
                            List<FieldErrorDto> exceptionMessage) {
-
 }

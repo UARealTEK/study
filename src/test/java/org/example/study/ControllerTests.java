@@ -15,7 +15,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,8 +28,10 @@ import tools.jackson.core.type.TypeReference;
 import java.util.List;
 import java.util.Objects;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
 import static org.example.study.testData.TestData.*;
+import static org.hamcrest.Matchers.anyOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -150,14 +151,15 @@ class ControllerTests extends BaseControllerTest {
         //then
 
         ExceptionDto exceptionDto = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
+        FieldErrorDto fullNameError = new FieldErrorDto("fullName", "name should not be blank");
+        FieldErrorDto nameIsMandatory = new FieldErrorDto("fullName", "name is mandatory and its length should be in range of 1 - 100");
 
         assertAll(
                 () -> assertEquals(HttpStatus.BAD_REQUEST.toString(), exceptionDto.statusCode().toString()),
                 () -> assertEquals("Validation error", exceptionDto.type()),
                 () -> assertEquals("Incorrect method arguments provided", exceptionDto.message()),
-                () -> assertEquals(List.of(
-                        new FieldErrorDto("fullName", "name should not be blank")
-                ), exceptionDto.exceptionMessage())
+                () -> assertThat(fullNameError).isIn(exceptionDto.exceptionMessage()),
+                () -> assertThat(nameIsMandatory).isIn(exceptionDto.exceptionMessage())
         );
 
         verifyNoInteractions(service);
@@ -192,14 +194,15 @@ class ControllerTests extends BaseControllerTest {
                 .andReturn();
 
         ExceptionDto response = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
+        FieldErrorDto fullNameError = new FieldErrorDto("fullName", "name should not be blank");
+        FieldErrorDto nameIsMandatory = new FieldErrorDto("fullName", "name is mandatory and its length should be in range of 1 - 100");
 
         assertAll(
                 () -> assertEquals(HttpStatus.BAD_REQUEST.toString(), response.statusCode().toString()),
                 () -> assertEquals("Validation error", response.type()),
                 () -> assertEquals("Incorrect method arguments provided", response.message()),
-                () -> assertEquals(List.of(
-                        new FieldErrorDto("fullName", "name should not be blank")
-                ), response.exceptionMessage())
+                () -> assertThat(fullNameError).isIn(response.exceptionMessage()),
+                () -> assertThat(nameIsMandatory).isIn(response.exceptionMessage())
         );
 
         verifyNoInteractions(service);
