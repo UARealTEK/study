@@ -64,6 +64,11 @@ public class UserController {
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDto> patchUser(@RequestBody UserDto body, @PathVariable @NotNull Integer id) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable @NotNull Long id) {
         service.deleteUser(id);
