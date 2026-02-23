@@ -65,7 +65,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserDto> patchUser(@RequestBody UserDto body, @PathVariable @NotNull Integer id) {
+    public ResponseEntity<UserDto> patchUser(@RequestBody UserDto body, @PathVariable @NotNull Long id) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
