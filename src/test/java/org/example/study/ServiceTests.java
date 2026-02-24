@@ -80,11 +80,12 @@ public class ServiceTests extends BaseServiceTest {
         Page<UserEntity> emptyPage = new PageImpl<>(List.of(), pageable, 0);
         //when
         when(repository.findAll(any(Pageable.class))).thenReturn(emptyPage);
-        UserNotFoundException result = assertThrows(UserNotFoundException.class, () -> service.getAllUsers(pageable));
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> service.getAllUsers(pageable));
 
         //then
         verify(repository, times(1)).findAll(pageable);
-        assertEquals(result.getMessage(), new UserNotFoundException().getMessage());
+        assertEquals(ex.getMessage(), new UserNotFoundException().getMessage());
+        assertInstanceOf(UserNotFoundException.class, ex);
     }
 
     @Test
@@ -98,6 +99,7 @@ public class ServiceTests extends BaseServiceTest {
 
         assertEquals(ex.getMessage(), new UserNotFoundException(1L).getMessage());
         verify(repository, times(1)).findById(1L);
+        assertInstanceOf(UserNotFoundException.class, ex);
     }
 
     @Test
@@ -177,6 +179,7 @@ public class ServiceTests extends BaseServiceTest {
         verify(repository, times(1)).findById(1L);
         verifyNoMoreInteractions(repository);
         assertEquals(ex.getMessage(), new UserNotFoundException(1L).getMessage());
+        assertInstanceOf(UserNotFoundException.class, ex);
     }
 
     @Test
@@ -235,6 +238,7 @@ public class ServiceTests extends BaseServiceTest {
         verify(repository, times(1)).findById(user.getId());
         verify(repository, never()).save(any());
         assertEquals(ex.getMessage(), new UserNotFoundException(user.getId()).getMessage());
+        assertInstanceOf(UserNotFoundException.class, ex);
     }
 
     @Test
