@@ -8,6 +8,8 @@ import org.example.study.Util.BaseServiceTest;
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,7 +26,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-//TODO: rework using PageResponseDTO
 @ExtendWith(MockitoExtension.class)
 public class ServiceTests extends BaseServiceTest {
 
@@ -33,6 +34,18 @@ public class ServiceTests extends BaseServiceTest {
 
     @InjectMocks
     public UserService service;
+
+    @BeforeEach
+    protected void init() {
+        super.init();
+        service = new UserService(repository,mapper);
+    }
+
+    @AfterEach
+    protected void cleanUp() {
+        super.cleanUp();
+        service = null;
+    }
 
     @Test
     void checkGetAllUsers() {
@@ -64,16 +77,14 @@ public class ServiceTests extends BaseServiceTest {
     void checkGetAllUsersWhenRepositoryIsEmpty() {
         //given
         Pageable pageable = PageRequest.of(0,1);
-        Page<UserEntity> mockedUserEntities = new PageImpl<>(List.of(), pageable, 0);
-
+        Page<UserEntity> emptyPage = new PageImpl<>(List.of(), pageable, 0);
         //when
-        when(repository.findAll(any(Pageable.class))).thenReturn(mockedUserEntities);
-        var result = service.getAllUsers(pageable);
+        when(repository.findAll(any(Pageable.class))).thenReturn(emptyPage);
+        UserNotFoundException result = assertThrows(UserNotFoundException.class, () -> service.getAllUsers(pageable));
 
         //then
         verify(repository, times(1)).findAll(pageable);
-        assertNotNull(result);
-        assertTrue(result.content().isEmpty());
+        assertEquals(result.getMessage(), new UserNotFoundException().getMessage());
     }
 
     @Test
@@ -85,7 +96,7 @@ public class ServiceTests extends BaseServiceTest {
         UserNotFoundException ex = assertThrows(UserNotFoundException.class,
                 () -> service.getUserByID(1L));
 
-        assertEquals("The user with the following id -> " + 1L + " was not found", ex.getMessage());
+        assertEquals(ex.getMessage(), new UserNotFoundException(1L).getMessage());
         verify(repository, times(1)).findById(1L);
     }
 
@@ -157,7 +168,6 @@ public class ServiceTests extends BaseServiceTest {
     @Test
     void checkInvalidDelete() {
         //given
-        String expectedError = "The user with the following id -> " + 1L + " was not found";
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
@@ -166,7 +176,7 @@ public class ServiceTests extends BaseServiceTest {
         //then
         verify(repository, times(1)).findById(1L);
         verifyNoMoreInteractions(repository);
-        assertEquals(expectedError, ex.getMessage());
+        assertEquals(ex.getMessage(), new UserNotFoundException(1L).getMessage());
     }
 
     @Test
@@ -216,7 +226,6 @@ public class ServiceTests extends BaseServiceTest {
     @Test
     void checkInvalidUpdate() {
         //given
-        String expectedError = "The user with the following id -> " + user.getId() + " was not found";
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
@@ -225,7 +234,7 @@ public class ServiceTests extends BaseServiceTest {
         //then
         verify(repository, times(1)).findById(user.getId());
         verify(repository, never()).save(any());
-        assertEquals(ex.getMessage(),expectedError);
+        assertEquals(ex.getMessage(), new UserNotFoundException(user.getId()).getMessage());
     }
 
     @Test
@@ -263,7 +272,7 @@ public class ServiceTests extends BaseServiceTest {
         verify(repository, times(1))
                 .findByAgeAndGender(pageable,1, Gender.FEMALE);
         verifyNoMoreInteractions(repository);
-        assertEquals("The users were not found", ex.getMessage());
+        assertEquals(ex.getMessage(), new UserNotFoundException().getMessage());
         assertInstanceOf(UserNotFoundException.class, ex);
     }
 
