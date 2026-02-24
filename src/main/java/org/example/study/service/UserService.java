@@ -2,6 +2,7 @@ package org.example.study.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.study.DTOs.PageResponseDTO;
+import org.example.study.DTOs.UserPatchDto;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
@@ -52,6 +53,13 @@ public class UserService {
         return mapper.toUserDto(repository.save(updatedEntity));
     }
 
+    @Transactional
+    public UserDto patchUser(UserPatchDto body, Long id) {
+        UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        UserEntity updatedEntity = patchUserData(entity, body);
+        return mapper.toUserDto(repository.save(updatedEntity));
+    }
+
     public void deleteUser(Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         repository.deleteById(entity.getId());
@@ -61,6 +69,19 @@ public class UserService {
         userToUpdate.setAge(body.getAge());
         userToUpdate.setGender(body.getGender());
         userToUpdate.setFullName(body.getFullName());
+        return userToUpdate;
+    }
+
+    private UserEntity patchUserData(UserEntity userToUpdate, UserPatchDto body) {
+        if (body.getAge() != null) {
+            userToUpdate.setAge(body.getAge());
+        }
+         if (body.getFullName() != null) {
+             userToUpdate.setFullName(body.getFullName());
+         }
+         if (body.getGender() != null) {
+             userToUpdate.setGender(body.getGender());
+         }
         return userToUpdate;
     }
 

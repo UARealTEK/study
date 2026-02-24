@@ -52,6 +52,10 @@ public class TestData {
         return new UserDto(10, "Volodymyr", Gender.MALE);
     }
 
+    public static Stream<Arguments> getSingleValidUserArg() {
+        return Stream.of(Arguments.of(new UserDto(10, "Volodymyr", Gender.MALE)));
+    }
+
     public static UserEntity getSingleValidEntity() {
         return new UserEntity(4L, 15, "Andrew", Gender.MALE);
     }

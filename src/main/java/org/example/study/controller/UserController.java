@@ -3,6 +3,7 @@ package org.example.study.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.example.study.DTOs.PageResponseDTO;
+import org.example.study.DTOs.UserPatchDto;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.service.UserService;
@@ -64,9 +65,9 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserDto> patchUser(@RequestBody UserDto body, @PathVariable @NotNull Long id) {
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserDto> patchUser(@Valid @RequestBody UserPatchDto body, @PathVariable @NotNull Long id) {
+        UserDto dto = service.patchUser(body, id);
+        return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -28,7 +28,6 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
-import static org.example.study.testData.TestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -96,10 +95,11 @@ class ControllerTests extends BaseControllerTest {
         );
     }
 
-    @Test
-    void testFindSingleValidUser() throws Exception {
+    @ParameterizedTest
+    @MethodSource("org.example.study.testData.TestData#getSingleValidUserArg")
+    void testFindSingleValidUser(UserDto userDto) throws Exception {
         //given
-        when(service.getUserByID(any(Long.class))).thenReturn(getSingleValidUser());
+        when(service.getUserByID(any(Long.class))).thenReturn(userDto);
         //when
         mvc.perform(get(usersEndpoint + "/" + any(Long.class)))
                 .andExpect(status().isOk())
