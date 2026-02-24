@@ -27,8 +27,12 @@ public class UserService {
 
     public PageResponseDTO<UserDto> getAllUsers(Pageable pageable) {
         Page<UserEntity> page = repository.findAll(pageable);
-        Page<UserDto> userDtoPage = page.map(mapper::toUserDto);
-        return mapper.toPageObj(userDtoPage);
+        if (page.isEmpty()) {
+            throw new UserNotFoundException();
+        } else {
+            Page<UserDto> userDtoPage = page.map(mapper::toUserDto);
+            return mapper.toPageObj(userDtoPage);
+        }
     }
 
     public UserDto getUserByID(Long id) {
@@ -64,6 +68,9 @@ public class UserService {
         Page<UserEntity> list = repository.findByAgeAndGender(page, age,gender);
         if (list.isEmpty()) {
             throw new UserNotFoundException();
-        } else return list.map(mapper::toPageObj);
+        } else  {
+            Page<UserDto> userDtoPage = list.map(mapper::toUserDto);
+            return mapper.toPageObj(userDtoPage);
+        }
     }
 }
