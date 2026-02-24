@@ -11,7 +11,7 @@ import org.example.study.enums.Gender;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserUpdateDto {
+public class UserPatchDto {
 
     @Min(0)
     @Max(value = 200, message = "Age should be less than 200 :)")
@@ -22,7 +22,7 @@ public class UserUpdateDto {
 
     private Gender gender;
 
-    public static UserUpdateDto copyOf(UserUpdateDto dtoToCopy) {
-        return new UserUpdateDto(dtoToCopy.getAge(),dtoToCopy.getFullName(),dtoToCopy.getGender());
+    public static UserPatchDto copyOf(UserPatchDto dtoToCopy) {
+        return new UserPatchDto(dtoToCopy.getAge(),dtoToCopy.getFullName(),dtoToCopy.getGender());
     }
 }

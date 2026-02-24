@@ -6,7 +6,7 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.service.UserService;
-import org.example.study.util.Converters.Converter;
+import org.example.study.util.Converters.UserMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -44,7 +44,7 @@ public class UserController {
 
     @GetMapping
     public PageResponseDTO<UserDto> getAllUsers(@PageableDefault(size = 5, sort = "age") Pageable page) {
-        return Converter.toPageObj(service.getAllUsers(page));
+        return service.getAllUsers(page);
     }
 
     @GetMapping("/{id}")
@@ -66,6 +66,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<UserDto> patchUser(@RequestBody UserDto body, @PathVariable @NotNull Long id) {
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -79,6 +80,6 @@ public class UserController {
     public PageResponseDTO<UserDto> findUsersByAgeAndGender(@PageableDefault(size = 5, sort = "age") Pageable pageable,
                                                             @RequestParam Integer age,
                                                             @RequestParam Gender gender) {
-        return Converter.toPageObj(service.findUserByAgeAndGender(pageable, age, gender));
+        return UserMapper.toPageObj(service.findUserByAgeAndGender(pageable, age, gender));
     }
 }

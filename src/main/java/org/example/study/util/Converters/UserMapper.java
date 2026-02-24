@@ -1,0 +1,26 @@
+package org.example.study.util.Converters;
+
+import org.example.study.DTOs.PageResponseDTO;
+import org.example.study.DTOs.UserDto;
+import org.example.study.Entities.UserEntity;
+import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
+
+@SuppressWarnings("unused")
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+
+    UserEntity toEntity(UserDto dto);
+
+    UserDto toUserDto(UserEntity dto);
+
+    default <T> PageResponseDTO<T> toPageObj(Page<T> page){
+        return new PageResponseDTO<>(
+          page.getContent(),
+          page.getNumber(),
+          page.getSize(),
+          page.getTotalElements(),
+          page.getTotalPages()
+        );
+    };
+}

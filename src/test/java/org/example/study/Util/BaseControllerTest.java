@@ -1,10 +1,10 @@
 package org.example.study.Util;
 
+import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.example.study.testData.TestData.*;
@@ -14,7 +14,7 @@ public class BaseControllerTest extends BaseTest {
 
     @Autowired
     protected ObjectMapper mapper;
-    protected Page<UserDto> users;
+    protected PageResponseDTO<UserDto> users;
     protected UserDto user;
     protected UserDto invalidUser;
     protected final String usersEndpoint = "/users";

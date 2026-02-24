@@ -1,9 +1,12 @@
 package org.example.study.testData;
 
+import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
+import org.example.study.util.Converters.UserMapper;
 import org.junit.jupiter.params.provider.Arguments;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +16,8 @@ import java.util.stream.Stream;
 
 public class TestData {
 
+    protected static final UserMapper mapper = Mappers.getMapper(UserMapper.class);
+
     public static List<UserDto> getValidUsers() {
         return List.of(
                 new UserDto(10, "Vova", Gender.MALE),
@@ -20,9 +25,10 @@ public class TestData {
                 new UserDto(30, "Ivan", Gender.MALE));
     }
 
-    public static Page<UserDto> getValidUserDtoPage() {
+    public static PageResponseDTO<UserDto> getValidUserDtoPage() {
         List<UserDto> list = getValidUsers();
-        return new PageImpl<>(list, PageRequest.of(0,list.size()), list.size());
+        Page<UserDto> pageDto = new PageImpl<>(list, PageRequest.of(0,list.size()), list.size());
+        return mapper.toPageObj(pageDto);
     }
 
     public static Stream<Arguments> getValidUserDtoPageStream() {

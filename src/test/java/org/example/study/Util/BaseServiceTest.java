@@ -2,13 +2,10 @@ package org.example.study.Util;
 
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
-import org.example.study.util.Converters.Converter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.data.domain.Page;
 
-
-import java.util.List;
 
 import static org.example.study.testData.TestData.*;
 
@@ -24,7 +21,7 @@ public class BaseServiceTest extends BaseTest {
         users = getValidUserEntityPage();
         user = getSingleValidEntity();
         invalidUser = getSingleEntityWithEmptyName();
-        userCopy = Converter.toUserDto(user);
+        userCopy = mapper.toUserDto(user);
     }
 
     @AfterEach
