@@ -9,7 +9,6 @@ import tools.jackson.databind.ObjectMapper;
 
 import static org.example.study.testData.TestData.*;
 
-//TODO: Refactor using Pageable
 public class BaseControllerTest extends BaseTest {
 
     @Autowired

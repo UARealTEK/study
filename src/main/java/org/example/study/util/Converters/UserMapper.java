@@ -14,7 +14,7 @@ public interface UserMapper {
 
     UserDto toUserDto(UserEntity dto);
 
-    default <T> PageResponseDTO<T> toPageObj(Page<T> page){
+    default <T> PageResponseDTO<T> toPageResponse(Page<T> page){
         return new PageResponseDTO<>(
           page.getContent(),
           page.getNumber(),
@@ -22,5 +22,5 @@ public interface UserMapper {
           page.getTotalElements(),
           page.getTotalPages()
         );
-    };
+    }
 }

@@ -14,7 +14,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -57,44 +56,43 @@ class ControllerTests extends BaseControllerTest {
         verify(service, times(1)).getAllUsers(any(Pageable.class));
     }
 
-    //TODO: rework using PageResponseDTO
     @ParameterizedTest
     @MethodSource("org.example.study.testData.TestData#getValidUserDtoPageStream")
-    void checkPagination(Page<UserDto> dto) throws Exception {
+    void checkPagination(PageResponseDTO<UserDto> dto) throws Exception {
         //when
         when(service.getAllUsers(any(Pageable.class))).thenReturn(dto);
 
         MvcResult result = mvc.perform(get(usersEndpoint)
-                .param("page", String.valueOf(dto.getNumber()))
-                .param("size", String.valueOf(dto.getSize()))
+                .param("page", String.valueOf(dto.number()))
+                .param("size", String.valueOf(dto.size()))
         ).andReturn();
 
         PageResponseDTO<UserDto> resultPage = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
 
         verify(service).getAllUsers(argThat(
-                i -> i.getPageNumber() == dto.getNumber() &&
-                        i.getPageSize() == dto.getSize()));
+                i -> i.getPageNumber() == dto.number() &&
+                        i.getPageSize() == dto.size()));
 
         verify(service, times(1)).getAllUsers(any(Pageable.class));
         verifyNoMoreInteractions(service);
 
         assertAll(
-                () -> assertEquals(dto.getNumber(), resultPage.number()), // current page Number
-                () -> assertEquals(dto.getSize(), resultPage.size()), // declared size of the page (not the amount of displayed content elements)
-                () -> assertEquals(resultPage.totalElements(), dto.getTotalElements()), // total amount of elements in DB
-                () -> assertEquals(resultPage.totalPages(), dto.getTotalPages()), // calculated value (total elements / size)
+                () -> assertEquals(dto.number(), resultPage.number()), // current page Number
+                () -> assertEquals(dto.size(), resultPage.size()), // declared size of the page (not the amount of displayed content elements)
+                () -> assertEquals(resultPage.totalElements(), dto.totalElements()), // total amount of elements in DB
+                () -> assertEquals(resultPage.totalPages(), dto.totalPages()), // calculated value (total elements / size)
 
-                () -> assertEquals(resultPage.content().get(0).getAge(), dto.getContent().get(0).getAge()),
-                () -> assertEquals(resultPage.content().get(0).getFullName(), dto.getContent().get(0).getFullName()),
-                () -> assertEquals(resultPage.content().get(0).getGender(), dto.getContent().get(0).getGender()),
+                () -> assertEquals(resultPage.content().get(0).getAge(), dto.content().get(0).getAge()),
+                () -> assertEquals(resultPage.content().get(0).getFullName(), dto.content().get(0).getFullName()),
+                () -> assertEquals(resultPage.content().get(0).getGender(), dto.content().get(0).getGender()),
 
-                () -> assertEquals(resultPage.content().get(1).getAge(), dto.getContent().get(1).getAge()),
-                () -> assertEquals(resultPage.content().get(1).getFullName(), dto.getContent().get(1).getFullName()),
-                () -> assertEquals(resultPage.content().get(1).getGender(), dto.getContent().get(1).getGender()),
+                () -> assertEquals(resultPage.content().get(1).getAge(), dto.content().get(1).getAge()),
+                () -> assertEquals(resultPage.content().get(1).getFullName(), dto.content().get(1).getFullName()),
+                () -> assertEquals(resultPage.content().get(1).getGender(), dto.content().get(1).getGender()),
 
-                () -> assertEquals(resultPage.content().get(2).getAge(), dto.getContent().get(2).getAge()),
-                () -> assertEquals(resultPage.content().get(2).getFullName(), dto.getContent().get(2).getFullName()),
-                () -> assertEquals(resultPage.content().get(2).getGender(), dto.getContent().get(2).getGender())
+                () -> assertEquals(resultPage.content().get(2).getAge(), dto.content().get(2).getAge()),
+                () -> assertEquals(resultPage.content().get(2).getFullName(), dto.content().get(2).getFullName()),
+                () -> assertEquals(resultPage.content().get(2).getGender(), dto.content().get(2).getGender())
         );
     }
 

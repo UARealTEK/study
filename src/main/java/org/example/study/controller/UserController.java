@@ -6,7 +6,6 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.service.UserService;
-import org.example.study.util.Converters.UserMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -80,6 +79,6 @@ public class UserController {
     public PageResponseDTO<UserDto> findUsersByAgeAndGender(@PageableDefault(size = 5, sort = "age") Pageable pageable,
                                                             @RequestParam Integer age,
                                                             @RequestParam Gender gender) {
-        return UserMapper.toPageObj(service.findUserByAgeAndGender(pageable, age, gender));
+        return service.findUserByAgeAndGender(pageable, age, gender);
     }
 }

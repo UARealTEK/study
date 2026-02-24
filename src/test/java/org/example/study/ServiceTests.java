@@ -1,5 +1,6 @@
 package org.example.study;
 
+import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
@@ -42,20 +43,20 @@ public class ServiceTests extends BaseServiceTest {
         //when
         when(repository.findAll(pageable)).thenReturn(mockedEntityPage);
 
-        Page<UserDto> result = service.getAllUsers(pageable);
+        PageResponseDTO<UserDto> result = service.getAllUsers(pageable);
         //then
 
         verify(repository, times(1)).findAll(pageable);
-        assertEquals(result.getContent().size(), users.getContent().size());
-        assertEquals(0, result.getNumber());
-        assertEquals(10, result.getSize());
-        assertEquals(50, result.getTotalElements());
+        assertEquals(result.content().size(), users.getContent().size());
+        assertEquals(0, result.number());
+        assertEquals(10, result.size());
+        assertEquals(50, result.totalElements());
 
 
-        for (int i = 0; i < result.getContent().size(); i++) {
-            assertEquals(result.getContent().get(i).getFullName(), users.getContent().get(i).getFullName());
-            assertEquals(result.getContent().get(i).getAge(), users.getContent().get(i).getAge());
-            assertEquals(result.getContent().get(i).getGender(), users.getContent().get(i).getGender());
+        for (int i = 0; i < result.content().size(); i++) {
+            assertEquals(result.content().get(i).getFullName(), users.getContent().get(i).getFullName());
+            assertEquals(result.content().get(i).getAge(), users.getContent().get(i).getAge());
+            assertEquals(result.content().get(i).getGender(), users.getContent().get(i).getGender());
         }
     }
 
@@ -72,7 +73,7 @@ public class ServiceTests extends BaseServiceTest {
         //then
         verify(repository, times(1)).findAll(pageable);
         assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertTrue(result.content().isEmpty());
     }
 
     @Test
@@ -238,14 +239,14 @@ public class ServiceTests extends BaseServiceTest {
         whatever is passed inside as params -does not matter. Since we are returning stubbed value anyway
         As long as the datatype matches - its fine
          */
-        Page<UserDto> list = service.findUserByAgeAndGender(pageable, 10,Gender.MALE);
+        PageResponseDTO<UserDto> list = service.findUserByAgeAndGender(pageable, 10,Gender.MALE);
 
         //then
         verify(repository, times(1)).findByAgeAndGender(pageable, 10, Gender.MALE);
         verifyNoMoreInteractions(repository);
         assertNotNull(list);
-        assertFalse(list.isEmpty());
-        assertEquals(list.getContent().size(), users.getContent().size());
+        assertFalse(list.content().isEmpty());
+        assertEquals(list.content().size(), users.getContent().size());
     }
 
     @Test

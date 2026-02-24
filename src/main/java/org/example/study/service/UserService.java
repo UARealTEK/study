@@ -31,7 +31,7 @@ public class UserService {
             throw new UserNotFoundException();
         } else {
             Page<UserDto> userDtoPage = page.map(mapper::toUserDto);
-            return mapper.toPageObj(userDtoPage);
+            return mapper.toPageResponse(userDtoPage);
         }
     }
 
@@ -70,7 +70,7 @@ public class UserService {
             throw new UserNotFoundException();
         } else  {
             Page<UserDto> userDtoPage = list.map(mapper::toUserDto);
-            return mapper.toPageObj(userDtoPage);
+            return mapper.toPageResponse(userDtoPage);
         }
     }
 }

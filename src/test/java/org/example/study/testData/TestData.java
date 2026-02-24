@@ -28,12 +28,12 @@ public class TestData {
     public static PageResponseDTO<UserDto> getValidUserDtoPage() {
         List<UserDto> list = getValidUsers();
         Page<UserDto> pageDto = new PageImpl<>(list, PageRequest.of(0,list.size()), list.size());
-        return mapper.toPageObj(pageDto);
+        return mapper.toPageResponse(pageDto);
     }
 
     public static Stream<Arguments> getValidUserDtoPageStream() {
         List<UserDto> list = getValidUsers();
-        return Stream.of(Arguments.of(new PageImpl<>(list, PageRequest.of(0,list.size()), list.size())));
+        return Stream.of(Arguments.of(mapper.toPageResponse(new PageImpl<>(list, PageRequest.of(0,list.size()), list.size()))));
     }
 
     public static List<UserEntity> getValidEntities() {
