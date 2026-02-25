@@ -5,20 +5,16 @@ import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.List;
 
-@ControllerAdvice
+@SuppressWarnings("unused")
+@RestControllerAdvice
 public class ExceptionWorker {
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ExceptionDto> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.internalServerError().body(new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", "Something went wrong on the server side", null));
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleBodyException(MethodArgumentNotValidException e) {
@@ -51,6 +47,11 @@ public class ExceptionWorker {
         List<FieldErrorDto> list = e.getConstraintViolations().stream().map(violation -> FieldErrorDto.of(violation.getMessageTemplate(),violation.getMessage())).toList();
         ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST, "Constraint violation", null, list);
         return new ResponseEntity<>(dto, dto.statusCode());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ExceptionDto> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.internalServerError().body(new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", "Something went wrong on the server side", null));
     }
 
 

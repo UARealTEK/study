@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 3️⃣ Add pagination & filtering
  * Also Add:
- * - PATCH request (PATCH /id)
  * - Look into Global Exception handling (RestControllerAdvice)
- * - API Response wrapper
  * - Sorting support + dynamic filtering (Specifications)
  * - Swagger
  * LATER:
