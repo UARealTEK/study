@@ -7,7 +7,6 @@ import org.mapstruct.factory.Mappers;
 public abstract class BaseTest {
 
     protected final UserMapper mapper = Mappers.getMapper(UserMapper.class);
-
     protected void init(){}
     protected void cleanUp(){}
 }

@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping
-    public PageResponseDTO<UserDto> getAllUsers(@PageableDefault(size = 5, sort = "age") Pageable page,
+    public PageResponseDTO<UserDto> searchUsers(@PageableDefault(size = 5, sort = "age") Pageable page,
                                                 @RequestParam(required = false) Integer age,
                                                 @RequestParam(required = false) String fullName,
                                                 @RequestParam(required = false) Gender gender) {

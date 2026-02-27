@@ -49,30 +49,31 @@ public class UserService {
     @Transactional
     public UserDto updateUser(UserDto body, Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        UserEntity updatedEntity = updateUserData(entity, body);
-        return mapper.toUserDto(repository.save(updatedEntity));
+        updateUserData(entity, body);
+        return mapper.toUserDto(entity);
     }
 
     @Transactional
     public UserDto patchUser(UserPatchDto body, Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        UserEntity updatedEntity = patchUserData(entity, body);
-        return mapper.toUserDto(repository.save(updatedEntity));
+        patchUserData(entity, body);
+        return mapper.toUserDto(entity);
     }
 
     public void deleteUser(Long id) {
-        UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        repository.deleteById(entity.getId());
+        if (!repository.existsById(id)) {
+            throw new UserNotFoundException(id);
+        }
+        repository.deleteById(id);
     }
 
-    private UserEntity updateUserData(UserEntity userToUpdate, UserDto body) {
+    private void updateUserData(UserEntity userToUpdate, UserDto body) {
         userToUpdate.setAge(body.getAge());
         userToUpdate.setGender(body.getGender());
         userToUpdate.setFullName(body.getFullName());
-        return userToUpdate;
     }
 
-    private UserEntity patchUserData(UserEntity userToUpdate, UserPatchDto body) {
+    private void patchUserData(UserEntity userToUpdate, UserPatchDto body) {
         if (body.getAge() != null) {
             userToUpdate.setAge(body.getAge());
         }
@@ -82,7 +83,6 @@ public class UserService {
          if (body.getGender() != null) {
              userToUpdate.setGender(body.getGender());
          }
-        return userToUpdate;
     }
 
     public PageResponseDTO<UserDto> findUserByAgeAndGender(Pageable page, Integer age, Gender gender) {
