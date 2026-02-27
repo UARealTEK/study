@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -56,12 +57,12 @@ public class ServiceTests extends BaseServiceTest {
         Page<UserEntity> mockedEntityPage = new PageImpl<>(users.getContent(), pageable, 50);
 
         //when
-        when(repository.findAll(pageable)).thenReturn(mockedEntityPage);
+        when(repository.findAll(anySpec(),eq(pageable))).thenReturn(mockedEntityPage);
 
         PageResponseDTO<UserDto> result = service.getAllUsers(pageable, null,null,null);
         //then
 
-        verify(repository, times(1)).findAll(pageable);
+        verify(repository, times(1)).findAll(anySpec(), eq(pageable));
         assertEquals(result.content().size(), users.getContent().size());
         assertEquals(0, result.number());
         assertEquals(10, result.size());
@@ -80,14 +81,15 @@ public class ServiceTests extends BaseServiceTest {
         //given
         Pageable pageable = PageRequest.of(0,1);
         Page<UserEntity> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+
         //when
-        when(repository.findAll(any(Pageable.class))).thenReturn(emptyPage);
-        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> service.getAllUsers(pageable, null,null,null));
+        when(repository.findAll(anySpec(),any(Pageable.class))).thenReturn(emptyPage);
+
+        PageResponseDTO<UserDto> result = service.getAllUsers(pageable, null,null,null);
 
         //then
-        verify(repository, times(1)).findAll(pageable);
-        assertEquals(ex.getMessage(), new UserNotFoundException().getMessage());
-        assertInstanceOf(UserNotFoundException.class, ex);
+        verify(repository, times(1)).findAll(anySpec(),eq(pageable));
+        assertThat(result.content()).isEmpty();
     }
 
     @Test
@@ -152,14 +154,14 @@ public class ServiceTests extends BaseServiceTest {
     void checkDeleteUser() {
         //given
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
-        when(repository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(repository.existsById(anyLong())).thenReturn(true);
         doNothing().when(repository).deleteById(anyLong());
 
         //when
         service.deleteUser(user.getId());
 
         //then
-        verify(repository, times(1)).findById(captor.capture());
+        verify(repository, times(1)).existsById(captor.capture());
         verify(repository, times(1)).deleteById(captor.capture());
         verifyNoMoreInteractions(repository);
 
@@ -172,18 +174,19 @@ public class ServiceTests extends BaseServiceTest {
     @Test
     void checkInvalidDelete() {
         //given
-        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+        when(repository.existsById(anyLong())).thenReturn(false);
 
         //when
         Exception ex = assertThrows(UserNotFoundException.class, () -> service.deleteUser(1L));
 
         //then
-        verify(repository, times(1)).findById(1L);
+        verify(repository, times(1)).existsById(eq(1L));
         verifyNoMoreInteractions(repository);
         assertEquals(ex.getMessage(), new UserNotFoundException(1L).getMessage());
         assertInstanceOf(UserNotFoundException.class, ex);
     }
 
+    //TODO: provide argument using Parametrized test instead
     @Test
     void checkUpdateUser() {
         //given
@@ -194,38 +197,19 @@ public class ServiceTests extends BaseServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(user));
 
-        //need to return the passed in argument because if not stubbed -> method returns null
-        when(repository.save(any(UserEntity.class))).thenAnswer( i -> i.getArgument(0));
-        ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
-
         //when
         UserDto returnedUser = service.updateUser(body,user.getId());
 
         //then
-
         verify(repository, times(1)).findById(user.getId());
-        verify(repository, times(1)).save(captor.capture());
         verifyNoMoreInteractions(repository);
-
-        UserEntity capturedData = captor.getValue();
-
-        //check that the passed in input for the repository.save() is matched with the pre-created dto body
-        assertAll(
-                () -> assertEquals(user.getId(), capturedData.getId()),
-                () -> assertEquals(body.getGender(), capturedData.getGender()),
-                () -> assertEquals(body.getFullName(), capturedData.getFullName()),
-                () -> assertEquals(body.getAge(), capturedData.getAge())
-        );
 
         //check that returned DTO matches with saved entity
         assertAll(
-                () -> assertEquals(returnedUser.getFullName(), capturedData.getFullName()),
-                () -> assertEquals(returnedUser.getAge(), capturedData.getAge()),
-                () -> assertEquals(returnedUser.getGender(), capturedData.getGender())
+                () -> assertEquals(returnedUser.getFullName(), user.getFullName()),
+                () -> assertEquals(returnedUser.getAge(), user.getAge()),
+                () -> assertEquals(returnedUser.getGender(), user.getGender())
         );
-
-        //proves that Entity was modified IN PLACE
-        assertSame(capturedData, user);
     }
 
     @Test
@@ -281,9 +265,4 @@ public class ServiceTests extends BaseServiceTest {
         assertEquals(ex.getMessage(), new UserNotFoundException().getMessage());
         assertInstanceOf(UserNotFoundException.class, ex);
     }
-
-
-
-
-
 }

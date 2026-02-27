@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.data.domain.Page;
 
-
 import static org.example.study.testData.TestData.*;
 
 public class BaseServiceTest extends BaseTest {
