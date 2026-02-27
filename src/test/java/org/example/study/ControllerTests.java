@@ -34,6 +34,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+//TODO: create tests with custom request params
 @WebMvcTest(UserController.class)
 class ControllerTests extends BaseControllerTest {
 

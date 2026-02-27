@@ -26,6 +26,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+//TODO: adjust using custom request params
 @ExtendWith(MockitoExtension.class)
 public class ServiceTests extends BaseServiceTest {
 
@@ -56,7 +58,7 @@ public class ServiceTests extends BaseServiceTest {
         //when
         when(repository.findAll(pageable)).thenReturn(mockedEntityPage);
 
-        PageResponseDTO<UserDto> result = service.getAllUsers(pageable);
+        PageResponseDTO<UserDto> result = service.getAllUsers(pageable, null,null,null);
         //then
 
         verify(repository, times(1)).findAll(pageable);
@@ -80,7 +82,7 @@ public class ServiceTests extends BaseServiceTest {
         Page<UserEntity> emptyPage = new PageImpl<>(List.of(), pageable, 0);
         //when
         when(repository.findAll(any(Pageable.class))).thenReturn(emptyPage);
-        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> service.getAllUsers(pageable));
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> service.getAllUsers(pageable, null,null,null));
 
         //then
         verify(repository, times(1)).findAll(pageable);
