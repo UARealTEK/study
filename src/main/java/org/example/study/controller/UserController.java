@@ -40,8 +40,11 @@ public class UserController {
     }
 
     @GetMapping
-    public PageResponseDTO<UserDto> getAllUsers(@PageableDefault(size = 5, sort = "age") Pageable page) {
-        return service.getAllUsers(page);
+    public PageResponseDTO<UserDto> getAllUsers(@PageableDefault(size = 5, sort = "age") Pageable page,
+                                                @RequestParam(required = false) Integer age,
+                                                @RequestParam(required = false) String fullName,
+                                                @RequestParam(required = false) Gender gender) {
+        return service.getAllUsers(page, age,fullName,gender);
     }
 
     @GetMapping("/{id}")
@@ -71,12 +74,5 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable @NotNull Long id) {
         service.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @GetMapping(params = {"age", "gender"})
-    public PageResponseDTO<UserDto> findUsersByAgeAndGender(@PageableDefault(size = 5, sort = "age") Pageable pageable,
-                                                            @RequestParam Integer age,
-                                                            @RequestParam Gender gender) {
-        return service.findUserByAgeAndGender(pageable, age, gender);
     }
 }

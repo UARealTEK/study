@@ -11,8 +11,11 @@ import org.example.study.util.Converters.UserMapper;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.example.study.util.Filtering.EntitySpecifications.byAllFields;
 
 @Slf4j
 @Service
@@ -26,14 +29,11 @@ public class UserService {
         this.mapper = mapper;
     }
 
-    public PageResponseDTO<UserDto> getAllUsers(Pageable pageable) {
-        Page<UserEntity> page = repository.findAll(pageable);
-        if (page.isEmpty()) {
-            throw new UserNotFoundException();
-        } else {
-            Page<UserDto> userDtoPage = page.map(mapper::toUserDto);
-            return mapper.toPageResponse(userDtoPage);
-        }
+    public PageResponseDTO<UserDto> getAllUsers(Pageable pageable, Integer age, String fullName, Gender gender) {
+        Specification<UserEntity> spec = byAllFields(age,fullName,gender);
+        Page<UserEntity> page = repository.findAll(spec, pageable);
+        Page<UserDto> userDtoPage = page.map(mapper::toUserDto);
+        return mapper.toPageResponse(userDtoPage);
     }
 
     public UserDto getUserByID(Long id) {
