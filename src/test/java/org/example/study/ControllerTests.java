@@ -4,7 +4,6 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Util.BaseControllerTest;
 import org.example.study.controller.UserController;
-import org.example.study.enums.Gender;
 import org.example.study.service.UserService;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
@@ -47,21 +46,26 @@ class ControllerTests extends BaseControllerTest {
     @Test
     void testFindAllUsers() throws Exception {
         //given
-        when(service.getAllUsers(any(Pageable.class), any(Integer.class), any(String.class), any(Gender.class))).thenReturn(users);
+        when(service.getAllUsers(any(Pageable.class),
+                isNull(),
+                isNull(),
+                isNull()))
+                .thenReturn(users);
 
         //when
         mvc.perform(get(usersEndpoint))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(usersJson));
         //then
-        verify(service, times(1)).getAllUsers(any(Pageable.class), null, null, null);
+        verify(service, times(1)).getAllUsers(any(Pageable.class), isNull(), isNull(), isNull());
     }
 
     @ParameterizedTest
     @MethodSource("org.example.study.testData.TestData#getValidUserDtoPageStream")
     void checkPagination(PageResponseDTO<UserDto> dto) throws Exception {
         //when
-        when(service.getAllUsers(any(Pageable.class), any(Integer.class), any(String.class), any(Gender.class))).thenReturn(dto);
+        when(service.getAllUsers(any(Pageable.class), isNull(), isNull(), isNull())).thenReturn(dto);
 
         MvcResult result = mvc.perform(get(usersEndpoint)
                 .param("page", String.valueOf(dto.number()))
@@ -72,9 +76,9 @@ class ControllerTests extends BaseControllerTest {
 
         verify(service).getAllUsers(argThat(
                 i -> i.getPageNumber() == dto.number() &&
-                        i.getPageSize() == dto.size()), null,null,null);
+                        i.getPageSize() == dto.size()), isNull(),isNull(),isNull());
 
-        verify(service, times(1)).getAllUsers(any(Pageable.class),null,null, null);
+        verify(service, times(1)).getAllUsers(any(Pageable.class),isNull(),isNull(), isNull());
         verifyNoMoreInteractions(service);
 
         assertAll(

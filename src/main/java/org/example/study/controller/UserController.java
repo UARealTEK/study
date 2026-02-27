@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 3️⃣ Add pagination & filtering
  * Also Add:
- * - Sorting support + dynamic filtering (Specifications)
- * - Swagger
  * LATER:
  * - ReadME
  * - Caching (@Cachable)
