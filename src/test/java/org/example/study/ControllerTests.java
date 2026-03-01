@@ -3,9 +3,8 @@ package org.example.study;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Util.BaseControllerTest;
-import org.example.study.controller.UserController;
-import org.example.study.service.UserService;
 import org.example.study.Annotations.Smoke;
+import org.example.study.enums.Endpoints;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
@@ -13,37 +12,26 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import tools.jackson.core.type.TypeReference;
 
+import java.util.Map;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 //TODO: create tests with custom request params
 @Smoke
-@WebMvcTest(UserController.class)
 class ControllerTests extends BaseControllerTest {
-
-    @Autowired
-    MockMvc mvc;
-
-    @MockitoBean
-    public UserService service;
 
     @Test
     void testFindAllUsers() throws Exception {
@@ -55,9 +43,7 @@ class ControllerTests extends BaseControllerTest {
                 .thenReturn(users);
 
         //when
-        mvc.perform(get(usersEndpoint))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        steps.mvcGet()
                 .andExpect(content().json(usersJson));
         //then
         verify(service, times(1)).getAllUsers(any(Pageable.class), isNull(), isNull(), isNull());
@@ -69,38 +55,28 @@ class ControllerTests extends BaseControllerTest {
         //when
         when(service.getAllUsers(any(Pageable.class), isNull(), isNull(), isNull())).thenReturn(dto);
 
-        MvcResult result = mvc.perform(get(usersEndpoint)
-                .param("page", String.valueOf(dto.number()))
-                .param("size", String.valueOf(dto.size()))
+        //then
+        MvcResult result = steps.mvcGet(Map.of(
+                "page", String.valueOf(dto.number()),
+                "size", String.valueOf(dto.size()))
         ).andReturn();
 
         PageResponseDTO<UserDto> resultPage = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
 
         verify(service).getAllUsers(argThat(
-                i -> i.getPageNumber() == dto.number() &&
-                        i.getPageSize() == dto.size()), isNull(),isNull(),isNull());
+                pageable -> {
+                    assertThat(pageable.getPageNumber()).isEqualTo(dto.number());
+                    assertThat(pageable.getPageSize()).isEqualTo(dto.size());
+                    return true;
+                }
+        ), isNull(),isNull(),isNull());
 
         verify(service, times(1)).getAllUsers(any(Pageable.class),isNull(),isNull(),isNull());
         verifyNoMoreInteractions(service);
 
-        assertAll(
-                () -> assertEquals(dto.number(), resultPage.number()), // current page Number
-                () -> assertEquals(dto.size(), resultPage.size()), // declared size of the page (not the amount of displayed content elements)
-                () -> assertEquals(resultPage.totalElements(), dto.totalElements()), // total amount of elements in DB
-                () -> assertEquals(resultPage.totalPages(), dto.totalPages()), // calculated value (total elements / size)
-
-                () -> assertEquals(resultPage.content().get(0).getAge(), dto.content().get(0).getAge()),
-                () -> assertEquals(resultPage.content().get(0).getFullName(), dto.content().get(0).getFullName()),
-                () -> assertEquals(resultPage.content().get(0).getGender(), dto.content().get(0).getGender()),
-
-                () -> assertEquals(resultPage.content().get(1).getAge(), dto.content().get(1).getAge()),
-                () -> assertEquals(resultPage.content().get(1).getFullName(), dto.content().get(1).getFullName()),
-                () -> assertEquals(resultPage.content().get(1).getGender(), dto.content().get(1).getGender()),
-
-                () -> assertEquals(resultPage.content().get(2).getAge(), dto.content().get(2).getAge()),
-                () -> assertEquals(resultPage.content().get(2).getFullName(), dto.content().get(2).getFullName()),
-                () -> assertEquals(resultPage.content().get(2).getGender(), dto.content().get(2).getGender())
-        );
+        assertThat(dto)
+                .usingRecursiveComparison()
+                .isEqualTo(resultPage);
     }
 
     @ParameterizedTest
@@ -109,7 +85,7 @@ class ControllerTests extends BaseControllerTest {
         //given
         when(service.getUserByID(any(Long.class))).thenReturn(userDto);
         //when
-        mvc.perform(get(usersEndpoint + "/" + any(Long.class)))
+        steps.mvcGet(1L)
                 .andExpect(status().isOk())
                 .andExpect(content().json(singleUserJson));
         //then
@@ -122,8 +98,7 @@ class ControllerTests extends BaseControllerTest {
         when(service.saveUser(any(UserDto.class))).thenReturn(user);
 
         //when
-        mvc.perform(post(usersEndpoint)
-                .contentType(MediaType.APPLICATION_JSON).content(singleUserJson))
+        steps.mvcPost(singleUserJson)
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(singleUserJson));
@@ -152,8 +127,7 @@ class ControllerTests extends BaseControllerTest {
     @Test
     void checkSaveInvalidUserValidation() throws Exception {
         //when
-        MvcResult result = mvc.perform(post(usersEndpoint)
-                        .contentType(MediaType.APPLICATION_JSON).content(singleInvalidUserJson))
+        MvcResult result = steps.mvcPost(singleInvalidUserJson)
                 .andReturn();
         //then
 
@@ -179,9 +153,7 @@ class ControllerTests extends BaseControllerTest {
 
         when(service.updateUser(any(UserDto.class), eq(100L))).thenReturn(updatedUser);
 
-        mvc.perform(put(usersEndpoint + "/" + 100L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(updatedUser)))
+        steps.mvcPut(100L, updatedUser)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(updatedUser.getAge()));
 
@@ -194,9 +166,7 @@ class ControllerTests extends BaseControllerTest {
         updatedUser.setFullName("");
 
         //using PUT on user with ID 1 but that's not ideal. User might not exist and then the test will die
-        MvcResult result = mvc.perform(put(usersEndpoint + "/" + 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(updatedUser)))
+        MvcResult result = steps.mvcPut(1L, updatedUser)
                 .andExpect(i -> assertInstanceOf(MethodArgumentNotValidException.class, i.getResolvedException()))
                 .andReturn();
 
@@ -221,19 +191,20 @@ class ControllerTests extends BaseControllerTest {
         doNothing().when(service).deleteUser(any(Long.class));
         //when
 
-        mvc.perform(delete(usersEndpoint + "/" + 1L))
+        steps.mvcDelete(1L)
                 .andExpect(status().isNoContent());
         //then
 
         verify(service, times(1)).deleteUser(eq(1L));
     }
 
+    //TODO: This test validates nothing. Need to trigger an exception instead of throwing it in the mock
     @Test
     void checkDeleteInvalidUser() throws Exception {
         //given
         doThrow(new UserNotFoundException()).when(service).deleteUser(any(Long.class));
         //when
-        MvcResult result = mvc.perform(delete(usersEndpoint + "/" + 1L))
+        MvcResult result = steps.mvcDelete(1L)
                 .andExpect(i -> assertEquals(UserNotFoundException.class, Objects.requireNonNull(i.getResolvedException()).getClass()))
                 .andReturn();
 
@@ -247,14 +218,14 @@ class ControllerTests extends BaseControllerTest {
                 () -> assertNull(dto.exceptionMessage())
         );
 
-        verify(service, times(1)).deleteUser(any(Long.class));
+        verify(service, times(1)).deleteUser(1L);
     }
 
     //Checking this method by trying to perform a GET request without /users endpoint
     @Test
     void checkNoHandlerFound() throws Exception {
         //when
-        mvc.perform(get("/"))
+        steps.mvcGet(Endpoints.DUMMY_ENDPOINT)
                 .andExpect(status().isNotFound())
                 .andExpect(i -> assertInstanceOf(NoHandlerFoundException.class, i.getResolvedException()));
         //then
