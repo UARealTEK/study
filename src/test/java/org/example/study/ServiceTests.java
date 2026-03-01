@@ -7,6 +7,7 @@ import org.example.study.Entities.UserEntity;
 import org.example.study.Util.BaseServiceTest;
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
+import org.example.study.Annotations.Unit;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 //TODO: adjust using custom request params
+@Unit
 @ExtendWith(MockitoExtension.class)
 public class ServiceTests extends BaseServiceTest {
 

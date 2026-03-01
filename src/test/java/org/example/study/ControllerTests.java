@@ -5,6 +5,7 @@ import org.example.study.DTOs.UserDto;
 import org.example.study.Util.BaseControllerTest;
 import org.example.study.controller.UserController;
 import org.example.study.service.UserService;
+import org.example.study.Annotations.Smoke;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
@@ -34,6 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 //TODO: create tests with custom request params
+@Smoke
 @WebMvcTest(UserController.class)
 class ControllerTests extends BaseControllerTest {
 
@@ -78,7 +80,7 @@ class ControllerTests extends BaseControllerTest {
                 i -> i.getPageNumber() == dto.number() &&
                         i.getPageSize() == dto.size()), isNull(),isNull(),isNull());
 
-        verify(service, times(1)).getAllUsers(any(Pageable.class),isNull(),isNull(), isNull());
+        verify(service, times(1)).getAllUsers(any(Pageable.class),isNull(),isNull(),isNull());
         verifyNoMoreInteractions(service);
 
         assertAll(

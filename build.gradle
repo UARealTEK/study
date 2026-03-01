@@ -48,10 +48,24 @@ dependencies {
     // Hibernate Validator (Reference Implementation) (use a compatible version, e.g., 8.0.x)
     implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2' // Use the latest version
 
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
+}
+
+test {
+    outputs.dir snippetsDir
+
+    useJUnitPlatform {
+        if (project.hasProperty('includeTags')) {
+            includeTags project.property('includeTags').toString()
+        }
+        if (project.hasProperty('excludeTags')) {
+            excludeTags project.property('excludeTags').toString()
+        }
+    }
 }
 
 tasks.named('test') {
