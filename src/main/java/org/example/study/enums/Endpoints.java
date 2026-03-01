@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum Endpoints {
     USERS("/users"),
-    DUMMY_ENDPOINT("/dummy");
+    DUMMY_ENDPOINT("/dummy"); // for Testing purposes
 
     private final String endpoint;
 

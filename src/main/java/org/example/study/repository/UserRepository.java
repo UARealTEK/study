@@ -11,5 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
 
+    //TODO: REDUNDANT. remove it and use Specification-related repository action now
     Page<UserEntity> findByAgeAndGender(Pageable page, Integer age, Gender gender);
 }

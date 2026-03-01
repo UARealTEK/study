@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-//TODO: adjust using custom request params
+//TODO: adjust using custom request params INSTEAD of hardcoded findByAgeAndGender()
 @Unit
 @ExtendWith(MockitoExtension.class)
 public class ServiceTests extends BaseServiceTest {
