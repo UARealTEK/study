@@ -53,7 +53,7 @@ public class BaseControllerTest extends BaseTest {
     @SuppressWarnings("InnerClassMayBeStatic")
     protected class Steps {
         private final MockMvc mvc;
-        private final Endpoints usersEndpoint;
+        private final Endpoints usersEndpoint; // having usersEndpoint here by default - weird
 
         protected Steps(MockMvc mvc, Endpoints usersEndpoint) {
             this.mvc = mvc;

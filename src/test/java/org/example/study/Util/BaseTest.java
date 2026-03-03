@@ -9,7 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 @SuppressWarnings("unused")
 public abstract class BaseTest {
 
-    protected final UserMapper mapper = Mappers.getMapper(UserMapper.class);
+    protected final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
     protected void init(){}
     protected void cleanUp(){}
 

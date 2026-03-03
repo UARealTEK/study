@@ -20,7 +20,7 @@ public class BaseServiceTest extends BaseTest {
         users = getValidUserEntityPage();
         user = getSingleValidEntity();
         invalidUser = getSingleEntityWithEmptyName();
-        userCopy = mapper.toUserDto(user);
+        userCopy = userMapper.toUserDto(user);
     }
 
     @AfterEach

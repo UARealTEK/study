@@ -5,6 +5,7 @@ import org.example.study.DTOs.UserDto;
 import org.example.study.Util.BaseControllerTest;
 import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
+import org.example.study.enums.Gender;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
@@ -12,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import tools.jackson.core.type.TypeReference;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -90,6 +95,53 @@ class ControllerTests extends BaseControllerTest {
                 .andExpect(content().json(singleUserJson));
         //then
         verify(service, times(1)).getUserByID(any(Long.class));
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.example.study.testData.TestData#getValidUserStream")
+    void testFindSingleValidUserUsingParams(List<UserDto> dto) throws Exception {
+        //given
+        Map<String,String> params = Map.of(
+                "age", String.valueOf(dto.get(0).getAge()),
+                "fullName", dto.get(0).getFullName(),
+                "gender", dto.get(0).getGender().name().toLowerCase(),
+                "page", String.valueOf(0),
+                "size", String.valueOf(dto.size())
+        );
+
+        Page<UserDto> page = new PageImpl<>(dto, PageRequest.of(0,dto.size()), dto.size());
+
+        //when
+        when(service.getAllUsers(any(Pageable.class),anyInt(),anyString(),any(Gender.class))).thenReturn(userMapper.toPageResponse(page));
+
+        //then
+        MvcResult result = steps.mvcGet(params)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        PageResponseDTO<UserDto> resultPage = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+        verify(service).getAllUsers(captor.capture(),
+                eq(dto.get(0).getAge()),
+                eq(dto.get(0).getFullName()),
+                eq(dto.get(0).getGender()));
+        verifyNoMoreInteractions(service);
+
+        Pageable capturedVal = captor.getValue();
+
+        assertAll(
+                () -> assertEquals(0,capturedVal.getPageNumber()),
+                () -> assertEquals(dto.size(), capturedVal.getPageSize()),
+                () -> assertEquals(dto.size(), resultPage.size()),
+                () -> assertEquals(0, resultPage.number()),
+                () -> assertEquals(dto.size(), resultPage.totalElements()),
+                () -> assertEquals(dto.size(),resultPage.totalPages())
+        );
+
+        assertThat(dto)
+                .usingRecursiveComparison()
+                .isEqualTo(resultPage.content());
     }
 
     @Test
@@ -198,11 +250,10 @@ class ControllerTests extends BaseControllerTest {
         verify(service, times(1)).deleteUser(eq(1L));
     }
 
-    //TODO: This test validates nothing. Need to trigger an exception instead of throwing it in the mock
     @Test
     void checkDeleteInvalidUser() throws Exception {
         //given
-        doThrow(new UserNotFoundException()).when(service).deleteUser(any(Long.class));
+        doThrow(new UserNotFoundException(1L)).when(service).deleteUser(1L);
         //when
         MvcResult result = steps.mvcDelete(1L)
                 .andExpect(i -> assertEquals(UserNotFoundException.class, Objects.requireNonNull(i.getResolvedException()).getClass()))
@@ -215,7 +266,7 @@ class ControllerTests extends BaseControllerTest {
                 () -> assertEquals(HttpStatus.NOT_FOUND.toString(), dto.statusCode().toString()),
                 () -> assertEquals("Not found", dto.type()),
                 () -> assertEquals("User was NOT found", dto.message()),
-                () -> assertNull(dto.exceptionMessage())
+                () -> assertEquals(dto.exceptionMessage().get(0).message(), new UserNotFoundException(1L).getMessage())
         );
 
         verify(service, times(1)).deleteUser(1L);

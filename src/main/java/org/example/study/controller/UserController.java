@@ -15,12 +15,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 3️⃣ Add pagination & filtering
  * Also Add:
- * LATER:
  * - ReadME
  * - Caching (@Cachable)
- * - Security
  * - Integration tests ? (Testcontainers)
  * - Database migrations (?)
  */

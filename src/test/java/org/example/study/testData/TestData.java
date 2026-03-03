@@ -20,9 +20,13 @@ public class TestData {
 
     public static List<UserDto> getValidUsers() {
         return List.of(
-                new UserDto(10, "Vova", Gender.MALE),
-                new UserDto(15, "Nina", Gender.FEMALE),
-                new UserDto(30, "Ivan", Gender.MALE));
+                new UserDto(21, "Andrew", Gender.MALE),
+                new UserDto(25, "Vova", Gender.MALE),
+                new UserDto(31, "Dima", Gender.MALE));
+    }
+
+    public static Stream<Arguments> getValidUserStream() {
+        return getValidUsers().stream().map(i -> Arguments.of(List.of(i)));
     }
 
     public static PageResponseDTO<UserDto> getValidUserDtoPage() {

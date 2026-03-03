@@ -43,7 +43,7 @@ public class ServiceTests extends BaseServiceTest {
     @BeforeEach
     protected void init() {
         super.init();
-        service = new UserService(repository,mapper);
+        service = new UserService(repository, userMapper);
     }
 
     @AfterEach

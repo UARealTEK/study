@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -25,7 +26,7 @@ public class ExceptionWorker {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ExceptionDto> handleGetNoUsersException(UserNotFoundException e) {
-        ExceptionDto dto = new ExceptionDto(HttpStatus.NOT_FOUND, "Not found", "User was NOT found", null);
+        ExceptionDto dto = new ExceptionDto(HttpStatus.NOT_FOUND, "Not found", "User was NOT found", List.of(new FieldErrorDto(Arrays.stream(e.getStackTrace()).toList().toString(), e.getMessage())));
         return new ResponseEntity<>(dto, HttpStatus.NOT_FOUND);
     }
 
