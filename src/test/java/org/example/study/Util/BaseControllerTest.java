@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 
@@ -23,6 +24,8 @@ public class BaseControllerTest extends BaseTest {
 
     @Autowired
     protected MockMvc mvc;
+    @Autowired
+    protected ObjectMapper mapper;
     @MockitoBean
     protected UserService service;
     protected PageResponseDTO<UserDto> users;
