@@ -9,6 +9,9 @@ import org.example.study.Entities.UserEntity;
 import org.example.study.repository.UserRepository;
 import org.example.study.util.Converters.UserMapper;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +22,7 @@ import static org.example.study.util.Filtering.EntitySpecifications.byAllFields;
 
 @Slf4j
 @Service
+@CacheConfig("users")
 public class UserService {
 
     private final UserRepository repository;
@@ -36,6 +40,7 @@ public class UserService {
         return mapper.toPageResponse(userDtoPage);
     }
 
+    @Cacheable(key = "#id")
     public UserDto getUserByID(Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         return mapper.toUserDto(entity);
@@ -46,6 +51,7 @@ public class UserService {
         return mapper.toUserDto(entity);
     }
 
+    @CacheEvict(key = "#id")
     @Transactional
     public UserDto updateUser(UserDto body, Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
@@ -53,6 +59,7 @@ public class UserService {
         return mapper.toUserDto(entity);
     }
 
+    @CacheEvict(key = "#id")
     @Transactional
     public UserDto patchUser(UserPatchDto body, Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
@@ -60,6 +67,7 @@ public class UserService {
         return mapper.toUserDto(entity);
     }
 
+    @CacheEvict(key = "#id")
     public void deleteUser(Long id) {
         if (!repository.existsById(id)) {
             throw new UserNotFoundException(id);
