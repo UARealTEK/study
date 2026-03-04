@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//TODO: create tests with custom request params
 @Smoke
 class ControllerTests extends BaseControllerTest {
 
@@ -95,6 +94,28 @@ class ControllerTests extends BaseControllerTest {
                 .andExpect(content().json(singleUserJson));
         //then
         verify(service, times(1)).getUserByID(any(Long.class));
+    }
+
+    @Test
+    void checkFindInvalidUser() throws Exception {
+        //given
+        doThrow(new UserNotFoundException(99L)).when(service).getUserByID(anyLong());
+        //when
+
+        MvcResult result = steps.mvcGet(99L)
+                .andExpect(status().isNotFound())
+                .andReturn();
+        //then
+        ExceptionDto exceptionDto = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
+
+        assertAll(
+                () -> assertEquals(HttpStatus.NOT_FOUND.toString(), exceptionDto.statusCode().toString()),
+                () -> assertEquals("Not found", exceptionDto.type()),
+                () -> assertEquals("User was NOT found", exceptionDto.message()),
+                () -> assertEquals(new UserNotFoundException(99L).getMessage(), exceptionDto.exceptionMessage().get(0).message())
+        );
+
+        verify(service, times(1)).getUserByID(99L);
     }
 
     @ParameterizedTest
