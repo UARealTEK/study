@@ -1,5 +1,6 @@
 package org.example.study;
 
+import org.example.study.Annotations.RandomUserDtoBody;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
@@ -8,6 +9,7 @@ import org.example.study.Util.BaseServiceTest;
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
 import org.example.study.Annotations.Unit;
+import org.example.study.testData.RandomUserDtoResolver;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +31,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-//TODO: adjust using custom request params INSTEAD of hardcoded findByAgeAndGender()
 @Unit
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(
+        {MockitoExtension.class,
+        RandomUserDtoResolver.class}
+)
 public class ServiceTests extends BaseServiceTest {
 
     @Mock
@@ -188,29 +192,25 @@ public class ServiceTests extends BaseServiceTest {
         assertInstanceOf(UserNotFoundException.class, ex);
     }
 
-    //TODO: provide argument using Parametrized test instead
+    /*
+    Used ParameterResolver here just for the sake of testing how does it work
+     */
     @Test
-    void checkUpdateUser() {
-        //given
-        UserDto body = new UserDto();
-        body.setAge(10);
-        body.setFullName("TestName");
-        body.setGender(Gender.MALE);
-
+    void checkUpdateUser(@RandomUserDtoBody UserDto dto) {
         when(repository.findById(anyLong())).thenReturn(Optional.of(user));
 
         //when
-        UserDto returnedUser = service.updateUser(body,user.getId());
+        UserDto returnedUser = service.updateUser(dto,user.getId());
 
         //then
         verify(repository, times(1)).findById(user.getId());
         verifyNoMoreInteractions(repository);
 
-        //check that returned DTO matches with saved entity
+        //check that returned DTO matches with returned body entity
         assertAll(
-                () -> assertEquals(returnedUser.getFullName(), user.getFullName()),
-                () -> assertEquals(returnedUser.getAge(), user.getAge()),
-                () -> assertEquals(returnedUser.getGender(), user.getGender())
+                () -> assertEquals(returnedUser.getFullName(), dto.getFullName()),
+                () -> assertEquals(returnedUser.getAge(), dto.getAge()),
+                () -> assertEquals(returnedUser.getGender(), dto.getGender())
         );
     }
 

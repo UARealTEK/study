@@ -57,7 +57,11 @@ class ControllerTests extends BaseControllerTest {
     @MethodSource("org.example.study.testData.TestData#getValidUserDtoPageStream")
     void checkPagination(PageResponseDTO<UserDto> dto) throws Exception {
         //when
-        when(service.getAllUsers(any(Pageable.class), isNull(), isNull(), isNull())).thenReturn(dto);
+        when(service.getAllUsers(
+                any(Pageable.class),
+                isNull(),
+                isNull(),
+                isNull())).thenReturn(dto);
 
         //then
         MvcResult result = steps.mvcGet(Map.of(
@@ -65,7 +69,9 @@ class ControllerTests extends BaseControllerTest {
                 "size", String.valueOf(dto.size()))
         ).andReturn();
 
-        PageResponseDTO<UserDto> resultPage = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        PageResponseDTO<UserDto> resultPage = mapper.readValue(
+                result.getResponse().getContentAsString(), new TypeReference<>() {}
+        );
 
         verify(service).getAllUsers(argThat(
                 pageable -> {
@@ -73,7 +79,8 @@ class ControllerTests extends BaseControllerTest {
                     assertThat(pageable.getPageSize()).isEqualTo(dto.size());
                     return true;
                 }
-        ), isNull(),isNull(),isNull());
+        ),
+                isNull(),isNull(),isNull());
 
         verify(service, times(1)).getAllUsers(any(Pageable.class),isNull(),isNull(),isNull());
         verifyNoMoreInteractions(service);
@@ -133,7 +140,10 @@ class ControllerTests extends BaseControllerTest {
         Page<UserDto> page = new PageImpl<>(dto, PageRequest.of(0,dto.size()), dto.size());
 
         //when
-        when(service.getAllUsers(any(Pageable.class),anyInt(),anyString(),any(Gender.class))).thenReturn(userMapper.toPageResponse(page));
+        when(service.getAllUsers(any(Pageable.class)
+                ,anyInt()
+                ,anyString()
+                ,any(Gender.class))).thenReturn(userMapper.toPageResponse(page));
 
         //then
         MvcResult result = steps.mvcGet(params)
@@ -143,7 +153,8 @@ class ControllerTests extends BaseControllerTest {
         PageResponseDTO<UserDto> resultPage = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
 
-        verify(service).getAllUsers(captor.capture(),
+        verify(service).getAllUsers(
+                captor.capture(),
                 eq(dto.get(0).getAge()),
                 eq(dto.get(0).getFullName()),
                 eq(dto.get(0).getGender()));

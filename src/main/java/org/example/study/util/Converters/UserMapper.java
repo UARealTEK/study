@@ -4,12 +4,14 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
 
 @SuppressWarnings("unused")
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+    @Mapping(target = "id", ignore = true)
     UserEntity toEntity(UserDto dto);
 
     UserDto toUserDto(UserEntity dto);
