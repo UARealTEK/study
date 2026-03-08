@@ -15,7 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.stream.Stream;
 
-//TODO: work on random data generation for tests
+//TODO: refactor this and make sure Im using it correctly in pair with the resolvers, because of the random resolvers some of the methods here might be redundant
 public class TestData {
 
     private static final UserMapper mapper = Mappers.getMapper(UserMapper.class);
