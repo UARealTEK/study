@@ -7,20 +7,14 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
 import org.example.study.Util.BaseServiceTest;
-import org.example.study.repository.UserRepository;
-import org.example.study.service.UserService;
 import org.example.study.Annotations.Unit;
 import org.example.study.testData.RandomPageImplResolver;
 import org.example.study.testData.RandomUserDtoResolver;
 import org.example.study.testData.RandomUserEntityResolver;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -42,24 +36,6 @@ import static org.mockito.Mockito.*;
         RandomUserEntityResolver.class}
 )
 public class ServiceTests extends BaseServiceTest {
-
-    @Mock
-    public UserRepository repository;
-
-    @InjectMocks
-    public UserService service;
-
-    @BeforeEach
-    protected void init() {
-        super.init();
-        service = new UserService(repository, userMapper);
-    }
-
-    @AfterEach
-    protected void cleanUp() {
-        super.cleanUp();
-        service = null;
-    }
 
     @Test
     void checkGetAllUsers(@PageImplObj Page<UserEntity> page) {
