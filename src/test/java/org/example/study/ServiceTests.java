@@ -1,15 +1,18 @@
 package org.example.study;
 
-import org.example.study.Annotations.RandomUserDtoBody;
+import org.example.study.Annotations.PageImplObj;
+import org.example.study.Annotations.RandomUserDto;
+import org.example.study.Annotations.RandomUserEntity;
 import org.example.study.DTOs.PageResponseDTO;
-import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
 import org.example.study.Util.BaseServiceTest;
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
 import org.example.study.Annotations.Unit;
+import org.example.study.testData.RandomPageImplResolver;
 import org.example.study.testData.RandomUserDtoResolver;
+import org.example.study.testData.RandomUserEntityResolver;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +37,9 @@ import static org.mockito.Mockito.*;
 @Unit
 @ExtendWith(
         {MockitoExtension.class,
-        RandomUserDtoResolver.class}
+        RandomUserDtoResolver.class,
+        RandomPageImplResolver.class,
+        RandomUserEntityResolver.class}
 )
 public class ServiceTests extends BaseServiceTest {
 
@@ -57,28 +62,51 @@ public class ServiceTests extends BaseServiceTest {
     }
 
     @Test
-    void checkGetAllUsers() {
+    void checkGetAllUsers(@PageImplObj Page<UserEntity> page) {
         //given
-        Pageable pageable = PageRequest.of(0,10);
-        Page<UserEntity> mockedEntityPage = new PageImpl<>(users.getContent(), pageable, 50);
-
+        Pageable pageable = page.getPageable();
         //when
-        when(repository.findAll(anySpec(),eq(pageable))).thenReturn(mockedEntityPage);
+        when(repository.findAll(anySpec(),eq(pageable))).thenReturn(page);
 
         PageResponseDTO<UserDto> result = service.getAllUsers(pageable, null,null,null);
         //then
 
         verify(repository, times(1)).findAll(anySpec(), eq(pageable));
-        assertEquals(result.content().size(), users.getContent().size());
-        assertEquals(0, result.number());
-        assertEquals(10, result.size());
-        assertEquals(50, result.totalElements());
+        assertEquals(page.getContent().size(), result.content().size());
+        assertEquals(pageable.getPageNumber(), result.number());
+        assertEquals(pageable.getPageSize(), result.size());
+        assertEquals(page.getTotalElements(), result.totalElements());
+
+        for (int i = 0; i < result.content().size(); i++) {
+            assertEquals(result.content().get(i).getFullName(), page.getContent().get(i).getFullName());
+            assertEquals(result.content().get(i).getAge(), page.getContent().get(i).getAge());
+            assertEquals(result.content().get(i).getGender(), page.getContent().get(i).getGender());
+        }
+    }
+
+    @Test
+    void checkGetAllUsersParametrized(@PageImplObj(size = 10, page = 1) Page<UserEntity> page) {
+        //given
+        Pageable pageable = page.getPageable();
+        UserEntity dto = page.getContent().get(0);
+
+        //when
+        when(repository.findAll(anySpec(),eq(pageable))).thenReturn(page);
+
+        PageResponseDTO<UserDto> result = service.getAllUsers(pageable, dto.getAge(),dto.getFullName(),dto.getGender());
+        //then
+
+        verify(repository, times(1)).findAll(anySpec(), eq(pageable));
+        assertEquals(page.getContent().size(), result.content().size());
+        assertEquals(pageable.getPageNumber(), result.number());
+        assertEquals(pageable.getPageSize(), result.size());
+        assertEquals(page.getTotalElements(), result.totalElements());
 
 
         for (int i = 0; i < result.content().size(); i++) {
-            assertEquals(result.content().get(i).getFullName(), users.getContent().get(i).getFullName());
-            assertEquals(result.content().get(i).getAge(), users.getContent().get(i).getAge());
-            assertEquals(result.content().get(i).getGender(), users.getContent().get(i).getGender());
+            assertEquals(result.content().get(i).getFullName(), page.getContent().get(i).getFullName());
+            assertEquals(result.content().get(i).getAge(), page.getContent().get(i).getAge());
+            assertEquals(result.content().get(i).getGender(), page.getContent().get(i).getGender());
         }
     }
 
@@ -196,14 +224,14 @@ public class ServiceTests extends BaseServiceTest {
     Used ParameterResolver here just for the sake of testing how does it work
      */
     @Test
-    void checkUpdateUser(@RandomUserDtoBody UserDto dto) {
-        when(repository.findById(anyLong())).thenReturn(Optional.of(user));
+    void checkUpdateUser(@RandomUserDto UserDto dto, @RandomUserEntity UserEntity entity) {
+        when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
 
         //when
-        UserDto returnedUser = service.updateUser(dto,user.getId());
+        UserDto returnedUser = service.updateUser(dto,entity.getId());
 
         //then
-        verify(repository, times(1)).findById(user.getId());
+        verify(repository, times(1)).findById(entity.getId());
         verifyNoMoreInteractions(repository);
 
         //check that returned DTO matches with returned body entity
@@ -226,45 +254,6 @@ public class ServiceTests extends BaseServiceTest {
         verify(repository, times(1)).findById(user.getId());
         verify(repository, never()).save(any());
         assertEquals(ex.getMessage(), new UserNotFoundException(user.getId()).getMessage());
-        assertInstanceOf(UserNotFoundException.class, ex);
-    }
-
-    @Test
-    void checkValidSearchByAgeAndGender() {
-        //given
-        Pageable pageable = PageRequest.of(0,5);
-        when(repository.findByAgeAndGender(any(Pageable.class), anyInt(), any(Gender.class))).thenReturn(users);
-
-        //when
-        /*
-        whatever is passed inside as params -does not matter. Since we are returning stubbed value anyway
-        As long as the datatype matches - its fine
-         */
-        PageResponseDTO<UserDto> list = service.findUserByAgeAndGender(pageable, 10,Gender.MALE);
-
-        //then
-        verify(repository, times(1)).findByAgeAndGender(pageable, 10, Gender.MALE);
-        verifyNoMoreInteractions(repository);
-        assertNotNull(list);
-        assertFalse(list.content().isEmpty());
-        assertEquals(list.content().size(), users.getContent().size());
-    }
-
-    @Test
-    void checkNoMatchForAgeOrGender() {
-        Pageable pageable = PageRequest.of(0,1);
-        PageImpl<UserEntity> page = new PageImpl<>(List.of(), pageable, 0);
-        //given
-        when(repository.findByAgeAndGender(any(Pageable.class), anyInt(), any(Gender.class))).thenReturn(page);
-
-        //when
-        Exception ex = assertThrows(UserNotFoundException.class, () -> service.findUserByAgeAndGender(pageable, 1, Gender.FEMALE));
-
-        //then
-        verify(repository, times(1))
-                .findByAgeAndGender(pageable,1, Gender.FEMALE);
-        verifyNoMoreInteractions(repository);
-        assertEquals(ex.getMessage(), new UserNotFoundException().getMessage());
         assertInstanceOf(UserNotFoundException.class, ex);
     }
 }

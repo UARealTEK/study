@@ -1,15 +1,18 @@
 package org.example.study;
 
+import org.example.study.Annotations.RandomUserDto;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Util.BaseControllerTest;
 import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;
+import org.example.study.testData.RandomUserDtoResolver;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
@@ -34,7 +37,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+//TODO: adapt using @Nested for better structure of tests. For example, group all tests related to GET /users/{id} in one nested class and so on
+//TODO: make sure Im using Parameterized tests where possible to avoid code duplication and make tests more readable
 @Smoke
+@ExtendWith(
+        RandomUserDtoResolver.class
+)
 class ControllerTests extends BaseControllerTest {
 
     @Test
@@ -90,17 +98,24 @@ class ControllerTests extends BaseControllerTest {
                 .isEqualTo(resultPage);
     }
 
-    @ParameterizedTest
-    @MethodSource("org.example.study.testData.TestData#getSingleValidUserArg")
-    void testFindSingleValidUser(UserDto userDto) throws Exception {
+    @Test
+    void testFindSingleValidUser(@RandomUserDto UserDto userDto) throws Exception {
         //given
         when(service.getUserByID(any(Long.class))).thenReturn(userDto);
+
         //when
-        steps.mvcGet(1L)
+        MvcResult result = steps.mvcGet(1L)
                 .andExpect(status().isOk())
-                .andExpect(content().json(singleUserJson));
+                .andReturn();
+
+        UserDto resultDto = mapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
+
         //then
         verify(service, times(1)).getUserByID(any(Long.class));
+        verifyNoMoreInteractions(service);
+        assertThat(resultDto)
+                .usingRecursiveComparison()
+                .isEqualTo(userDto);
     }
 
     @Test
@@ -231,17 +246,21 @@ class ControllerTests extends BaseControllerTest {
     }
 
     @Test
-    void checkValidUpdateUser() throws Exception {
-        UserDto updatedUser = copyOf(user);
-        updatedUser.setAge(user.getAge() + 10);
+    void checkValidUpdateUser(@RandomUserDto UserDto dto) throws Exception {
+        UserDto updatedUser = copyOf(dto);
+        updatedUser.setAge(dto.getAge() + 10);
 
         when(service.updateUser(any(UserDto.class), eq(100L))).thenReturn(updatedUser);
 
-        steps.mvcPut(100L, updatedUser)
+        MvcResult result = steps.mvcPut(100L, updatedUser)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.age").value(updatedUser.getAge()));
+                .andReturn();
+
+        UserDto resultDto = mapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
 
         verify(service, times(1)).updateUser(any(UserDto.class), eq(100L));
+        assertNotEquals(resultDto.getAge(), dto.getAge());
+        assertEquals(resultDto.getAge(), updatedUser.getAge());
     }
 
     @Test

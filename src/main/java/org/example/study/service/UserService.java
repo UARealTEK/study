@@ -92,14 +92,4 @@ public class UserService {
              userToUpdate.setGender(body.getGender());
          }
     }
-
-    public PageResponseDTO<UserDto> findUserByAgeAndGender(Pageable page, Integer age, Gender gender) {
-        Page<UserEntity> list = repository.findByAgeAndGender(page, age,gender);
-        if (list.isEmpty()) {
-            throw new UserNotFoundException();
-        } else  {
-            Page<UserDto> userDtoPage = list.map(mapper::toUserDto);
-            return mapper.toPageResponse(userDtoPage);
-        }
-    }
 }

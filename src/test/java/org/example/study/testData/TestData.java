@@ -1,5 +1,6 @@
 package org.example.study.testData;
 
+import net.datafaker.Faker;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
@@ -14,9 +15,11 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.stream.Stream;
 
+//TODO: work on random data generation for tests
 public class TestData {
 
-    protected static final UserMapper mapper = Mappers.getMapper(UserMapper.class);
+    private static final UserMapper mapper = Mappers.getMapper(UserMapper.class);
+    private static final Faker faker = new Faker();
 
     public static List<UserDto> getValidUsers() {
         return List.of(
@@ -45,9 +48,10 @@ public class TestData {
 
     public static List<UserEntity> getValidEntities() {
         return List.of(
-                new UserEntity(1L,10, "Vova", Gender.MALE),
-                new UserEntity(2L,15, "Nina", Gender.FEMALE),
-                new UserEntity(3L,30, "Ivan", Gender.MALE));
+                new UserEntity(faker.number().numberBetween(0L,10L), faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random()),
+                new UserEntity(faker.number().numberBetween(0L,10L), faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random()),
+                new UserEntity(faker.number().numberBetween(0L,10L), faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random())
+        );
     }
 
     public static Page<UserEntity> getValidUserEntityPage() {
@@ -56,22 +60,18 @@ public class TestData {
     }
 
     public static UserDto getSingleValidUser() {
-        return new UserDto(10, "Volodymyr", Gender.MALE);
-    }
-
-    public static Stream<Arguments> getSingleValidUserArg() {
-        return Stream.of(Arguments.of(new UserDto(10, "Volodymyr", Gender.MALE)));
+        return new UserDto(faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random());
     }
 
     public static UserEntity getSingleValidEntity() {
-        return new UserEntity(4L, 15, "Andrew", Gender.MALE);
+        return new UserEntity(faker.number().numberBetween(0L,10L), faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random());
     }
 
     public static UserDto getSingleUserWithEmptyName() {
-        return new UserDto(10, "",Gender.FEMALE);
+        return new UserDto(faker.number().numberBetween(1,200), "",Gender.random());
     }
 
     public static UserEntity getSingleEntityWithEmptyName() {
-        return new UserEntity(5L,33, "",Gender.FEMALE);
+        return new UserEntity(faker.number().numberBetween(0L,10L),faker.number().numberBetween(0,200), "",Gender.random());
     }
 }

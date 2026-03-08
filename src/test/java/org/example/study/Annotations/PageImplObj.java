@@ -7,5 +7,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RandomUserDtoBody {
+public @interface PageImplObj {
+    int size() default 20;
+    int page() default 0;
+    int totalElements() default 100;
 }

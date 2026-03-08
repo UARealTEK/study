@@ -20,7 +20,7 @@ import static org.example.study.testData.TestData.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WebMvcTest(UserController.class)
-public class BaseControllerTest extends BaseTest {
+public abstract class BaseControllerTest extends BaseTest {
 
     @Autowired
     protected MockMvc mvc;

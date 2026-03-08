@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.data.domain.Page;
 
 import static org.example.study.testData.TestData.*;
-
-public class BaseServiceTest extends BaseTest {
+//TODO: clean up redundant variables because of the random resolvers
+public abstract class BaseServiceTest extends BaseTest {
 
     protected Page<UserEntity> users;
     protected UserEntity user;
