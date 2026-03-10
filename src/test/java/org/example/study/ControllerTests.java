@@ -8,13 +8,14 @@ import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;
 import org.example.study.testData.RandomUserDtoResolver;
+import org.example.study.testData.TestData;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,6 +34,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
+import static org.example.study.testData.TestData.getValidUsers;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -62,9 +64,10 @@ class ControllerTests extends BaseControllerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.example.study.testData.TestData#getValidUserDtoPageStream")
-    void checkPagination(PageResponseDTO<UserDto> dto) throws Exception {
+    @ValueSource(ints = {1, 3})
+    void checkPagination(int count) throws Exception {
         //when
+        PageResponseDTO<UserDto> dto = TestData.getValidUserDtoPage(count);
         when(service.getAllUsers(
                 any(Pageable.class),
                 isNull(),
@@ -141,9 +144,10 @@ class ControllerTests extends BaseControllerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.example.study.testData.TestData#getValidUserStream")
-    void testFindSingleValidUserUsingParams(List<UserDto> dto) throws Exception {
+    @ValueSource(ints = 1)
+    void testFindSingleValidUserUsingParams(int count) throws Exception {
         //given
+        List<UserDto> dto = getValidUsers(count);
         Map<String,String> params = Map.of(
                 "age", String.valueOf(dto.get(0).getAge()),
                 "fullName", dto.get(0).getFullName(),

@@ -22,7 +22,6 @@ public class UserDto {
     @NotNull
     private Gender gender;
 
-    //TODO: figure out why do I need it and if it is needed at all
     public static UserDto copyOf(UserDto dtoToCopy) {
         return new UserDto(dtoToCopy.getAge(),dtoToCopy.getFullName(),dtoToCopy.getGender());
     }

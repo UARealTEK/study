@@ -25,7 +25,7 @@ public abstract class BaseServiceTest extends BaseTest {
 
     @BeforeEach
     protected void init() {
-        users = getValidUserEntityPage();
+        users = getValidUserEntityPage(5);
         user = getSingleValidEntity();
         invalidUser = getSingleEntityWithEmptyName();
         userCopy = userMapper.toUserDto(user);

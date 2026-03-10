@@ -39,7 +39,7 @@ public abstract class BaseControllerTest extends BaseTest {
 
     @BeforeEach
     protected void init() {
-        users = getValidUserDtoPage();
+        users = getValidUserDtoPage(5);
         user = getSingleValidUser();
         invalidUser = getSingleUserWithEmptyName();
 

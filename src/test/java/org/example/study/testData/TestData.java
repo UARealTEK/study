@@ -15,63 +15,66 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.stream.Stream;
 
-//TODO: refactor this and make sure Im using it correctly in pair with the resolvers, because of the random resolvers some of the methods here might be redundant
+@SuppressWarnings("unused")
 public class TestData {
 
     private static final UserMapper mapper = Mappers.getMapper(UserMapper.class);
     private static final Faker faker = new Faker();
 
-    public static List<UserDto> getValidUsers() {
-        return List.of(
-                new UserDto(21, "Andrew", Gender.MALE),
-                new UserDto(25, "Vova", Gender.MALE),
-                new UserDto(31, "Dima", Gender.MALE));
+    // Generate a list of valid UserDto using Faker
+    public static List<UserDto> getValidUsers(int count) {
+        return Stream.generate(() -> new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), Gender.random()))
+                .limit(count)
+                .toList();
     }
 
-    public static Stream<Arguments> getValidUserStream() {
-        return getValidUsers().stream().map(i -> Arguments.of(List.of(i)));
+    // Stream for parameterized tests
+    public static Stream<Arguments> getValidUserStream(int count) {
+        return Stream.of(Arguments.of(getValidUsers(count)));
     }
 
-    public static PageResponseDTO<UserDto> getValidUserDtoPage() {
-        List<UserDto> list = getValidUsers();
-        Page<UserDto> pageDto = new PageImpl<>(list, PageRequest.of(0,list.size()), list.size());
+    // PageResponseDTO for UserDto
+    public static PageResponseDTO<UserDto> getValidUserDtoPage(int count) {
+        List<UserDto> list = getValidUsers(count);
+        Page<UserDto> pageDto = new PageImpl<>(list, PageRequest.of(0, list.size()), list.size());
         return mapper.toPageResponse(pageDto);
     }
 
-    public static Stream<Arguments> getValidUserDtoPageStream() {
-        List<UserDto> list = getValidUsers();
-        return Stream.of(
-                Arguments.of(
-                        mapper.toPageResponse(new PageImpl<>(list,
-                                PageRequest.of(0,list.size()), list.size()))));
+    // Stream for page DTOs
+    public static Stream<Arguments> getValidUserDtoPageStream(int count) {
+        return Stream.of(Arguments.of(getValidUserDtoPage(count)));
     }
 
-    public static List<UserEntity> getValidEntities() {
-        return List.of(
-                new UserEntity(faker.number().numberBetween(0L,10L), faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random()),
-                new UserEntity(faker.number().numberBetween(0L,10L), faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random()),
-                new UserEntity(faker.number().numberBetween(0L,10L), faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random())
-        );
+    // Generate a list of valid UserEntities using Faker
+    public static List<UserEntity> getValidEntities(int count) {
+        return Stream.generate(() -> new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), faker.funnyName().name(), Gender.random()))
+                .limit(count)
+                .toList();
     }
 
-    public static Page<UserEntity> getValidUserEntityPage() {
-        List<UserEntity> list = getValidEntities();
-        return new PageImpl<>(list, PageRequest.of(0,list.size()), list.size());
+    // Page for UserEntities
+    public static Page<UserEntity> getValidUserEntityPage(int count) {
+        List<UserEntity> list = getValidEntities(count);
+        return new PageImpl<>(list, PageRequest.of(0, list.size()), list.size());
     }
 
+    // Single UserDto
     public static UserDto getSingleValidUser() {
-        return new UserDto(faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random());
+        return new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), Gender.random());
     }
 
+    // Single UserEntity
     public static UserEntity getSingleValidEntity() {
-        return new UserEntity(faker.number().numberBetween(0L,10L), faker.number().numberBetween(1,200), faker.funnyName().name(), Gender.random());
+        return new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), faker.funnyName().name(), Gender.random());
     }
 
+    // Single UserDto with empty name
     public static UserDto getSingleUserWithEmptyName() {
-        return new UserDto(faker.number().numberBetween(1,200), "",Gender.random());
+        return new UserDto(faker.number().numberBetween(1, 200), "", Gender.random());
     }
 
+    // Single UserEntity with empty name
     public static UserEntity getSingleEntityWithEmptyName() {
-        return new UserEntity(faker.number().numberBetween(0L,10L),faker.number().numberBetween(0,200), "",Gender.random());
+        return new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), "", Gender.random());
     }
 }
