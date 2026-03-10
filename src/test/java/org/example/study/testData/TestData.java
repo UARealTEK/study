@@ -82,7 +82,7 @@ public class TestData {
     // Generate a list of UserDto with fixed values
     public static List<UserDto> getValidUsersWithFixedValues(int count) {
         UserDto dto = new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), random());
-        return Stream.generate(() -> dto)
+        return Stream.generate(() -> new UserDto(dto.getAge(),dto.getFullName(), dto.getGender()))
                 .limit(count)
                 .toList();
     }
