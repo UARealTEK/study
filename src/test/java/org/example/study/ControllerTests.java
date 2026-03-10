@@ -34,7 +34,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
-import static org.example.study.testData.TestData.getValidUsers;
+import static org.example.study.testData.TestData.getValidUsersWithFixedValues;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -147,7 +147,7 @@ class ControllerTests extends BaseControllerTest {
     @ValueSource(ints = {1, 3})
     void testFindSingleValidUserUsingParams(int count) throws Exception {
         //given
-        List<UserDto> dto = getValidUsers(count);
+        List<UserDto> dto = getValidUsersWithFixedValues(count);
         Map<String,String> params = Map.of(
                 "age", String.valueOf(dto.get(0).getAge()),
                 "fullName", dto.get(0).getFullName(),
@@ -182,11 +182,11 @@ class ControllerTests extends BaseControllerTest {
         Pageable capturedVal = captor.getValue();
 
         assertAll(
-                () -> assertEquals(0,capturedVal.getPageNumber()), // checking that page number is correctly passed to service layer. In this case it's 0 because I set it in params
-                () -> assertEquals(dto.size(), capturedVal.getPageSize()), // checking that amount of items that can be placed on one page is correctly passed to service layer. In this case it's equal to the size of DTO list because I set it in params
-                () -> assertEquals(dto.size(), resultPage.size()), // checking that actual size of the page that is returned to the user is correct. In this case it's equal to the size of DTO list because I set it in params and there are only that many items in total
-                () -> assertEquals(0, resultPage.number()), // checking that page number in the response is correct. In this case it's 0 because I set it in params and there are only that many items in total so all of them are on the first page
-                () -> assertEquals(dto.size(), resultPage.totalElements()) // checking that total amount of items that can be paginated is correct. In this case it's equal to the size of DTO list because I set it in params and there are only that many items in total
+                () -> assertEquals(0,capturedVal.getPageNumber()), // checking that page number is correctly passed to service layer.
+                () -> assertEquals(dto.size(), capturedVal.getPageSize()), // checking that amount of items that can be placed on one page is correctly passed to service layer
+                () -> assertEquals(dto.size(), resultPage.size()), // checking that actual size of the page that is returned to the user is correct
+                () -> assertEquals(0, resultPage.number()), // checking that page number in the response is correct
+                () -> assertEquals(dto.size(), resultPage.totalElements()) // checking that total amount of items that can be paginated is correct
         );
 
         assertThat(dto)

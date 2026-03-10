@@ -2,7 +2,6 @@ package org.example.study.testData;
 
 import net.datafaker.Faker;
 import org.example.study.DTOs.PageResponseDTO;
-import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.Entities.UserEntity;
 import org.example.study.util.Converters.UserMapper;
@@ -15,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.example.study.enums.Gender.random;
+
 @SuppressWarnings("unused")
 public class TestData {
 
@@ -23,7 +24,7 @@ public class TestData {
 
     // Generate a list of valid UserDto using Faker
     public static List<UserDto> getValidUsers(int count) {
-        return Stream.generate(() -> new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), Gender.random()))
+        return Stream.generate(() -> new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), random()))
                 .limit(count)
                 .toList();
     }
@@ -47,7 +48,7 @@ public class TestData {
 
     // Generate a list of valid UserEntities using Faker
     public static List<UserEntity> getValidEntities(int count) {
-        return Stream.generate(() -> new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), faker.funnyName().name(), Gender.random()))
+        return Stream.generate(() -> new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), faker.funnyName().name(), random()))
                 .limit(count)
                 .toList();
     }
@@ -60,21 +61,29 @@ public class TestData {
 
     // Single UserDto
     public static UserDto getSingleValidUser() {
-        return new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), Gender.random());
+        return new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), random());
     }
 
     // Single UserEntity
     public static UserEntity getSingleValidEntity() {
-        return new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), faker.funnyName().name(), Gender.random());
+        return new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), faker.funnyName().name(), random());
     }
 
     // Single UserDto with empty name
     public static UserDto getSingleUserWithEmptyName() {
-        return new UserDto(faker.number().numberBetween(1, 200), "", Gender.random());
+        return new UserDto(faker.number().numberBetween(1, 200), "", random());
     }
 
     // Single UserEntity with empty name
     public static UserEntity getSingleEntityWithEmptyName() {
-        return new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), "", Gender.random());
+        return new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), "", random());
+    }
+
+    // Generate a list of UserDto with fixed values
+    public static List<UserDto> getValidUsersWithFixedValues(int count) {
+        UserDto dto = new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), random());
+        return Stream.generate(() -> dto)
+                .limit(count)
+                .toList();
     }
 }
