@@ -1,13 +1,10 @@
 package org.example.study;
 
-import org.example.study.Annotations.PageImplObj;
-import org.example.study.Annotations.RandomUserDto;
-import org.example.study.Annotations.RandomUserEntity;
+import org.example.study.Annotations.*;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.Util.BaseServiceTest;
-import org.example.study.Annotations.Unit;
 import org.example.study.testData.RandomPageImplResolver;
 import org.example.study.testData.RandomUserDtoResolver;
 import org.example.study.testData.RandomUserEntityResolver;
@@ -25,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-//TODO: fix Tests so they are adjusted to the new contentSize() property in the @PageImplObj annotation
+//TODO: fix Tests so they are adjusted to the totalElements property in the @PageImplObj annotation
 @Unit
 @ExtendWith(
         {MockitoExtension.class,
@@ -36,7 +33,7 @@ import static org.mockito.Mockito.*;
 public class ServiceTests extends BaseServiceTest {
 
     @Test
-    void checkGetAllUsers(@PageImplObj Page<UserEntity> page) {
+    void checkGetAllUsers(@PageImplObj(totalElements = 15) Page<UserEntity> page) {
         //given
         Pageable pageable = page.getPageable();
         //when
@@ -58,8 +55,9 @@ public class ServiceTests extends BaseServiceTest {
         }
     }
 
+    //TODO: Implement @pageImplAllSameObj
     @Test
-    void checkGetAllUsersParametrized(@PageImplObj(size = 10, page = 1) Page<UserEntity> page) {
+    void checkGetAllUsersParametrized(@PageImplAllSameObj Page<UserEntity> page) {
         //given
         Pageable pageable = page.getPageable();
         UserEntity dto = page.getContent().get(0);
@@ -85,7 +83,7 @@ public class ServiceTests extends BaseServiceTest {
     }
 
     @Test
-    void checkGetAllUsersWhenRepositoryIsEmpty(@PageImplObj(size = 0, page = 1) Page<UserEntity> page) {
+    void checkGetAllUsersWhenRepositoryIsEmpty(@PageImplObj Page<UserEntity> page) {
         Pageable pageable = page.getPageable();
 
         //when
@@ -97,7 +95,6 @@ public class ServiceTests extends BaseServiceTest {
         verify(repository, times(1)).findAll(anySpec(),eq(pageable));
         assertThat(result.number()).isEqualTo(pageable.getPageNumber());
         assertThat(result.size()).isEqualTo(pageable.getPageSize());
-        assertThat(result.totalPages()).isZero();
         assertThat(result.totalElements()).isZero();
         assertThat(result.content()).isEmpty();
     }

@@ -7,8 +7,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PageImplObj {
+@SuppressWarnings("unused")
+public @interface PageImplAllSameObj {
     int size() default 20;
     int page() default 0;
-    int totalElements() default 0;
+    int totalElements() default 100;
 }
