@@ -1,7 +1,8 @@
-package org.example.study.Entities;
+package org.example.study.DTOs.Entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.study.DTOs.BaseDao;
 import org.example.study.enums.Gender;
 
 @Entity
@@ -9,7 +10,7 @@ import org.example.study.enums.Gender;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserEntity {
+public class UserEntity extends BaseDao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

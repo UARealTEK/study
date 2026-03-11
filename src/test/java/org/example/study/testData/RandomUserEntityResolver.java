@@ -1,7 +1,7 @@
 package org.example.study.testData;
 
 import org.example.study.Annotations.RandomUserEntity;
-import org.example.study.Entities.UserEntity;
+import org.example.study.DTOs.Entities.UserEntity;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtensionContext;

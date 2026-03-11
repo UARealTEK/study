@@ -5,7 +5,7 @@ import org.example.study.Annotations.RandomUserDto;
 import org.example.study.Annotations.RandomUserEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
-import org.example.study.Entities.UserEntity;
+import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.Util.BaseServiceTest;
 import org.example.study.Annotations.Unit;
 import org.example.study.testData.RandomPageImplResolver;

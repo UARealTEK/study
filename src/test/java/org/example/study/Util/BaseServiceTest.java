@@ -1,7 +1,7 @@
 package org.example.study.Util;
 
 import org.example.study.DTOs.UserDto;
-import org.example.study.Entities.UserEntity;
+import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
 import org.junit.jupiter.api.AfterEach;

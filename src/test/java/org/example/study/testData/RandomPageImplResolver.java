@@ -1,7 +1,7 @@
 package org.example.study.testData;
 
 import org.example.study.Annotations.PageImplObj;
-import org.example.study.Entities.UserEntity;
+import org.example.study.DTOs.BaseDao;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -12,10 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import static org.example.study.testData.TestData.getSingleValidEntity;
+import static org.example.study.testData.TestData.getValidListForType;
 
 public class RandomPageImplResolver implements ParameterResolver {
     @Override
@@ -24,18 +24,27 @@ public class RandomPageImplResolver implements ParameterResolver {
     }
 
     @Override
-    public @Nullable Page<UserEntity> resolveParameter(ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+    public @Nullable Object resolveParameter(ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         PageImplObj annotation = parameterContext.findAnnotation(PageImplObj.class).
-                orElseThrow(() -> new ParameterResolutionException("Missing @PageableObj annotation"));
+                orElseThrow(() -> new ParameterResolutionException("Missing @PageImplObj annotation"));
         int page = annotation.page();
         int size = annotation.size();
         int totalElements = annotation.totalElements();
-        return new PageImpl<>(generateContent(size), PageRequest.of(page, size), totalElements);
+
+        @SuppressWarnings("unchecked")
+        Class<BaseDao> elementType =
+                parameterContext.getParameter().getType().getTypeParameters().length > 0
+                        ? (Class<BaseDao>) ((ParameterizedType) parameterContext
+                        .getParameter()
+                        .getParameterizedType())
+                        .getActualTypeArguments()[0]
+                        : BaseDao.class;
+
+        // Use the generic method to get the list
+        List<BaseDao> list = getValidListForType(elementType, size);
+
+        // Create and return the PageImpl
+        return new PageImpl<>(list, PageRequest.of(page, size), totalElements);
     }
 
-    private List<UserEntity> generateContent(int size) {
-        return IntStream.range(0,size).mapToObj(
-                i -> getSingleValidEntity()
-        ).toList();
-    }
 }

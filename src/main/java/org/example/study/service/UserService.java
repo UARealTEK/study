@@ -5,7 +5,7 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserPatchDto;
 import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
-import org.example.study.Entities.UserEntity;
+import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.repository.UserRepository;
 import org.example.study.util.Converters.UserMapper;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;

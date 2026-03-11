@@ -1,6 +1,6 @@
 package org.example.study.util.Filtering;
 
-import org.example.study.Entities.UserEntity;
+import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.enums.Gender;
 import org.springframework.data.jpa.domain.Specification;
 
