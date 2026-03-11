@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PageImplObj {
+    int contentSize() default 0;
     int size() default 20;
     int page() default 0;
     int totalElements() default 100;

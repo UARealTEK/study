@@ -17,17 +17,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+//TODO: fix Tests so they are adjusted to the new contentSize() property in the @PageImplObj annotation
 @Unit
 @ExtendWith(
         {MockitoExtension.class,
@@ -87,18 +85,20 @@ public class ServiceTests extends BaseServiceTest {
     }
 
     @Test
-    void checkGetAllUsersWhenRepositoryIsEmpty() {
-        //given
-        Pageable pageable = PageRequest.of(0,1);
-        Page<UserEntity> emptyPage = new PageImpl<>(List.of(), pageable, 0);
+    void checkGetAllUsersWhenRepositoryIsEmpty(@PageImplObj(size = 0, page = 1) Page<UserEntity> page) {
+        Pageable pageable = page.getPageable();
 
         //when
-        when(repository.findAll(anySpec(),any(Pageable.class))).thenReturn(emptyPage);
+        when(repository.findAll(anySpec(),any(Pageable.class))).thenReturn(page);
 
         PageResponseDTO<UserDto> result = service.getAllUsers(pageable, null,null,null);
 
         //then
         verify(repository, times(1)).findAll(anySpec(),eq(pageable));
+        assertThat(result.number()).isEqualTo(pageable.getPageNumber());
+        assertThat(result.size()).isEqualTo(pageable.getPageSize());
+        assertThat(result.totalPages()).isZero();
+        assertThat(result.totalElements()).isZero();
         assertThat(result.content()).isEmpty();
     }
 

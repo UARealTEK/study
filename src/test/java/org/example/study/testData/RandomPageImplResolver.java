@@ -27,9 +27,14 @@ public class RandomPageImplResolver implements ParameterResolver {
     public @Nullable Object resolveParameter(ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         PageImplObj annotation = parameterContext.findAnnotation(PageImplObj.class).
                 orElseThrow(() -> new ParameterResolutionException("Missing @PageImplObj annotation"));
+        int contentSize = annotation.contentSize();
         int page = annotation.page();
         int size = annotation.size();
         int totalElements = annotation.totalElements();
+
+        if (contentSize > size) {
+            throw new ParameterResolutionException("Content size (" + contentSize + ") cannot be greater than page size (" + size + ")");
+        }
 
         @SuppressWarnings("unchecked")
         Class<BaseDao> elementType =
@@ -41,7 +46,7 @@ public class RandomPageImplResolver implements ParameterResolver {
                         : BaseDao.class;
 
         // Use the generic method to get the list
-        List<BaseDao> list = getValidListForType(elementType, size);
+        List<BaseDao> list = getValidListForType(elementType, contentSize);
 
         // Create and return the PageImpl
         return new PageImpl<>(list, PageRequest.of(page, size), totalElements);
