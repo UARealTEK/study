@@ -1,6 +1,5 @@
 package org.example.study.testData;
 
-import org.example.study.Annotations.BaseParameterResolverAnnotation;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -13,9 +12,6 @@ import java.lang.reflect.Type;
 public abstract class BaseParameterResolver implements ParameterResolver {
 
     protected static boolean isAnnotatedWith(ParameterContext context, Class<? extends Annotation> annotation) {
-        if (!hasBaseAnnotation(context)) {
-           return false;
-        }
         return context.isAnnotated(annotation);
     }
 
@@ -50,15 +46,5 @@ public abstract class BaseParameterResolver implements ParameterResolver {
             }
         }
         throw new ParameterResolutionException("Unable to determine generic type for parameter: " + parameterContext.getParameter().getName());
-    }
-
-    private static boolean hasBaseAnnotation(ParameterContext context) {
-        for (Annotation annotation : context.getParameter().getAnnotations()) {
-            if (annotation.annotationType()
-                    .isAnnotationPresent(BaseParameterResolverAnnotation.class)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
