@@ -14,7 +14,7 @@ public abstract class BaseParameterResolver implements ParameterResolver {
 
     protected static boolean isAnnotatedWith(ParameterContext context, Class<? extends Annotation> annotation) {
         if (!hasBaseAnnotation(context)) {
-            throw new IllegalArgumentException("Parameter is not annotated with any annotation that extends BaseParameterResolverAnnotation");
+           return false;
         }
         return context.isAnnotated(annotation);
     }
