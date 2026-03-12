@@ -5,6 +5,7 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.Util.BaseServiceTest;
+import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.RandomPageImplResolver;
 import org.example.study.testData.RandomUserDtoResolver;
 import org.example.study.testData.RandomUserEntityResolver;
@@ -22,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-//TODO: fix Tests so they are adjusted to the totalElements property in the @PageImplObj annotation
 @Unit
 @ExtendWith(
         {MockitoExtension.class,
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 public class ServiceTests extends BaseServiceTest {
 
     @Test
-    void checkGetAllUsers(@PageImplObj(totalElements = 15) Page<UserEntity> page) {
+    void checkGetAllUsers(@RandomPageImplObj(strategy = PageStrategyType.RANDOM, totalElements = 15) Page<UserEntity> page) {
         //given
         Pageable pageable = page.getPageable();
         //when
@@ -55,9 +55,8 @@ public class ServiceTests extends BaseServiceTest {
         }
     }
 
-    //TODO: Implement @pageImplAllSameObj
     @Test
-    void checkGetAllUsersParametrized(@PageImplAllSameObj Page<UserEntity> page) {
+    void checkGetAllUsersParametrized(@RandomPageImplObj(strategy = PageStrategyType.SAME, totalElements = 10) Page<UserEntity> page) {
         //given
         Pageable pageable = page.getPageable();
         UserEntity dto = page.getContent().get(0);
@@ -83,7 +82,7 @@ public class ServiceTests extends BaseServiceTest {
     }
 
     @Test
-    void checkGetAllUsersWhenRepositoryIsEmpty(@PageImplObj Page<UserEntity> page) {
+    void checkGetAllUsersWhenRepositoryIsEmpty(@RandomPageImplObj(strategy = PageStrategyType.EMPTY) Page<UserEntity> page) {
         Pageable pageable = page.getPageable();
 
         //when
@@ -114,58 +113,59 @@ public class ServiceTests extends BaseServiceTest {
     }
 
     @Test
-    void checkGetUser() {
-        when(repository.findById(anyLong())).thenReturn(Optional.of(user));
+    void checkGetUser(@RandomUserEntity UserEntity entity) {
+        when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
 
-        UserDto dto = service.getUserByID(user.getId());
+        UserDto dto = service.getUserByID(entity.getId());
 
-        verify(repository, times(1)).findById(user.getId());
+        System.out.println(entity);
+        System.out.println(dto);
+
+        verify(repository, times(1)).findById(entity.getId());
         assertAll(
-                () -> assertEquals(dto.getAge(), user.getAge()),
-                () -> assertEquals(dto.getGender(), user.getGender()),
-                () -> assertEquals(dto.getFullName(), user.getFullName())
+                () -> assertEquals(dto.getAge(), entity.getAge()),
+                () -> assertEquals(dto.getGender(), entity.getGender()),
+                () -> assertEquals(dto.getFullName(), entity.getFullName())
         );
     }
 
     @Test
-    void checkSaveUser() {
+    void checkSaveUser(@RandomUserEntity UserEntity entity) {
         //given
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
-        when(repository.save(any(UserEntity.class))).thenReturn(user);
+        when(repository.save(any(UserEntity.class))).thenReturn(entity);
+        UserDto dto = userMapper.toUserDto(entity);
 
         //when
-        UserDto userDto = service.saveUser(userCopy);
+        UserDto userDto = service.saveUser(dto);
 
         verify(repository, times(1)).save(captor.capture());
         UserEntity captorValue = captor.getValue();
 
         //then
-        // verifying that the DTO value which was passed to the service was mapped correctly to the entity which was passed further to the repository
         assertAll(
-                () -> assertEquals(captorValue.getFullName(), userCopy.getFullName()),
-                () -> assertEquals(captorValue.getAge(), userCopy.getAge()),
-                () -> assertEquals(captorValue.getGender(), userCopy.getGender()),
+                () -> assertEquals(captorValue.getFullName(), dto.getFullName()),
+                () -> assertEquals(captorValue.getAge(), dto.getAge()),
+                () -> assertEquals(captorValue.getGender(), dto.getGender()),
                 () -> assertNull(captorValue.getId())
         );
 
-
-        //Verify that the entity which was returned by the mocked repository matches with the actual returned value returned by the service
         assertAll(
-                () -> assertEquals(user.getAge(), userDto.getAge()),
-                () -> assertEquals(user.getGender(), userDto.getGender()),
-                () -> assertEquals(user.getFullName(), userDto.getFullName())
+                () -> assertEquals(entity.getAge(), userDto.getAge()),
+                () -> assertEquals(entity.getGender(), userDto.getGender()),
+                () -> assertEquals(entity.getFullName(), userDto.getFullName())
         );
     }
 
     @Test
-    void checkDeleteUser() {
+    void checkDeleteUser(@RandomUserEntity UserEntity entity) {
         //given
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
         when(repository.existsById(anyLong())).thenReturn(true);
         doNothing().when(repository).deleteById(anyLong());
 
         //when
-        service.deleteUser(user.getId());
+        service.deleteUser(entity.getId());
 
         //then
         verify(repository, times(1)).existsById(captor.capture());
@@ -173,8 +173,8 @@ public class ServiceTests extends BaseServiceTest {
         verifyNoMoreInteractions(repository);
 
         assertAll(
-                () -> assertEquals(captor.getAllValues().get(0), user.getId()),
-                () -> assertEquals(captor.getAllValues().get(1), user.getId())
+                () -> assertEquals(captor.getAllValues().get(0), entity.getId()),
+                () -> assertEquals(captor.getAllValues().get(1), entity.getId())
         );
     }
 
@@ -193,9 +193,6 @@ public class ServiceTests extends BaseServiceTest {
         assertInstanceOf(UserNotFoundException.class, ex);
     }
 
-    /*
-    Used ParameterResolver here just for the sake of testing how does it work
-     */
     @Test
     void checkUpdateUser(@RandomUserDto UserDto dto, @RandomUserEntity UserEntity entity) {
         when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
@@ -216,17 +213,17 @@ public class ServiceTests extends BaseServiceTest {
     }
 
     @Test
-    void checkInvalidUpdate() {
+    void checkInvalidUpdate(@RandomUserDto UserDto dto, @RandomUserEntity UserEntity entity) {
         //given
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
-        Exception ex = assertThrows(UserNotFoundException.class, () -> service.updateUser(userCopy, user.getId()));
+        Exception ex = assertThrows(UserNotFoundException.class, () -> service.updateUser(dto, entity.getId()));
 
         //then
-        verify(repository, times(1)).findById(user.getId());
+        verify(repository, times(1)).findById(entity.getId());
         verify(repository, never()).save(any());
-        assertEquals(ex.getMessage(), new UserNotFoundException(user.getId()).getMessage());
+        assertEquals(ex.getMessage(), new UserNotFoundException(entity.getId()).getMessage());
         assertInstanceOf(UserNotFoundException.class, ex);
     }
 }

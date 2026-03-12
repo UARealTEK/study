@@ -10,6 +10,7 @@ import org.example.study.enums.Gender;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class UserEntity extends BaseDao {
 
     @Id

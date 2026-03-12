@@ -8,7 +8,6 @@ import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;
 import org.example.study.testData.RandomUserDtoResolver;
-import org.example.study.testData.TestData;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
@@ -34,6 +33,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
+import static org.example.study.testData.TestData.getValidUserDtoPage;
 import static org.example.study.testData.TestData.getValidUsersWithFixedValues;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -64,10 +64,10 @@ class ControllerTests extends BaseControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 3})
+    @ValueSource(ints = {1, 3}) // TODO: use Parameter Resolver here instead of ValueSource
     void checkPagination(int count) throws Exception {
         //when
-        PageResponseDTO<UserDto> dto = TestData.getValidUserDtoPage(count);
+        PageResponseDTO<UserDto> dto = getValidUserDtoPage(count);
         when(service.getAllUsers(
                 any(Pageable.class),
                 isNull(),
@@ -144,7 +144,7 @@ class ControllerTests extends BaseControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 3})
+    @ValueSource(ints = {1, 3}) // TODO: use ParameterResolver here instead of ValueSource
     void testFindSingleValidUserUsingParams(int count) throws Exception {
         //given
         List<UserDto> dto = getValidUsersWithFixedValues(count);
@@ -195,28 +195,28 @@ class ControllerTests extends BaseControllerTest {
     }
 
     @Test
-    void testSaveValidUser() throws Exception {
+    void testSaveValidUser(@RandomUserDto UserDto dto) throws Exception {
         //given
-        when(service.saveUser(any(UserDto.class))).thenReturn(user);
+        when(service.saveUser(any(UserDto.class))).thenReturn(dto);
 
         //when
-        steps.mvcPost(singleUserJson)
+        steps.mvcPost(singleUserJson) // TODO: I can probably rewrite mvcPost method to accept Object directly instead of JSON
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json(singleUserJson));
+                .andExpect(content().json(singleUserJson)); // TODO: Extract the JSON from the passed in Object to further assert it
         //then
 
         //Tried to use captor here to see how it works. basically it tracks the argument that crossed from controller to service
         //Then I can inspect what DTO came to the service. Check if it matches the DTO that I'm intended to use further
         ArgumentCaptor<UserDto> captor = ArgumentCaptor.forClass(UserDto.class);
         verify(service).saveUser(captor.capture());
-        UserDto dto = captor.getValue();
+        UserDto dtoCaptor = captor.getValue();
 
         //checks to verify that DTO which was serialized from JSON and passed to the service layer contains correct data
         assertAll(
-                () -> assertEquals(dto.getAge(), user.getAge()),
-                () -> assertEquals(dto.getGender(), user.getGender()),
-                () -> assertEquals(dto.getFullName(), user.getFullName())
+                () -> assertEquals(dtoCaptor.getAge(), dto.getAge()),
+                () -> assertEquals(dtoCaptor.getGender(), dto.getGender()),
+                () -> assertEquals(dtoCaptor.getFullName(), dto.getFullName())
         );
 
         verifyNoMoreInteractions(service);
@@ -229,7 +229,7 @@ class ControllerTests extends BaseControllerTest {
     @Test
     void checkSaveInvalidUserValidation() throws Exception {
         //when
-        MvcResult result = steps.mvcPost(singleInvalidUserJson)
+        MvcResult result = steps.mvcPost(singleInvalidUserJson) //TODO: use ParameterResolver here instead of singleInvalidUserJson. Pass in the object and then extract JSON from it
                 .andReturn();
         //then
 
@@ -248,6 +248,7 @@ class ControllerTests extends BaseControllerTest {
         verifyNoInteractions(service);
     }
 
+    //TODO: don't use copyOf if not needed
     @Test
     void checkValidUpdateUser(@RandomUserDto UserDto dto) throws Exception {
         UserDto updatedUser = copyOf(dto);
@@ -266,6 +267,7 @@ class ControllerTests extends BaseControllerTest {
         assertEquals(resultDto.getAge(), updatedUser.getAge());
     }
 
+    //TODO: don't use copyOf if not needed
     @Test
     void checkUpdateUserUsingInvalidDto() throws Exception {
         UserDto updatedUser = copyOf(user);

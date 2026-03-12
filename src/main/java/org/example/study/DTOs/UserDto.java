@@ -8,7 +8,8 @@ import org.example.study.enums.Gender;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDto extends BaseDao{
+@ToString
+public class UserDto extends BaseDao {
 
     @NotNull(message = "Age should NOT be null")
     @Min(0)

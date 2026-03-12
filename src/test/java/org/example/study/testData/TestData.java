@@ -1,7 +1,6 @@
 package org.example.study.testData;
 
 import net.datafaker.Faker;
-import org.example.study.DTOs.BaseDao;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.Entities.UserEntity;
@@ -44,13 +43,12 @@ public class TestData {
                 .toList();
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends BaseDao> List<T> getValidListForType(Class<T> clazz, int count) {
+    public static List<?> getValidListForType(Class<?> clazz, int count) {
         Function<Integer, List<?>> generator = generators.get(clazz);
         if (generator == null) {
             throw new IllegalArgumentException("Unsupported class type: " + clazz.getName());
         }
-        return (List<T>) generator.apply(count);
+        return generator.apply(count);
     }
 
     // Stream for parameterized tests
