@@ -50,19 +50,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ControllerTests extends BaseControllerTest {
 
     @Test
-    void testFindAllUsers() throws Exception {
+    void testFindAllUsers(@RandomPageResponseDto PageResponseDTO<UserDto> dto) throws Exception {
         //given
         when(service.getAllUsers(any(Pageable.class),
                 isNull(),
                 isNull(),
                 isNull()))
-                .thenReturn(users);
+                .thenReturn(dto);
 
         //when
+        String usersJson = mapper.writeValueAsString(dto);
         steps.mvcGet()
                 .andExpect(content().json(usersJson));
         //then
-        verify(service, times(1)).getAllUsers(any(Pageable.class), isNull(), isNull(), isNull());
+        verify(service, times(1)).getAllUsers(
+                any(Pageable.class),
+                isNull(),
+                isNull(),
+                isNull());
     }
 
     @Test
