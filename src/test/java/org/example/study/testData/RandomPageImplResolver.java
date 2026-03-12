@@ -2,11 +2,7 @@ package org.example.study.testData;
 
 import org.example.study.Annotations.RandomPageImplObj;
 import org.example.study.DTOs.BaseDao;
-import org.example.study.StrategyEngine.Strategies.EmptyStrategy;
-import org.example.study.StrategyEngine.Strategies.RandomStrategy;
-import org.example.study.StrategyEngine.Strategies.SameObjStrategy;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
-import org.example.study.enums.PageStrategyType;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -17,15 +13,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
-import java.util.Map;
 
 public class RandomPageImplResolver extends BaseParameterResolver {
-
-    private static final Map<PageStrategyType, PageGenerationStrategy> strategyMap = Map.of(
-            PageStrategyType.RANDOM, new RandomStrategy(),
-            PageStrategyType.SAME, new SameObjStrategy(),
-            PageStrategyType.EMPTY, new EmptyStrategy()
-    );
 
     @Override
     public boolean supportsParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
@@ -59,18 +48,6 @@ public class RandomPageImplResolver extends BaseParameterResolver {
 
         // Create and return the PageImpl
         return new PageImpl<>(list, PageRequest.of(page, size), totalElements);
-    }
-
-    private void validateAnnotation(PageStrategyType type, int totalElements) {
-        if (type == PageStrategyType.EMPTY && totalElements != 0) {
-            throw  new ParameterResolutionException("totalElements must be 0 for EMPTY strategy");
-        }
-        if (type == PageStrategyType.RANDOM && totalElements <= 0) {
-            throw  new ParameterResolutionException("totalElements must be bigger than 0 for RANDOM strategy");
-        }
-        if (type == PageStrategyType.SAME && totalElements <= 0) {
-            throw  new ParameterResolutionException("totalElements must be bigger than 0 for SAME strategy");
-        }
     }
 
 }

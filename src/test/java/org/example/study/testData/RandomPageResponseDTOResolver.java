@@ -3,14 +3,20 @@ package org.example.study.testData;
 import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.DTOs.BaseDao;
 import org.example.study.DTOs.PageResponseDTO;
+import org.example.study.DTOs.UserDto;
+import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 
+import java.util.List;
+
+
 @SuppressWarnings("unused")
 public class RandomPageResponseDTOResolver extends BaseParameterResolver {
+
     @Override
     public boolean supportsParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         // Check if annotated with @PageImplObj
@@ -25,9 +31,18 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
         return isParametrizedTypeOf(BaseDao.class, parameterContext);
     }
 
-    //TODO: complete it
     @Override
-    public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
-        return null;
+    public @Nullable PageResponseDTO<?> resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+        RandomPageResponseDto annotation = parameterContext.findAnnotation(RandomPageResponseDto.class)
+                .orElseThrow(() -> new ParameterResolutionException("Missing @RandomPageResponseDto annotation"));
+        int page = annotation.number();
+        int size = annotation.size();
+        int totalElements = annotation.totalElements();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        PageGenerationStrategy strategy = strategyMap.get(annotation.strategy());
+
+        List<?> data = strategy.generate(UserDto.class, totalElements);
+
+        return new PageResponseDTO<>(data, page, size, totalElements, totalPages);
     }
 }

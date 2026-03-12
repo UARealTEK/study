@@ -1,5 +1,6 @@
 package org.example.study;
 
+import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.Annotations.RandomUserDto;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
@@ -7,6 +8,7 @@ import org.example.study.Util.BaseControllerTest;
 import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;
+import org.example.study.testData.RandomPageResponseDTOResolver;
 import org.example.study.testData.RandomUserDtoResolver;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
@@ -33,7 +35,6 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
-import static org.example.study.testData.TestData.getValidUserDtoPage;
 import static org.example.study.testData.TestData.getValidUsersWithFixedValues;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -43,7 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //TODO: make sure Im using Parameterized tests where possible to avoid code duplication and make tests more readable
 @Smoke
 @ExtendWith(
-        RandomUserDtoResolver.class
+        {RandomUserDtoResolver.class,
+        RandomPageResponseDTOResolver.class}
 )
 class ControllerTests extends BaseControllerTest {
 
@@ -63,11 +65,9 @@ class ControllerTests extends BaseControllerTest {
         verify(service, times(1)).getAllUsers(any(Pageable.class), isNull(), isNull(), isNull());
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {1, 3}) // TODO: use Parameter Resolver here instead of ValueSource
-    void checkPagination(int count) throws Exception {
+    @Test
+    void checkPagination(@RandomPageResponseDto PageResponseDTO<UserDto> dto) throws Exception {
         //when
-        PageResponseDTO<UserDto> dto = getValidUserDtoPage(count);
         when(service.getAllUsers(
                 any(Pageable.class),
                 isNull(),

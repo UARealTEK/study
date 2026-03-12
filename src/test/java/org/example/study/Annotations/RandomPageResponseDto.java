@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @SuppressWarnings("unused")
 public @interface RandomPageResponseDto {
     int size() default 20;
-    int page() default 0;
+    int number() default 0;
     int totalElements() default 0;
     PageStrategyType strategy() default PageStrategyType.RANDOM;
 }

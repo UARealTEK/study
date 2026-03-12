@@ -1,4 +1,4 @@
-package org.example.study.StrategyEngine.Strategies;
+package org.example.study.StrategyEngine.PageStrategies;
 
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 
