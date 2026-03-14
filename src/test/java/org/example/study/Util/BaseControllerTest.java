@@ -57,9 +57,9 @@ public abstract class BaseControllerTest extends BaseTest {
             this.usersEndpoint = usersEndpoint;
         }
 
-        public ResultActions mvcPost(String content) throws Exception {
+        public ResultActions mvcPost(UserDto content) throws Exception {
             return mvc.perform(post(usersEndpoint.getEndpoint())
-                    .contentType(MediaType.APPLICATION_JSON).content(content));
+                    .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(content)));
         }
 
         //Default Endpoint -> prefilled in this class

@@ -12,7 +12,7 @@ import org.example.study.enums.Gender;
 public class UserDto extends BaseDao {
 
     @NotNull(message = "Age should NOT be null")
-    @Min(0)
+    @Min(1)
     @Max(value = 200, message = "Age should be less than 200 :)")
     private Integer age;
 

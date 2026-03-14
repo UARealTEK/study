@@ -1,5 +1,6 @@
 package org.example.study;
 
+import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.Annotations.RandomUserDto;
 import org.example.study.DTOs.PageResponseDTO;
@@ -8,6 +9,8 @@ import org.example.study.Util.BaseControllerTest;
 import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;
+import org.example.study.enums.PageStrategyType;
+import org.example.study.testData.RandomInvalidUserDtoResolver;
 import org.example.study.testData.RandomPageResponseDTOResolver;
 import org.example.study.testData.RandomUserDtoResolver;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
@@ -15,12 +18,7 @@ import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,7 +33,6 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
-import static org.example.study.testData.TestData.getValidUsersWithFixedValues;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -44,8 +41,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //TODO: make sure Im using Parameterized tests where possible to avoid code duplication and make tests more readable
 @Smoke
 @ExtendWith(
-        {RandomUserDtoResolver.class,
-        RandomPageResponseDTOResolver.class}
+        {
+                RandomUserDtoResolver.class,
+                RandomPageResponseDTOResolver.class,
+                RandomInvalidUserDtoResolver.class
+        }
 )
 class ControllerTests extends BaseControllerTest {
 
@@ -77,7 +77,8 @@ class ControllerTests extends BaseControllerTest {
                 any(Pageable.class),
                 isNull(),
                 isNull(),
-                isNull())).thenReturn(dto);
+                isNull()))
+                .thenReturn(dto);
 
         //then
         MvcResult result = steps.mvcGet(Map.of(
@@ -96,7 +97,10 @@ class ControllerTests extends BaseControllerTest {
                     return true;
                 }
         ),
-                isNull(),isNull(),isNull());
+                isNull(),
+                isNull(),
+                isNull()
+        );
 
         verify(service, times(1)).getAllUsers(any(Pageable.class),isNull(),isNull(),isNull());
         verifyNoMoreInteractions(service);
@@ -129,7 +133,9 @@ class ControllerTests extends BaseControllerTest {
     @Test
     void checkFindInvalidUser() throws Exception {
         //given
-        doThrow(new UserNotFoundException(99L)).when(service).getUserByID(anyLong());
+        doThrow(new UserNotFoundException(99L))
+                .when(service)
+                .getUserByID(99L);
         //when
 
         MvcResult result = steps.mvcGet(99L)
@@ -142,32 +148,30 @@ class ControllerTests extends BaseControllerTest {
                 () -> assertEquals(HttpStatus.NOT_FOUND.toString(), exceptionDto.statusCode().toString()),
                 () -> assertEquals("Not found", exceptionDto.type()),
                 () -> assertEquals("User was NOT found", exceptionDto.message()),
-                () -> assertEquals(new UserNotFoundException(99L).getMessage(), exceptionDto.exceptionMessage().get(0).message())
+                () -> assertEquals(new UserNotFoundException(99L).getMessage(), exceptionDto.exceptionMessage().getFirst().message())
         );
 
         verify(service, times(1)).getUserByID(99L);
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {1, 3}) // TODO: use ParameterResolver here instead of ValueSource
-    void testFindSingleValidUserUsingParams(int count) throws Exception {
+    @Test
+    void testFindValidUsersUsingParams(@RandomPageResponseDto(strategy = PageStrategyType.SAME, totalElements = 10) PageResponseDTO<UserDto> pageResponseDTO) throws Exception {
         //given
-        List<UserDto> dto = getValidUsersWithFixedValues(count);
+        List<UserDto> dto = pageResponseDTO.content();
         Map<String,String> params = Map.of(
-                "age", String.valueOf(dto.get(0).getAge()),
-                "fullName", dto.get(0).getFullName(),
-                "gender", dto.get(0).getGender().name().toLowerCase(),
-                "page", String.valueOf(0),
-                "size", String.valueOf(dto.size())
+                "age", String.valueOf(dto.getFirst().getAge()),
+                "fullName", dto.getFirst().getFullName(),
+                "gender", dto.getFirst().getGender().name().toLowerCase(),
+                "page", String.valueOf(pageResponseDTO.number()),
+                "size", String.valueOf(pageResponseDTO.size())
         );
-
-        Page<UserDto> page = new PageImpl<>(dto, PageRequest.of(0,dto.size()), dto.size());
 
         //when
         when(service.getAllUsers(any(Pageable.class)
                 ,anyInt()
                 ,anyString()
-                ,any(Gender.class))).thenReturn(userMapper.toPageResponse(page));
+                ,any(Gender.class)))
+                .thenReturn(pageResponseDTO);
 
         //then
         MvcResult result = steps.mvcGet(params)
@@ -179,24 +183,21 @@ class ControllerTests extends BaseControllerTest {
 
         verify(service).getAllUsers(
                 captor.capture(),
-                eq(dto.get(0).getAge()),
-                eq(dto.get(0).getFullName()),
-                eq(dto.get(0).getGender()));
+                eq(dto.getFirst().getAge()),
+                eq(dto.getFirst().getFullName()),
+                eq(dto.getFirst().getGender()));
         verifyNoMoreInteractions(service);
 
         Pageable capturedVal = captor.getValue();
 
         assertAll(
-                () -> assertEquals(0,capturedVal.getPageNumber()), // checking that page number is correctly passed to service layer.
-                () -> assertEquals(dto.size(), capturedVal.getPageSize()), // checking that amount of items that can be placed on one page is correctly passed to service layer
-                () -> assertEquals(dto.size(), resultPage.size()), // checking that actual size of the page that is returned to the user is correct
-                () -> assertEquals(0, resultPage.number()), // checking that page number in the response is correct
-                () -> assertEquals(dto.size(), resultPage.totalElements()) // checking that total amount of items that can be paginated is correct
+                () -> assertEquals(pageResponseDTO.number(),capturedVal.getPageNumber()), // checking that page number is correctly passed to service layer.
+                () -> assertEquals(pageResponseDTO.size(), capturedVal.getPageSize()) // checking that amount of items that can be placed on one page is correctly passed to service layer
         );
 
-        assertThat(dto)
+        assertThat(pageResponseDTO)
                 .usingRecursiveComparison()
-                .isEqualTo(resultPage.content());
+                .isEqualTo(resultPage);
     }
 
     @Test
@@ -204,11 +205,12 @@ class ControllerTests extends BaseControllerTest {
         //given
         when(service.saveUser(any(UserDto.class))).thenReturn(dto);
 
+
         //when
-        steps.mvcPost(singleUserJson) // TODO: I can probably rewrite mvcPost method to accept Object directly instead of JSON
+        steps.mvcPost(dto)
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json(singleUserJson)); // TODO: Extract the JSON from the passed in Object to further assert it
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(mapper.writeValueAsString(dto)));
         //then
 
         //Tried to use captor here to see how it works. basically it tracks the argument that crossed from controller to service
@@ -218,11 +220,9 @@ class ControllerTests extends BaseControllerTest {
         UserDto dtoCaptor = captor.getValue();
 
         //checks to verify that DTO which was serialized from JSON and passed to the service layer contains correct data
-        assertAll(
-                () -> assertEquals(dtoCaptor.getAge(), dto.getAge()),
-                () -> assertEquals(dtoCaptor.getGender(), dto.getGender()),
-                () -> assertEquals(dtoCaptor.getFullName(), dto.getFullName())
-        );
+        assertThat(dtoCaptor)
+                .usingRecursiveComparison()
+                .isEqualTo(dto);
 
         verifyNoMoreInteractions(service);
     }
@@ -231,10 +231,17 @@ class ControllerTests extends BaseControllerTest {
     // in this case - MethodArgumentNotValid. Because I validate request body at Controller level
     // So validation does not reach the service at all
     // As for whether the correct exception was thrown - I assert on the MESSAGES that are returned to the user as the result of this call
+    //TODO: would be nice to specify which field EXACTLY I want to be invalid.
+    // create ENUM that will hold invalid dto variable flags (fullName, age, gender)
+    // then depending on the selected flag - invoke a method that will return invalid DTO
+    // also adapt it for Lists (for @RandomInvalidUserDtoList)
+
+    //TODO: hardcoded error messages ? not sure if its okay
     @Test
-    void checkSaveInvalidUserValidation() throws Exception {
+    void checkSaveInvalidUserValidation(@RandomInvalidUserDto UserDto dto) throws Exception {
         //when
-        MvcResult result = steps.mvcPost(singleInvalidUserJson) //TODO: use ParameterResolver here instead of singleInvalidUserJson. Pass in the object and then extract JSON from it
+        MvcResult result = steps.mvcPost(dto)
+                .andExpect(status().isBadRequest())
                 .andReturn();
         //then
 
@@ -327,7 +334,7 @@ class ControllerTests extends BaseControllerTest {
                 () -> assertEquals(HttpStatus.NOT_FOUND.toString(), dto.statusCode().toString()),
                 () -> assertEquals("Not found", dto.type()),
                 () -> assertEquals("User was NOT found", dto.message()),
-                () -> assertEquals(dto.exceptionMessage().get(0).message(), new UserNotFoundException(1L).getMessage())
+                () -> assertEquals(dto.exceptionMessage().getFirst().message(), new UserNotFoundException(1L).getMessage())
         );
 
         verify(service, times(1)).deleteUser(1L);

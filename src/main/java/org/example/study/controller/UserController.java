@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Also Add:
  * - ReadME
- * - Caching (@Cachable)
  * - Integration tests ? (Testcontainers)
  * - Database migrations (?)
  */

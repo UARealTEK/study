@@ -37,9 +37,9 @@ public class RandomPageImplResolver extends BaseParameterResolver {
         int page = annotation.page();
         int size = annotation.size();
         int totalElements = annotation.totalElements();
-        PageGenerationStrategy strategy = strategyMap.get(annotation.strategy());
+        PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
 
-        validateAnnotation(annotation.strategy(), totalElements);
+        validateStrategyType(annotation.strategy(), totalElements);
 
         Class<?> elementType = getGenericType(parameterContext);
 

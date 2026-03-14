@@ -39,7 +39,9 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
         int size = annotation.size();
         int totalElements = annotation.totalElements();
         int totalPages = (int) Math.ceil((double) totalElements / size);
-        PageGenerationStrategy strategy = strategyMap.get(annotation.strategy());
+        PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+
+        validateStrategyType(annotation.strategy(), totalElements);
 
         List<?> data = strategy.generate(UserDto.class, totalElements);
 

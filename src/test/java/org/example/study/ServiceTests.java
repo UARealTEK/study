@@ -25,10 +25,12 @@ import static org.mockito.Mockito.*;
 
 @Unit
 @ExtendWith(
-        {MockitoExtension.class,
-        RandomUserDtoResolver.class,
-        RandomPageImplResolver.class,
-        RandomUserEntityResolver.class}
+        {
+                MockitoExtension.class,
+                RandomUserDtoResolver.class,
+                RandomPageImplResolver.class,
+                RandomUserEntityResolver.class
+        }
 )
 public class ServiceTests extends BaseServiceTest {
 
@@ -59,7 +61,7 @@ public class ServiceTests extends BaseServiceTest {
     void checkGetAllUsersParametrized(@RandomPageImplObj(strategy = PageStrategyType.SAME, totalElements = 10) Page<UserEntity> page) {
         //given
         Pageable pageable = page.getPageable();
-        UserEntity dto = page.getContent().get(0);
+        UserEntity dto = page.getContent().getFirst();
 
         //when
         when(repository.findAll(anySpec(),eq(pageable))).thenReturn(page);
@@ -173,7 +175,7 @@ public class ServiceTests extends BaseServiceTest {
         verifyNoMoreInteractions(repository);
 
         assertAll(
-                () -> assertEquals(captor.getAllValues().get(0), entity.getId()),
+                () -> assertEquals(captor.getAllValues().getFirst(), entity.getId()),
                 () -> assertEquals(captor.getAllValues().get(1), entity.getId())
         );
     }

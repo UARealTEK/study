@@ -1,6 +1,7 @@
 package org.example.study.testData;
 
 import net.datafaker.Faker;
+import org.example.study.DTOs.BaseDao;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.Entities.UserEntity;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.example.study.enums.Gender.random;
@@ -27,6 +29,11 @@ public class TestData {
     private static final Map<Class<?>, Function<Integer, List<?>>> generators = Map.of(
         UserDto.class, TestData::getValidUsers,
         UserEntity.class, TestData::getValidEntities
+    );
+
+    private static final Map<Class<? extends BaseDao>, Supplier<? extends BaseDao>> singleGenerators = Map.of(
+        UserDto.class, TestData::getSingleValidUser,
+        UserEntity.class, TestData::getSingleValidEntity
     );
 
     // Generate a list of valid UserDto using Faker
@@ -49,6 +56,15 @@ public class TestData {
             throw new IllegalArgumentException("Unsupported class type: " + clazz.getName());
         }
         return generator.apply(count);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends BaseDao> T getSingleValidForType(Class<T> clazz) {
+        Supplier<? extends BaseDao> generator = singleGenerators.get(clazz);
+        if (generator == null) {
+            throw new IllegalArgumentException("Unsupported class type: " + clazz.getName());
+        }
+        return (T) generator.get();
     }
 
     // Stream for parameterized tests

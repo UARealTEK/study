@@ -1,10 +1,15 @@
 package org.example.study.testData;
 
+import org.example.study.DTOs.BaseDao;
+import org.example.study.StrategyEngine.DTOStrategies.AgeStrategy;
+import org.example.study.StrategyEngine.DTOStrategies.NameStrategy;
 import org.example.study.StrategyEngine.PageStrategies.EmptyStrategy;
 import org.example.study.StrategyEngine.PageStrategies.RandomStrategy;
 import org.example.study.StrategyEngine.PageStrategies.SameObjStrategy;
+import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 import org.example.study.enums.PageStrategyType;
+import org.example.study.enums.UserDTOInvalidFlag;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -54,7 +59,7 @@ public abstract class BaseParameterResolver implements ParameterResolver {
         throw new ParameterResolutionException("Unable to determine generic type for parameter: " + parameterContext.getParameter().getName());
     }
 
-    protected void validateAnnotation(PageStrategyType type, int totalElements) {
+    protected void validateStrategyType(PageStrategyType type, int totalElements) {
         if (type == PageStrategyType.EMPTY && totalElements != 0) {
             throw  new ParameterResolutionException("totalElements must be 0 for EMPTY strategy");
         }
@@ -66,9 +71,16 @@ public abstract class BaseParameterResolver implements ParameterResolver {
         }
     }
 
-    protected static final Map<PageStrategyType, PageGenerationStrategy> strategyMap = Map.of(
+    protected static final Map<PageStrategyType, PageGenerationStrategy> pageStrategyMap = Map.of(
             PageStrategyType.RANDOM, new RandomStrategy(),
             PageStrategyType.SAME, new SameObjStrategy(),
             PageStrategyType.EMPTY, new EmptyStrategy()
+    );
+
+    //TODO: complete it
+    protected static final Map<UserDTOInvalidFlag, InvalidDTOGenerationStrategy<BaseDao>> invalidDtoStrategyMap = Map.of(
+            UserDTOInvalidFlag.FULL_NAME, new NameStrategy<>(),
+            UserDTOInvalidFlag.AGE, new AgeStrategy<>(),
+            UserDTOInvalidFlag.GENDER, new NameStrategy<>()
     );
 }
