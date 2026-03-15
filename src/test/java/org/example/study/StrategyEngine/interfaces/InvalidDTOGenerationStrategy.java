@@ -1,9 +1,8 @@
 package org.example.study.StrategyEngine.interfaces;
 
 
-import org.example.study.DTOs.BaseDao;
+import org.example.study.DTOs.BaseUser;
 
-//TODO: figure ouw how generic bounds work. Check syntax in concrete Implementations
-public interface InvalidDTOGenerationStrategy<T extends BaseDao> {
+public interface InvalidDTOGenerationStrategy<T extends BaseUser> {
     T generate(Class<T> clazz);
 }

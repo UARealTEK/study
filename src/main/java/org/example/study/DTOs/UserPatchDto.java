@@ -11,14 +11,30 @@ import org.example.study.enums.Gender;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserPatchDto extends BaseDao {
+@SuppressWarnings("unused")
+public class UserPatchDto extends BaseUser {
 
+    public UserPatchDto(Integer age, String fullName, Gender gender) {
+        setAge(age);
+        setFullName(fullName);
+        setGender(gender);
+    }
+
+    @Override
     @Min(0)
     @Max(value = 200, message = "Age should be less than 200 :)")
-    private Integer age;
+    public Integer getAge() {
+        return super.getAge();
+    }
 
+    @Override
     @Size(min = 1, max = 100, message = "name is mandatory and its length should be in range of 1 - 100")
-    private String fullName;
+    public String getFullName() {
+        return super.getFullName();
+    }
 
-    private Gender gender;
+    @Override
+    public Gender getGender() {
+        return super.getGender();
+    }
 }

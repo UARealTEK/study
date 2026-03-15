@@ -2,7 +2,7 @@ package org.example.study.DTOs.Entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.study.DTOs.BaseDao;
+import org.example.study.DTOs.BaseUser;
 import org.example.study.enums.Gender;
 
 @Entity
@@ -11,18 +11,16 @@ import org.example.study.enums.Gender;
 @Getter
 @Setter
 @ToString
-public class UserEntity extends BaseDao {
+public class UserEntity extends BaseUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer age;
-
-    @Column(name = "full_name",length = 100)
-    private String fullName;
-
-    @NonNull
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    public UserEntity(Long id, Integer age, String fullName, Gender gender) {
+        this.id = id;
+        setAge(age);
+        setFullName(fullName);
+        setGender(gender);
+    }
 }

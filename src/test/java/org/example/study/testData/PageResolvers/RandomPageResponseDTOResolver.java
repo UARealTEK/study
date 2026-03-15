@@ -1,10 +1,11 @@
-package org.example.study.testData;
+package org.example.study.testData.PageResolvers;
 
 import org.example.study.Annotations.RandomPageResponseDto;
-import org.example.study.DTOs.BaseDao;
+import org.example.study.DTOs.BaseUser;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -28,7 +29,7 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
         // Check if it's a parameterized type (e.g., Page<SomeDao>)
         if (!hasParametrizedType(parameterContext)) return false;
 
-        return isParametrizedTypeOf(BaseDao.class, parameterContext);
+        return isParametrizedTypeOf(BaseUser.class, parameterContext);
     }
 
     @Override

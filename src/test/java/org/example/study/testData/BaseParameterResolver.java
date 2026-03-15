@@ -1,8 +1,9 @@
 package org.example.study.testData;
 
-import org.example.study.DTOs.BaseDao;
-import org.example.study.StrategyEngine.DTOStrategies.AgeStrategy;
-import org.example.study.StrategyEngine.DTOStrategies.NameStrategy;
+import org.example.study.DTOs.BaseUser;
+import org.example.study.StrategyEngine.DTOStrategies.InvalidAgeStrategy;
+import org.example.study.StrategyEngine.DTOStrategies.InvalidNameStrategy;
+import org.example.study.StrategyEngine.DTOStrategies.RandomDtoInvalidStrategy;
 import org.example.study.StrategyEngine.PageStrategies.EmptyStrategy;
 import org.example.study.StrategyEngine.PageStrategies.RandomStrategy;
 import org.example.study.StrategyEngine.PageStrategies.SameObjStrategy;
@@ -77,10 +78,10 @@ public abstract class BaseParameterResolver implements ParameterResolver {
             PageStrategyType.EMPTY, new EmptyStrategy()
     );
 
-    //TODO: complete it
-    protected static final Map<UserDTOInvalidFlag, InvalidDTOGenerationStrategy<BaseDao>> invalidDtoStrategyMap = Map.of(
-            UserDTOInvalidFlag.FULL_NAME, new NameStrategy<>(),
-            UserDTOInvalidFlag.AGE, new AgeStrategy<>(),
-            UserDTOInvalidFlag.GENDER, new NameStrategy<>()
+    protected static final Map<UserDTOInvalidFlag, InvalidDTOGenerationStrategy<BaseUser>> invalidDtoStrategyMap = Map.of(
+            UserDTOInvalidFlag.FULL_NAME, new InvalidNameStrategy<>(),
+            UserDTOInvalidFlag.AGE, new InvalidAgeStrategy<>(),
+            UserDTOInvalidFlag.GENDER, new InvalidNameStrategy<>(),
+            UserDTOInvalidFlag.RANDOM_INVALID, new RandomDtoInvalidStrategy<>()
     );
 }

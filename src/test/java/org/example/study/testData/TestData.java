@@ -1,7 +1,7 @@
 package org.example.study.testData;
 
 import net.datafaker.Faker;
-import org.example.study.DTOs.BaseDao;
+import org.example.study.DTOs.BaseUser;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.Entities.UserEntity;
@@ -31,7 +31,7 @@ public class TestData {
         UserEntity.class, TestData::getValidEntities
     );
 
-    private static final Map<Class<? extends BaseDao>, Supplier<? extends BaseDao>> singleGenerators = Map.of(
+    private static final Map<Class<? extends BaseUser>, Supplier<? extends BaseUser>> singleGenerators = Map.of(
         UserDto.class, TestData::getSingleValidUser,
         UserEntity.class, TestData::getSingleValidEntity
     );
@@ -45,7 +45,11 @@ public class TestData {
 
     // Generate a list of valid UserEntities using Faker
     private static List<UserEntity> getValidEntities(int count) {
-        return Stream.generate(() -> new UserEntity(faker.number().numberBetween(0L, 10L), faker.number().numberBetween(1, 200), faker.funnyName().name(), random()))
+        return Stream.generate(() -> new UserEntity(
+                                faker.number().numberBetween(0L, 10L),
+                                faker.number().numberBetween(1, 200),
+                                faker.funnyName().name(), random())
+                )
                 .limit(count)
                 .toList();
     }
@@ -59,8 +63,8 @@ public class TestData {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends BaseDao> T getSingleValidForType(Class<T> clazz) {
-        Supplier<? extends BaseDao> generator = singleGenerators.get(clazz);
+    public static <T extends BaseUser> T getSingleValidForType(Class<T> clazz) {
+        Supplier<? extends BaseUser> generator = singleGenerators.get(clazz);
         if (generator == null) {
             throw new IllegalArgumentException("Unsupported class type: " + clazz.getName());
         }

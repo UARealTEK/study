@@ -1,10 +1,10 @@
-package org.example.study.testData;
+package org.example.study.testData.DTOResolvers;
 
-import org.example.study.Annotations.RandomInvalidUserDto;
-import org.example.study.Annotations.RandomInvalidUserDtoList;
+import org.example.study.Annotations.RandomUserDto;
 import org.example.study.Annotations.RandomUserDtoList;
 import org.example.study.DTOs.UserDto;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -15,14 +15,14 @@ import java.util.List;
 
 import static org.example.study.testData.TestData.getSingleValidUser;
 
-public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
+public class RandomUserDtoResolver extends BaseParameterResolver {
 
     @Override
     public boolean supportsParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
 
-        boolean isEligibleForSingle = isAnnotatedWith(parameterContext, RandomInvalidUserDto.class) &&
+        boolean isEligibleForSingle = isAnnotatedWith(parameterContext, RandomUserDto.class) &&
                 isSuperOf(UserDto.class, parameterContext);
-        boolean isEligibleForList = isAnnotatedWith(parameterContext, RandomInvalidUserDtoList.class) &&
+        boolean isEligibleForList = isAnnotatedWith(parameterContext, RandomUserDtoList.class) &&
                 isSuperOf(List.class, parameterContext) &&
                 hasParametrizedType(parameterContext) &&
                 isParametrizedTypeOf(UserDto.class, parameterContext);
@@ -32,11 +32,11 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
-        if (isAnnotatedWith(parameterContext, RandomInvalidUserDto.class)) {
+        if (isAnnotatedWith(parameterContext, RandomUserDto.class)) {
             return getSingleValidUser();
         } else if (isAnnotatedWith(parameterContext, RandomUserDtoList.class)) {
-            RandomInvalidUserDtoList annotation = parameterContext.findAnnotation(RandomInvalidUserDtoList.class).
-                    orElseThrow(() -> new ParameterResolutionException("Missing @RandomInvalidUserDtoList annotation"));
+            RandomUserDtoList annotation = parameterContext.findAnnotation(RandomUserDtoList.class).
+                    orElseThrow(() -> new ParameterResolutionException("Missing @RandomUserDtoList annotation"));
             int count = annotation.count();
             PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);

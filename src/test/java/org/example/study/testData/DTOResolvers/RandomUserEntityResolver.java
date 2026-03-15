@@ -1,4 +1,4 @@
-package org.example.study.testData;
+package org.example.study.testData.DTOResolvers;
 
 import org.example.study.Annotations.RandomUserEntity;
 import org.example.study.DTOs.Entities.UserEntity;
