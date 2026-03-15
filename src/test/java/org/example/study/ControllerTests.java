@@ -10,17 +10,17 @@ import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;
 import org.example.study.enums.PageStrategyType;
+import org.example.study.enums.UserDTOInvalidFlag;
 import org.example.study.testData.DTOResolvers.RandomInvalidUserDtoResolver;
 import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.example.study.testData.DTOResolvers.RandomUserDtoResolver;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
+import org.example.study.util.Exceptions.ExceptionHandler.ApiErrorType;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
-import org.example.study.util.Exceptions.ExceptionHandler.FieldErrorDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,7 +29,6 @@ import tools.jackson.core.type.TypeReference;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.example.study.DTOs.UserDto.copyOf;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 //TODO: adapt using @Nested for better structure of tests. For example, group all tests related to GET /users/{id} in one nested class and so on
-//TODO: make sure Im using Parameterized tests where possible to avoid code duplication and make tests more readable
 @Smoke
 @ExtendWith(
         {
@@ -50,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ControllerTests extends BaseControllerTest {
 
     @Test
-    void testFindAllUsers(@RandomPageResponseDto PageResponseDTO<UserDto> dto) throws Exception {
+    void testFindAllUsers(@RandomPageResponseDto(totalElements = 5) PageResponseDTO<UserDto> dto) throws Exception {
         //given
         when(service.getAllUsers(any(Pageable.class),
                 isNull(),
@@ -71,7 +69,7 @@ class ControllerTests extends BaseControllerTest {
     }
 
     @Test
-    void checkPagination(@RandomPageResponseDto PageResponseDTO<UserDto> dto) throws Exception {
+    void checkPagination(@RandomPageResponseDto(totalElements = 5) PageResponseDTO<UserDto> dto) throws Exception {
         //when
         when(service.getAllUsers(
                 any(Pageable.class),
@@ -145,9 +143,10 @@ class ControllerTests extends BaseControllerTest {
         ExceptionDto exceptionDto = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
 
         assertAll(
-                () -> assertEquals(HttpStatus.NOT_FOUND.toString(), exceptionDto.statusCode().toString()),
-                () -> assertEquals("Not found", exceptionDto.type()),
-                () -> assertEquals("User was NOT found", exceptionDto.message()),
+                () -> assertEquals(ApiErrorType.USER_NOT_FOUND.getStatus().toString(), exceptionDto.statusCode().toString()),
+                () -> assertEquals(ApiErrorType.USER_NOT_FOUND.getType(), exceptionDto.type()),
+                () -> assertEquals(ApiErrorType.USER_NOT_FOUND.getMessage(), exceptionDto.message()),
+                () -> assertEquals(new UserNotFoundException(99L).getId().toString(), exceptionDto.exceptionMessage().getFirst().error()),
                 () -> assertEquals(new UserNotFoundException(99L).getMessage(), exceptionDto.exceptionMessage().getFirst().message())
         );
 
@@ -213,8 +212,7 @@ class ControllerTests extends BaseControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(dto)));
         //then
 
-        //Tried to use captor here to see how it works. basically it tracks the argument that crossed from controller to service
-        //Then I can inspect what DTO came to the service. Check if it matches the DTO that I'm intended to use further
+
         ArgumentCaptor<UserDto> captor = ArgumentCaptor.forClass(UserDto.class);
         verify(service).saveUser(captor.capture());
         UserDto dtoCaptor = captor.getValue();
@@ -227,40 +225,27 @@ class ControllerTests extends BaseControllerTest {
         verifyNoMoreInteractions(service);
     }
 
-    // Test that exception is thrown
-    // in this case - MethodArgumentNotValid. Because I validate request body at Controller level
-    // So validation does not reach the service at all
-    // As for whether the correct exception was thrown - I assert on the MESSAGES that are returned to the user as the result of this call
-    //TODO: would be nice to specify which field EXACTLY I want to be invalid.
-    // create ENUM that will hold invalid dto variable flags (fullName, age, gender)
-    // then depending on the selected flag - invoke a method that will return invalid DTO
-    // also adapt it for Lists (for @RandomInvalidUserDtoList)
-
-    //TODO: hardcoded error messages ? not sure if its okay
     @Test
-    void checkSaveInvalidUserValidation(@RandomInvalidUserDto UserDto dto) throws Exception {
+    void checkSaveInvalidUserValidation(@RandomInvalidUserDto(invalidFlag = UserDTOInvalidFlag.FULL_NAME) UserDto dto) throws Exception {
         //when
         MvcResult result = steps.mvcPost(dto)
                 .andExpect(status().isBadRequest())
+                .andExpect(i -> assertInstanceOf(MethodArgumentNotValidException.class, i.getResolvedException()))
                 .andReturn();
-        //then
 
+        //then
         ExceptionDto exceptionDto = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
-        FieldErrorDto fullNameError = new FieldErrorDto("fullName", "name should not be blank");
-        FieldErrorDto nameIsMandatory = new FieldErrorDto("fullName", "name is mandatory and its length should be in range of 1 - 100");
 
         assertAll(
-                () -> assertEquals(HttpStatus.BAD_REQUEST.toString(), exceptionDto.statusCode().toString()),
-                () -> assertEquals("Validation error", exceptionDto.type()),
-                () -> assertEquals("Incorrect method arguments provided", exceptionDto.message()),
-                () -> assertThat(fullNameError).isIn(exceptionDto.exceptionMessage()),
-                () -> assertThat(nameIsMandatory).isIn(exceptionDto.exceptionMessage())
+                () -> assertEquals(ApiErrorType.VALIDATION_ERROR.getStatus().toString(), exceptionDto.statusCode().toString()),
+                () -> assertEquals(ApiErrorType.VALIDATION_ERROR.getType(), exceptionDto.type()),
+                () -> assertEquals(ApiErrorType.VALIDATION_ERROR.getMessage(), exceptionDto.message()),
+                () -> assertNull(exceptionDto.exceptionMessage())
         );
 
         verifyNoInteractions(service);
     }
 
-    //TODO: don't use copyOf if not needed
     @Test
     void checkValidUpdateUser(@RandomUserDto UserDto dto) throws Exception {
         UserDto updatedUser = copyOf(dto);
@@ -276,30 +261,29 @@ class ControllerTests extends BaseControllerTest {
 
         verify(service, times(1)).updateUser(any(UserDto.class), eq(100L));
         assertNotEquals(resultDto.getAge(), dto.getAge());
-        assertEquals(resultDto.getAge(), updatedUser.getAge());
+        assertAll(
+                () -> assertEquals(resultDto.getAge(), updatedUser.getAge()),
+                () -> assertEquals(resultDto.getFullName(), updatedUser.getFullName()),
+                () -> assertEquals(resultDto.getGender(), updatedUser.getGender())
+        );
+
     }
 
-    //TODO: don't use copyOf if not needed
     @Test
-    void checkUpdateUserUsingInvalidDto() throws Exception {
-        UserDto updatedUser = copyOf(user);
-        updatedUser.setFullName("");
+    void checkUpdateUserUsingInvalidDto(@RandomInvalidUserDto(invalidFlag = UserDTOInvalidFlag.FULL_NAME) UserDto dto) throws Exception {
 
         //using PUT on user with ID 1 but that's not ideal. User might not exist and then the test will die
-        MvcResult result = steps.mvcPut(1L, updatedUser)
+        MvcResult result = steps.mvcPut(1L, dto)
+                .andExpect(status().isBadRequest())
                 .andExpect(i -> assertInstanceOf(MethodArgumentNotValidException.class, i.getResolvedException()))
                 .andReturn();
 
         ExceptionDto response = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
-        FieldErrorDto fullNameError = new FieldErrorDto("fullName", "name should not be blank");
-        FieldErrorDto nameIsMandatory = new FieldErrorDto("fullName", "name is mandatory and its length should be in range of 1 - 100");
-
         assertAll(
-                () -> assertEquals(HttpStatus.BAD_REQUEST.toString(), response.statusCode().toString()),
-                () -> assertEquals("Validation error", response.type()),
-                () -> assertEquals("Incorrect method arguments provided", response.message()),
-                () -> assertThat(fullNameError).isIn(response.exceptionMessage()),
-                () -> assertThat(nameIsMandatory).isIn(response.exceptionMessage())
+                () -> assertEquals(ApiErrorType.VALIDATION_ERROR.getStatus().toString(), response.statusCode().toString()),
+                () -> assertEquals(ApiErrorType.VALIDATION_ERROR.getType(), response.type()),
+                () -> assertEquals(ApiErrorType.VALIDATION_ERROR.getMessage(), response.message()),
+                () -> assertNull(response.exceptionMessage())
         );
 
         verifyNoInteractions(service);
@@ -308,9 +292,9 @@ class ControllerTests extends BaseControllerTest {
     @Test
     void checkDeleteValidUser() throws Exception {
         //given
-        doNothing().when(service).deleteUser(any(Long.class));
-        //when
+        doNothing().when(service).deleteUser(1L);
 
+        //when
         steps.mvcDelete(1L)
                 .andExpect(status().isNoContent());
         //then
@@ -324,17 +308,18 @@ class ControllerTests extends BaseControllerTest {
         doThrow(new UserNotFoundException(1L)).when(service).deleteUser(1L);
         //when
         MvcResult result = steps.mvcDelete(1L)
-                .andExpect(i -> assertEquals(UserNotFoundException.class, Objects.requireNonNull(i.getResolvedException()).getClass()))
+                .andExpect(i -> assertInstanceOf(UserNotFoundException.class, i.getResolvedException()))
                 .andReturn();
 
         //then
         ExceptionDto dto = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
 
         assertAll(
-                () -> assertEquals(HttpStatus.NOT_FOUND.toString(), dto.statusCode().toString()),
-                () -> assertEquals("Not found", dto.type()),
-                () -> assertEquals("User was NOT found", dto.message()),
-                () -> assertEquals(dto.exceptionMessage().getFirst().message(), new UserNotFoundException(1L).getMessage())
+                () -> assertEquals(ApiErrorType.USER_NOT_FOUND.getStatus().toString(), dto.statusCode().toString()),
+                () -> assertEquals(ApiErrorType.USER_NOT_FOUND.getType(), dto.type()),
+                () -> assertEquals(ApiErrorType.USER_NOT_FOUND.getMessage(), dto.message()),
+                () -> assertEquals(new UserNotFoundException(1L).getId().toString(), dto.exceptionMessage().getFirst().error()),
+                () -> assertEquals(new UserNotFoundException(1L).getMessage(), dto.exceptionMessage().getFirst().message())
         );
 
         verify(service, times(1)).deleteUser(1L);
@@ -344,10 +329,21 @@ class ControllerTests extends BaseControllerTest {
     @Test
     void checkNoHandlerFound() throws Exception {
         //when
-        steps.mvcGet(Endpoints.DUMMY_ENDPOINT)
+        MvcResult result = steps.mvcGet(Endpoints.DUMMY_ENDPOINT)
                 .andExpect(status().isNotFound())
-                .andExpect(i -> assertInstanceOf(NoHandlerFoundException.class, i.getResolvedException()));
+                .andExpect(i -> assertInstanceOf(NoHandlerFoundException.class, i.getResolvedException()))
+                        .andReturn();
+
+        ExceptionDto exceptionDto = mapper.readValue(result.getResponse().getContentAsString(), ExceptionDto.class);
         //then
+
+        assertAll(
+                () -> assertEquals(ApiErrorType.NO_HANDLER_FOUND.getStatus().toString(), exceptionDto.statusCode().toString()),
+                () -> assertEquals(ApiErrorType.NO_HANDLER_FOUND.getType(), exceptionDto.type()),
+                () -> assertEquals(ApiErrorType.NO_HANDLER_FOUND.getMessage(), exceptionDto.message()),
+                () -> assertNull(exceptionDto.exceptionMessage())
+        );
+
         verifyNoInteractions(service);
     }
 

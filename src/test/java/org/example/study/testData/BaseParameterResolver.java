@@ -1,6 +1,6 @@
 package org.example.study.testData;
 
-import org.example.study.DTOs.BaseUser;
+import org.example.study.DTOs.UserDto;
 import org.example.study.StrategyEngine.DTOStrategies.InvalidAgeStrategy;
 import org.example.study.StrategyEngine.DTOStrategies.InvalidNameStrategy;
 import org.example.study.StrategyEngine.DTOStrategies.RandomDtoInvalidStrategy;
@@ -78,7 +78,7 @@ public abstract class BaseParameterResolver implements ParameterResolver {
             PageStrategyType.EMPTY, new EmptyStrategy()
     );
 
-    protected static final Map<UserDTOInvalidFlag, InvalidDTOGenerationStrategy<BaseUser>> invalidDtoStrategyMap = Map.of(
+    protected static final Map<UserDTOInvalidFlag, InvalidDTOGenerationStrategy<UserDto>> invalidDtoStrategyMap = Map.of(
             UserDTOInvalidFlag.FULL_NAME, new InvalidNameStrategy<>(),
             UserDTOInvalidFlag.AGE, new InvalidAgeStrategy<>(),
             UserDTOInvalidFlag.GENDER, new InvalidNameStrategy<>(),

@@ -4,7 +4,6 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.study.enums.Gender;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter

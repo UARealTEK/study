@@ -1,6 +1,5 @@
 package org.example.study.Util;
 
-import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.controller.UserController;
 import org.example.study.enums.Endpoints;
@@ -15,7 +14,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Map;
 
-import static org.example.study.testData.TestData.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WebMvcTest(UserController.class)
@@ -25,32 +23,18 @@ public abstract class BaseControllerTest extends BaseTest {
     protected MockMvc mvc;
     @MockitoBean
     protected UserService service;
-    protected PageResponseDTO<UserDto> users;
-    protected UserDto user;
-    protected UserDto invalidUser;
     protected final Endpoints usersEndpoint = Endpoints.USERS;
-    protected String usersJson;
-    protected String singleUserJson;
-    protected String singleInvalidUserJson;
     protected Steps steps;
 
     @BeforeEach
     protected void init() {
-        users = getValidUserDtoPage(5);
-        user = getSingleValidUser();
-        invalidUser = getSingleUserWithEmptyName();
-
-        usersJson = mapper.writeValueAsString(users);
-        singleUserJson = mapper.writeValueAsString(user);
-        singleInvalidUserJson = mapper.writeValueAsString(invalidUser);
-
         steps = new Steps(mvc, usersEndpoint);
     }
 
     @SuppressWarnings("InnerClassMayBeStatic")
     protected class Steps {
         private final MockMvc mvc;
-        private final Endpoints usersEndpoint; // having usersEndpoint here by default - weird
+        private final Endpoints usersEndpoint; // having usersEndpoint here by default - problematic if we want to test other endpoints in the future
 
         protected Steps(MockMvc mvc, Endpoints usersEndpoint) {
             this.mvc = mvc;

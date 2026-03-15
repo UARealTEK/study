@@ -3,12 +3,10 @@ package org.example.study.DTOs;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.study.enums.Gender;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @SuppressWarnings("unused")

@@ -3,7 +3,6 @@ package org.example.study.testData.DTOResolvers;
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
 import org.example.study.Annotations.RandomUserDtoList;
-import org.example.study.DTOs.BaseUser;
 import org.example.study.DTOs.UserDto;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
@@ -16,8 +15,6 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.util.List;
-
-import static org.example.study.testData.TestData.getSingleValidUser;
 
 public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
@@ -34,18 +31,19 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
         return isEligibleForList || isEligibleForSingle;
     }
 
-    //TODO: complete it
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         if (isAnnotatedWith(parameterContext, RandomInvalidUserDto.class)) {
             UserDTOInvalidFlag flag = parameterContext.findAnnotation(RandomInvalidUserDto.class)
                     .orElseThrow(() -> new ParameterResolutionException("Missing @RandomInvalidUserDto annotation"))
                     .invalidFlag();
-            InvalidDTOGenerationStrategy<?> strategy = invalidDtoStrategyMap.get(flag);
-            return strategy.generate();
+
+            InvalidDTOGenerationStrategy<UserDto> strategy = invalidDtoStrategyMap.get(flag);
+            return strategy.generate(UserDto.class);
         } else if (isAnnotatedWith(parameterContext, RandomUserDtoList.class)) {
             RandomInvalidUserDtoList annotation = parameterContext.findAnnotation(RandomInvalidUserDtoList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomInvalidUserDtoList annotation"));
+
             int count = annotation.count();
             PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
