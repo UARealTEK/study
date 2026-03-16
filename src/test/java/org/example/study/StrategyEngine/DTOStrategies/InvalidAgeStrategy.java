@@ -9,9 +9,8 @@ import static org.example.study.testData.TestData.getSingleValidForType;
 public class InvalidAgeStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
-    public<T extends BaseUser> T generate(Class<T> clazz) {
+    public<T extends BaseUser> T generate(Class<T> clazz) throws NoSuchFieldException {
         T dao = getSingleValidForType(clazz);
-        dao.setAge(0);
-        return dao;
+        return invalidateField(dao, dao.getClass().getField("age"));
     }
 }

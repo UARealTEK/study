@@ -18,7 +18,7 @@ public class UserDto extends BaseUser {
 
     @Override
     @NotNull(message = "Age should NOT be null")
-    @Min(1)
+    @Min(value = 0, message = "Age should be greater than or equal to 0")
     @Max(value = 200, message = "Age should be less than 200 :)")
     public Integer getAge() {
         return super.getAge();

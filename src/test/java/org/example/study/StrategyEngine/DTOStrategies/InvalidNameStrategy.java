@@ -9,9 +9,8 @@ import static org.example.study.testData.TestData.getSingleValidForType;
 public class InvalidNameStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
-    public <T extends BaseUser> T generate(Class<T> clazz) {
+    public <T extends BaseUser> T generate(Class<T> clazz) throws NoSuchFieldException {
         T dao = getSingleValidForType(clazz);
-        dao.setFullName("");
-        return dao;
+        return invalidateField(dao, dao.getClass().getField("fullName"));
     }
 }
