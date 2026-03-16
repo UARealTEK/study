@@ -4,6 +4,9 @@ import org.example.study.DTOs.BaseUser;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.example.study.testData.TestData.getSingleValidForType;
@@ -21,7 +24,7 @@ public class RandomDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
     private <T extends BaseUser> Field getRandomField(T obj) {
         //TODO: figure out why I really call .getSuperClass() to get all fields in the class hierarchy
-        Field[] fields = obj.getClass().getSuperclass().getDeclaredFields();
+        Field[] fields = getAllFields(obj.getClass());
         return fields[ThreadLocalRandom.current().nextInt(fields.length)];
     }
 
@@ -35,6 +38,17 @@ public class RandomDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
             default -> throw new IllegalArgumentException("Unexpected field: " + fieldName);
         }
         return obj;
+    }
+
+    private Field[] getAllFields(Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+
+        while (clazz != null && !clazz.getSuperclass().equals(Object.class)) {
+            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+            clazz = clazz.getSuperclass();
+        }
+
+        return fields.toArray(new Field[0]);
     }
 
 }
