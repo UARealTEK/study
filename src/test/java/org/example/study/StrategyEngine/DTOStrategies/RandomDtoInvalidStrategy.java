@@ -10,22 +10,22 @@ import static org.example.study.testData.TestData.getSingleValidForType;
 
 //TODO: invalidate fields based on existing constraints
 // for now - Im hardcoding it. But would be nice to invalidate them based on existing field constraints
-public class RandomDtoInvalidStrategy<T extends BaseUser> implements InvalidDTOGenerationStrategy<T> {
+public class RandomDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
 
     @Override
-    public T generate(Class<T> clazz) {
+    public <T extends BaseUser> T generate(Class<T> clazz) {
         T dao = getSingleValidForType(clazz);
         return setSelectedFieldValue(dao);
     }
 
-    private Field getRandomField(T obj) {
+    private <T extends BaseUser> Field getRandomField(T obj) {
         //TODO: figure out why I really call .getSuperClass() to get all fields in the class hierarchy
         Field[] fields = obj.getClass().getSuperclass().getDeclaredFields();
         return fields[ThreadLocalRandom.current().nextInt(fields.length)];
     }
 
-    private T setSelectedFieldValue(T obj) {
+    private <T extends BaseUser> T setSelectedFieldValue(T obj) {
         Field field = getRandomField(obj);
         String fieldName = field.getName();
         switch (fieldName) {

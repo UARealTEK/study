@@ -38,7 +38,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
                     .orElseThrow(() -> new ParameterResolutionException("Missing @RandomInvalidUserDto annotation"))
                     .invalidFlag();
 
-            InvalidDTOGenerationStrategy<UserDto> strategy = invalidDtoStrategyMap.get(flag);
+            InvalidDTOGenerationStrategy strategy = invalidDtoStrategyMap.get(flag);
             return strategy.generate(UserDto.class);
         } else if (isAnnotatedWith(parameterContext, RandomUserDtoList.class)) {
             RandomInvalidUserDtoList annotation = parameterContext.findAnnotation(RandomInvalidUserDtoList.class).

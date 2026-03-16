@@ -6,10 +6,10 @@ import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import static org.example.study.testData.TestData.getSingleValidForType;
 
 
-public class InvalidAgeStrategy<T extends BaseUser> implements InvalidDTOGenerationStrategy<T> {
+public class InvalidAgeStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
-    public T generate(Class<T> clazz) {
+    public<T extends BaseUser> T generate(Class<T> clazz) {
         T dao = getSingleValidForType(clazz);
         dao.setAge(0);
         return dao;
