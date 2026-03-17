@@ -22,7 +22,7 @@ import static org.example.study.util.Filtering.EntitySpecifications.byAllFields;
 
 @Slf4j
 @Service
-@CacheConfig("users")
+@CacheConfig(cacheNames = "users")
 public class UserService {
 
     private final UserRepository repository;
