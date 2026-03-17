@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
                 RandomUserEntityResolver.class
         }
 )
-public class ServiceTests extends BaseServiceTest {
+public class CRUDServiceTests extends BaseServiceTest {
 
     @Test
     void checkGetAllUsers(@RandomPageImplObj(strategy = PageStrategyType.RANDOM, totalElements = 15) Page<UserEntity> page) {
