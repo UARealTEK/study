@@ -1,13 +1,12 @@
 package org.example.study.DTOs.Entities;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 /*
 Represents an event. Meaning that user borrows a book at a certain time and returns it at another time
  */
+@Entity
 public class BorrowRecordEntity {
 
     @Id
@@ -15,10 +14,12 @@ public class BorrowRecordEntity {
     private Long id;
 
     @ManyToOne
-    private UserEntity userEntity;
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     @ManyToOne
-    private BookEntity bookEntity;
+    @JoinColumn(name = "book_id")
+    private BookEntity book;
     private LocalDateTime borrowedAt;
     private LocalDateTime returnedAt;
 }

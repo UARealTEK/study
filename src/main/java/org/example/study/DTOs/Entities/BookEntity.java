@@ -1,12 +1,15 @@
 package org.example.study.DTOs.Entities;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Getter
+@Setter
 public class BookEntity {
 
     @Id
@@ -15,8 +18,7 @@ public class BookEntity {
     String name;
     String author;
 
-    @OneToMany(mappedBy = "bookEntity")
-    List<BorrowRecordEntity> borrowRecords;
-
+    @OneToMany(mappedBy = "book")
+    List<BorrowRecordEntity> borrowRecords = new ArrayList<>();
 
 }

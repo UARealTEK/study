@@ -9,6 +9,7 @@ public enum ApiErrorType {
     ARGUMENT_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "Argument mismatch", "Incorrect body arguments"),
     NO_HANDLER_FOUND(HttpStatus.NOT_FOUND, "No handler found", "Endpoint does not exist"),
     CONSTRAINT_VIOLATION(HttpStatus.BAD_REQUEST, "Constraint violation", "Constraint validation failed"),
+    BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "Not found", "Book was not found"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", "Something went wrong on the server side");
 
     @Getter

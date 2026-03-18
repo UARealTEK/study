@@ -5,6 +5,7 @@ import lombok.*;
 import org.example.study.DTOs.BaseUser;
 import org.example.study.enums.Gender;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,8 +20,8 @@ public class UserEntity extends BaseUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "userEntity")
-    private List<BorrowRecordEntity> borrowRecords;
+    @OneToMany(mappedBy = "user")
+    private List<BorrowRecordEntity> borrowRecords = new ArrayList<>();
 
     public UserEntity(Long id, Integer age, String fullName, Gender gender) {
         this.id = id;
