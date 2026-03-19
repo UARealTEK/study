@@ -7,10 +7,11 @@ import org.example.study.repository.BookRepository;
 import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-//TODO: create new Exceptions and probably new RestExceptionAdvice ?
+@SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -22,27 +23,45 @@ public class BookService {
     // May be added in further iterations
     public List<BookDto> findAllBooks() {
         List<BookEntity> bookEntities = bookRepository.findAll();
-        return bookEntities.stream().map(mapper::toBookDto).toList();
+        return bookEntities.stream().map(mapper::toDto).toList();
     }
 
     //TODO: throw an exception instead of returning null
     public BookDto findById(Long id) {
         BookEntity entity = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
-        return mapper.toBookDto(entity);
+        return mapper.toDto(entity);
+    }
+
+    public BookEntity findEntityById(Long id) {
+        return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
     }
 
     //TODO: think if I really need to return here BookDto ?
     // if YES - can I return the same stuff that came in to this service?
     public BookDto saveBook(BookDto dto) {
         BookEntity userEntity = bookRepository.save(mapper.toEntity(dto));
-        return mapper.toBookDto(userEntity);
+        return mapper.toDto(userEntity);
     }
 
+    @Transactional
     public BookDto updateBook(Long bookId, BookDto bookBody) {
         BookEntity entity = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
         updateBookData(entity, bookBody);
-        bookRepository.save(entity);
-        return mapper.toBookDto(entity);
+        return mapper.toDto(entity);
+    }
+
+    @Transactional
+    public BookDto patchBook(Long bookId, BookDto bookBody) {
+        BookEntity entity = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        patchBookData(entity, bookBody);
+        return mapper.toDto(entity);
+    }
+
+    public void deleteBook(Long bookId) {
+        if (!bookRepository.existsById(bookId)) {
+            throw new BookNotFoundException(bookId);
+        }
+        bookRepository.deleteById(bookId);
     }
 
     /*
@@ -53,7 +72,15 @@ public class BookService {
         bookEntity.setName(bookBody.getName());
     }
 
+    private void patchBookData(BookEntity bookEntity, BookDto bookBody) {
+        if (bookBody.getAuthor() != null) {
+            bookEntity.setAuthor(bookBody.getAuthor());
+        }
 
+        if (bookBody.getName() != null) {
+            bookEntity.setName(bookBody.getName());
+        }
+    }
 
 
 }

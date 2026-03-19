@@ -107,7 +107,7 @@ public class CRUDServiceTests extends BaseServiceTest {
 
         //then
         UserNotFoundException ex = assertThrows(UserNotFoundException.class,
-                () -> service.getUserByID(1L));
+                () -> service.findById(1L));
 
         assertEquals(ex.getMessage(), new UserNotFoundException(1L).getMessage());
         verify(repository, times(1)).findById(1L);
@@ -118,7 +118,7 @@ public class CRUDServiceTests extends BaseServiceTest {
     void checkGetUser(@RandomUserEntity UserEntity entity) {
         when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
 
-        UserDto dto = service.getUserByID(entity.getId());
+        UserDto dto = service.findById(entity.getId());
 
         System.out.println(entity);
         System.out.println(dto);
@@ -136,7 +136,7 @@ public class CRUDServiceTests extends BaseServiceTest {
         //given
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         when(repository.save(any(UserEntity.class))).thenReturn(entity);
-        UserDto dto = userMapper.toUserDto(entity);
+        UserDto dto = userMapper.toDto(entity);
 
         //when
         UserDto userDto = service.saveUser(dto);

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.example.study.DTOs.UserDto.copyOf;
+import static org.example.study.DTOs.UserDto.copy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -112,7 +112,7 @@ class CRUDControllerTests extends BaseControllerTest {
     @Test
     void testFindSingleValidUser(@RandomUserDto UserDto userDto) throws Exception {
         //given
-        when(service.getUserByID(any(Long.class))).thenReturn(userDto);
+        when(service.findById(any(Long.class))).thenReturn(userDto);
 
         //when
         MvcResult result = steps.mvcGet(1L)
@@ -122,7 +122,7 @@ class CRUDControllerTests extends BaseControllerTest {
         UserDto resultDto = mapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
 
         //then
-        verify(service, times(1)).getUserByID(any(Long.class));
+        verify(service, times(1)).findById(any(Long.class));
         verifyNoMoreInteractions(service);
         assertThat(resultDto)
                 .usingRecursiveComparison()
@@ -134,7 +134,7 @@ class CRUDControllerTests extends BaseControllerTest {
         //given
         doThrow(new UserNotFoundException(99L))
                 .when(service)
-                .getUserByID(99L);
+                .findById(99L);
         //when
 
         MvcResult result = steps.mvcGet(99L)
@@ -151,7 +151,7 @@ class CRUDControllerTests extends BaseControllerTest {
                 () -> assertEquals(new UserNotFoundException(99L).getMessage(), exceptionDto.exceptionMessage().getFirst().message())
         );
 
-        verify(service, times(1)).getUserByID(99L);
+        verify(service, times(1)).findById(99L);
     }
 
     @Test
@@ -249,7 +249,7 @@ class CRUDControllerTests extends BaseControllerTest {
 
     @Test
     void checkValidUpdateUser(@RandomUserDto UserDto dto) throws Exception {
-        UserDto updatedUser = copyOf(dto);
+        UserDto updatedUser = copy(dto);
         updatedUser.setAge(dto.getAge() + 10);
 
         when(service.updateUser(any(UserDto.class), eq(100L))).thenReturn(updatedUser);

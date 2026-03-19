@@ -12,5 +12,5 @@ public interface BookMapper {
     @Mapping(target = "id", ignore = true)
     BookEntity toEntity(BookDto dto);
 
-    BookDto toBookDto(BookEntity dto);
+    BookDto toDto(BookEntity dto);
 }

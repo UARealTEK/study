@@ -5,7 +5,6 @@ import lombok.*;
 import org.example.study.enums.Gender;
 
 @NoArgsConstructor
-@Getter
 @Setter
 @ToString
 public class UserDto extends BaseUser {
@@ -36,7 +35,7 @@ public class UserDto extends BaseUser {
         return super.getGender();
     }
 
-    public static UserDto copyOf(UserDto dtoToCopy) {
+    public static UserDto copy(UserDto dtoToCopy) {
         return new UserDto(dtoToCopy.getAge(),dtoToCopy.getFullName(),dtoToCopy.getGender());
     }
 }

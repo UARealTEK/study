@@ -14,7 +14,7 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     UserEntity toEntity(UserDto dto);
 
-    UserDto toUserDto(UserEntity dto);
+    UserDto toDto(UserEntity dto);
 
     default <T> PageResponseDTO<T> toPageResponse(Page<T> page){
         return new PageResponseDTO<>(

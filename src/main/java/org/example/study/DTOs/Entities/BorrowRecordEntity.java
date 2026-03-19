@@ -1,12 +1,19 @@
 package org.example.study.DTOs.Entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 /*
 Represents an event. Meaning that user borrows a book at a certain time and returns it at another time
  */
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@SuppressWarnings("JpaDataSourceORMInspection")
 public class BorrowRecordEntity {
 
     @Id

@@ -2,6 +2,7 @@ package org.example.study.util.Exceptions.ExceptionHandler;
 
 import jakarta.validation.ConstraintViolationException;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
+import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordExistsException;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,6 +20,12 @@ public class ExceptionWorker {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleBodyException(MethodArgumentNotValidException e) {
         ApiErrorType errorType = ApiErrorType.VALIDATION_ERROR;
+        return exceptionResponseBuilder(errorType, null);
+    }
+
+    @ExceptionHandler(BorrowRecordExistsException.class)
+    public ResponseEntity<ExceptionDto> handleBorrowRecordNotFoundException(BorrowRecordExistsException e) {
+        ApiErrorType errorType = ApiErrorType.BORROW_RECORD_NOT_FOUND;
         return exceptionResponseBuilder(errorType, null);
     }
 
