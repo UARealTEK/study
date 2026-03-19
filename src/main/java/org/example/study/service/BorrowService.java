@@ -34,6 +34,7 @@ public class BorrowService {
     }
 
     //TODO: add DB constraint ? to avoid race conditions
+    // TODO: Read more about @Transactional
     //CREATE UNIQUE INDEX unique_active_borrow
     //ON borrow_record (book_id)
     //WHERE returned_at IS NULL;
