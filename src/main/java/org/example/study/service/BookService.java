@@ -26,7 +26,6 @@ public class BookService {
         return bookEntities.stream().map(mapper::toDto).toList();
     }
 
-    //TODO: throw an exception instead of returning null
     public BookDto findById(Long id) {
         BookEntity entity = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
         return mapper.toDto(entity);

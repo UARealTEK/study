@@ -5,7 +5,7 @@ import org.example.study.enums.Gender;
 import org.springframework.data.jpa.domain.Specification;
 
 @SuppressWarnings("unused")
-public class EntitySpecifications {
+public class UserEntitySpecification {
 
     public static Specification<UserEntity> byAge(Integer age) {
         return (root,criteria,builder) ->

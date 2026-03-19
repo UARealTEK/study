@@ -18,7 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.example.study.util.Filtering.EntitySpecifications.byAllFields;
+import static org.example.study.util.Filtering.UserEntitySpecification.byAllFields;
 
 @Slf4j
 @Service

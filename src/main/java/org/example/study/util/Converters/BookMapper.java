@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 
 @SuppressWarnings("unused")
 @Mapper(componentModel = "spring")
-public interface BookMapper {
+public interface BookMapper extends BaseMapper {
 
     @Mapping(target = "id", ignore = true)
     BookEntity toEntity(BookDto dto);
