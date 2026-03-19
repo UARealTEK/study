@@ -33,13 +33,6 @@ public class BorrowService {
         return borrowRecordMapper.toPageResponse(pageDto);
     }
 
-    private BorrowRecordEntity getActiveBorrowOrThrow(Long userId, Long bookId) {
-        UserEntity userEntity = userService.findEntityById(userId);
-        BookEntity bookEntity = bookService.findEntityById(bookId);
-        return borrowRecordsRepository.findByUserAndBookAndReturnedAtIsNull(userEntity, bookEntity)
-                .orElseThrow(BorrowRecordDoesntExistsException::new);
-    }
-
     //TODO: add DB constraint ? to avoid race conditions
     //CREATE UNIQUE INDEX unique_active_borrow
     //ON borrow_record (book_id)
@@ -72,6 +65,13 @@ public class BorrowService {
 
     private boolean isBookBorrowed(BookEntity book) {
         return borrowRecordsRepository.existsByBookAndReturnedAtIsNull(book);
+    }
+
+    private BorrowRecordEntity getActiveBorrowOrThrow(Long userId, Long bookId) {
+        UserEntity userEntity = userService.findEntityById(userId);
+        BookEntity bookEntity = bookService.findEntityById(bookId);
+        return borrowRecordsRepository.findByUserAndBookAndReturnedAtIsNull(userEntity, bookEntity)
+                .orElseThrow(BorrowRecordDoesntExistsException::new);
     }
 
 }
