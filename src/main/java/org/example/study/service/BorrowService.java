@@ -10,6 +10,7 @@ import org.example.study.repository.BorrowRecordsRepository;
 import org.example.study.util.Converters.BorrowRecordMapper;
 import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordDoesntExistsException;
 import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordExistsException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,28 +34,24 @@ public class BorrowService {
         return borrowRecordMapper.toPageResponse(pageDto);
     }
 
-    //TODO: add DB constraint ? to avoid race conditions
-    // TODO: Read more about @Transactional
-    //CREATE UNIQUE INDEX unique_active_borrow
-    //ON borrow_record (book_id)
-    //WHERE returned_at IS NULL;
     @Transactional
     public BorrowRecordResponseDto borrowBook(Long bookId, Long userID) {
-
         UserEntity user = userService.findEntityById(userID);
         BookEntity book = bookService.findEntityById(bookId);
 
-        if (isBookBorrowed(book)) {
+        try {
+            BorrowRecordEntity entity = borrowRecordsRepository.save(
+                    BorrowRecordEntity.builder()
+                            .user(user)
+                            .book(book)
+                            .borrowedAt(now())
+                            .build()
+            );
+
+            return borrowRecordMapper.toDto(entity);
+        } catch (DataIntegrityViolationException e) {
             throw new BorrowRecordExistsException(userID, bookId);
         }
-
-        BorrowRecordEntity entity = borrowRecordsRepository.save(BorrowRecordEntity.builder()
-                .user(user)
-                .book(book)
-                .borrowedAt(now())
-                .build());
-
-        return borrowRecordMapper.toDto(entity);
     }
 
     @Transactional
@@ -64,8 +61,9 @@ public class BorrowService {
         return borrowRecordMapper.toDto(borrowRecordEntity);
     }
 
-    private boolean isBookBorrowed(BookEntity book) {
-        return borrowRecordsRepository.existsByBookAndReturnedAtIsNull(book);
+    public BorrowRecordResponseDto getRecordById(Long id) {
+       return borrowRecordMapper.toDto(borrowRecordsRepository.findById(id)
+               .orElseThrow(BorrowRecordDoesntExistsException::new));
     }
 
     private BorrowRecordEntity getActiveBorrowOrThrow(Long userId, Long bookId) {

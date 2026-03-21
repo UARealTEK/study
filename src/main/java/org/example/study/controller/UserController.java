@@ -2,6 +2,7 @@ package org.example.study.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserPatchDto;
 import org.example.study.enums.Gender;
@@ -22,16 +23,17 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @SuppressWarnings("unused")
+
+//TODO:
+// - Get All books borrowed by user:
+// GET /users/{id}/borrows
 @Validated
 @RestController
 @RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
 
     private final UserService service;
-
-    public UserController(UserService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public PageResponseDTO<UserDto> searchUsers(@PageableDefault(size = 5, sort = "age") Pageable page,
