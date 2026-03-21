@@ -40,8 +40,4 @@ public class BorrowController {
     public BorrowRecordResponseDto getBorrowRecordById(@PathVariable Long id) {
         return borrowService.getRecordById(id);
     }
-
-
-
-
 }
