@@ -2,6 +2,7 @@ package org.example.study.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.example.study.DTOs.BorrowRecordRequestDto;
 import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.PageResponseDTO;
@@ -31,13 +32,13 @@ public class BorrowController {
         return borrowService.returnBook(requestDto.bookId(), requestDto.userId());
     }
 
-    @GetMapping
+    @GetMapping("/listAll")
     public PageResponseDTO<BorrowRecordResponseDto> getAllRecords(Pageable pageable) {
         return borrowService.getAllBorrowRecords(pageable);
     }
 
     @GetMapping("/{id}")
-    public BorrowRecordResponseDto getBorrowRecordById(@PathVariable Long id) {
+    public BorrowRecordResponseDto getBorrowRecordById(@PathVariable @NonNull Long id) {
         return borrowService.getRecordById(id);
     }
 }

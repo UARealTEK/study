@@ -36,14 +36,14 @@ public class UserService {
     public PageResponseDTO<UserDto> getAllUsers(Pageable pageable, Integer age, String fullName, Gender gender) {
         Specification<UserEntity> spec = byAllFields(age,fullName,gender);
         Page<UserEntity> page = repository.findAll(spec, pageable);
-        Page<UserDto> userDtoPage = page.map(mapper::toDto);
+        Page<UserDto> userDtoPage = page.map(mapper::toUserDto);
         return mapper.toPageResponse(userDtoPage);
     }
 
     @Cacheable(key = "#id")
     public UserDto findById(Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        return mapper.toDto(entity);
+        return mapper.toUserDto(entity);
     }
 
     public UserEntity findEntityById(Long id) {
@@ -52,7 +52,7 @@ public class UserService {
 
     public UserDto saveUser(UserDto dto) {
         UserEntity entity = repository.save(mapper.toEntity(dto));
-        return mapper.toDto(entity);
+        return mapper.toUserDto(entity);
     }
 
     @CacheEvict(key = "#id")
@@ -60,7 +60,7 @@ public class UserService {
     public UserDto updateUser(UserDto body, Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         updateUserData(entity, body);
-        return mapper.toDto(entity);
+        return mapper.toUserDto(entity);
     }
 
     @CacheEvict(key = "#id")
@@ -68,7 +68,7 @@ public class UserService {
     public UserDto patchUser(UserPatchDto body, Long id) {
         UserEntity entity = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         patchUserData(entity, body);
-        return mapper.toDto(entity);
+        return mapper.toUserDto(entity);
     }
 
     @CacheEvict(key = "#id")

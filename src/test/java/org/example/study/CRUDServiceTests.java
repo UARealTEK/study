@@ -136,7 +136,7 @@ public class CRUDServiceTests extends BaseServiceTest {
         //given
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         when(repository.save(any(UserEntity.class))).thenReturn(entity);
-        UserDto dto = userMapper.toDto(entity);
+        UserDto dto = userMapper.toUserDto(entity);
 
         //when
         UserDto userDto = service.saveUser(dto);

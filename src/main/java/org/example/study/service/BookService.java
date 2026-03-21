@@ -2,28 +2,37 @@ package org.example.study.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.study.DTOs.BookDto;
+import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.Entities.BookEntity;
+import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.repository.BookRepository;
 import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
 public class BookService {
 
-    private BookRepository bookRepository;
+    private final BorrowService borrowService;
+    private final BookRepository bookRepository;
     private final BookMapper mapper;
 
     //TODO: for now - Im not doing Working with specifications / Caches / Specific ResponseDTOs which include Page<T> here.
     // May be added in further iterations
-    public List<BookDto> findAllBooks() {
-        List<BookEntity> bookEntities = bookRepository.findAll();
-        return bookEntities.stream().map(mapper::toDto).toList();
+    public PageResponseDTO<BookDto> findAllBooks(Pageable pageable) {
+        Page<BookEntity> bookEntities = bookRepository.findAll(pageable);
+        Page<BookDto> bookDtoPage = bookEntities.map(mapper::toDto);
+        return mapper.toPageResponse(bookDtoPage);
+    }
+
+    public PageResponseDTO<BookDto> findAvailableBooks(Pageable pageable) {
+        PageResponseDTO<BorrowRecordResponseDto> bookDtoPage = borrowService.getActiveBorrowRecords(pageable);
+        return mapper.convertData(bookDtoPage, BorrowRecordResponseDto::getBook);
     }
 
     public BookDto findById(Long id) {

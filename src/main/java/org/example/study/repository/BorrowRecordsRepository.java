@@ -3,6 +3,8 @@ package org.example.study.repository;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.Entities.BorrowRecordEntity;
 import org.example.study.DTOs.Entities.UserEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +20,6 @@ public interface BorrowRecordsRepository extends JpaRepository<BorrowRecordEntit
     boolean existsByUserAndBook(UserEntity user, BookEntity book);
 
     Optional<BorrowRecordEntity> findByUserAndBookAndReturnedAtIsNull(UserEntity user, BookEntity book);
+
+    Page<BorrowRecordEntity> findByReturnedAtIsNull(Pageable pageable);
 }
