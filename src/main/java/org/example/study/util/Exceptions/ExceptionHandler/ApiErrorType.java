@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ApiErrorType {
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "Validation error", "Incorrect body parameters provided"),
+    MISSING_REQUEST_PARAM(HttpStatus.NOT_FOUND, "Validation error", "Missing request Parameters which are required"),
     BORROW_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "Not Found", "Borrow Record for the specified parameters was not found"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "Not found", "User was NOT found"),
     ARGUMENT_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "Argument mismatch", "Incorrect body arguments"),

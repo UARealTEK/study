@@ -22,7 +22,7 @@ public class LibraryController {
         return bookService.saveBook(bookDto);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public BookDto getSingleBook(
              @RequestParam String bookName,
              @RequestParam String bookAuthor

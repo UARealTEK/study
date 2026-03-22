@@ -7,6 +7,7 @@ import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -86,6 +87,13 @@ public class ExceptionWorker {
     public ResponseEntity<ExceptionDto> handleUnknown(Exception e) {
         ApiErrorType errorType = ApiErrorType.INTERNAL_SERVER_ERROR;
         return exceptionResponseBuilder(errorType, null);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ExceptionDto> handleMissingParams(MissingServletRequestParameterException e) {
+        ApiErrorType errorType = ApiErrorType.MISSING_REQUEST_PARAM;
+        return exceptionResponseBuilder(errorType,
+                List.of(new FieldErrorDto(e.getParameterName(), e.getMessage())));
     }
 
     private ResponseEntity<ExceptionDto> exceptionResponseBuilder(ApiErrorType errorType, List<FieldErrorDto> list) {
