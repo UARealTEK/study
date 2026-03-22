@@ -50,10 +50,10 @@ public class BookService {
         return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
     }
 
-    public BookDto findByNameAndAuthor(BookDto bookDto) {
-        return bookRepository.findByNameAndAuthor(bookDto.getName(), bookDto.getAuthor())
+    public BookDto findByNameAndAuthor(String bookName, String bookAuthor) {
+        return bookRepository.findByNameAndAuthor(bookName, bookAuthor)
                 .map(mapper::toDto)
-                .orElseThrow(() -> new BookNotFoundException(bookDto.getName(), bookDto.getAuthor()));
+                .orElseThrow(() -> new BookNotFoundException(bookName, bookAuthor));
     }
 
     public BookDto saveBook(BookDto dto) {

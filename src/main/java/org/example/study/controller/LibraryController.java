@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+// TODO: think about creating specification for books. So getSingleBooks will be redundant
 @RestController
 @RequestMapping("/library")
 @AllArgsConstructor
@@ -22,8 +23,11 @@ public class LibraryController {
     }
 
     @GetMapping
-    public BookDto getSingleBook(@Valid @RequestBody BookDto bookDto) {
-        return bookService.findByNameAndAuthor(bookDto);
+    public BookDto getSingleBook(
+             @RequestParam String bookName,
+             @RequestParam String bookAuthor
+    ) {
+        return bookService.findByNameAndAuthor(bookName,bookAuthor);
     }
 
     @GetMapping(value = {"/", ""})
