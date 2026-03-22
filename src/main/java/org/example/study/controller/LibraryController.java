@@ -16,7 +16,7 @@ public class LibraryController {
 
     private final BookService bookService;
 
-    @PostMapping
+    @PostMapping(value = {"/", ""})
     public BookDto addBook(@Valid @RequestBody BookDto bookDto) {
         return bookService.saveBook(bookDto);
     }
