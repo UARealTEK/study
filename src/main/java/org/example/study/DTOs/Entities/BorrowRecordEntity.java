@@ -17,7 +17,7 @@ Represents an event. Meaning that user borrows a book at a certain time and retu
 public class BorrowRecordEntity {
 
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
