@@ -1,13 +1,14 @@
 # Study Project
 
 ## Purpose
-This is a pet project designed to train and demonstrate skills in Java development and testing, with a strong emphasis on automated testing practices. As an aspiring Automation QA (AQA) Engineer, the project prioritizes comprehensive testing strategies, including unit, integration, and API testing, while also covering backend development. It serves as a practical exercise in building a RESTful API for a library management system, focusing on CRUD operations and domain-specific logic for book borrowing. Note: While development skills are valuable, the AQA role is highlighted here due to its specialized focus on quality assurance and testing automation.
+Pet project to learn Java and testing. Builds a library API with CRUD operations and book borrowing logic. Focuses on AQA skills in automated testing.
 
 ## Tech Stack
 - **Java 21**: The programming language used for development.
 - **Spring Boot 4.0.1**: Framework for building the REST API, providing dependency injection, web MVC, and data JPA.
 - **Spring Data JPA**: For ORM and database interactions.
 - **MySQL**: Primary database for production (with MySQL Connector/J).
+- **H2 Database**: In-memory database for testing.
 - **Lombok**: Reduces boilerplate code with annotations.
 - **MapStruct**: For object mapping between DTOs and entities.
 - **Hibernate Validator**: For bean validation.
@@ -17,6 +18,30 @@ This is a pet project designed to train and demonstrate skills in Java developme
 - **RestAssured**: For API integration testing.
 - **Allure**: For generating detailed test reports.
 - **Spring RestDocs**: For API documentation generation.
+
+## Database Setup
+This project requires a local MySQL database to run. Set up MySQL and create the following schema:
+
+### Tables
+- **users**
+  - `id` BIGINT PRIMARY KEY AUTO_INCREMENT
+  - `full_name` VARCHAR(255) NOT NULL
+  - `age` INT NOT NULL
+  - `gender` VARCHAR(50) NOT NULL
+
+- **books**
+  - `id` BIGINT PRIMARY KEY AUTO_INCREMENT
+  - `name` VARCHAR(255) NOT NULL
+  - `author` VARCHAR(255) NOT NULL
+
+- **borrow_records**
+  - `id` BIGINT PRIMARY KEY AUTO_INCREMENT
+  - `user_id` BIGINT NOT NULL, FOREIGN KEY REFERENCES users(id)
+  - `book_id` BIGINT NOT NULL, FOREIGN KEY REFERENCES books(id)
+  - `borrowed_at` DATETIME NOT NULL
+  - `returned_at` DATETIME NULL
+
+Update `application.properties` or `application.yml` with your MySQL connection details (e.g., URL, username, password).
 
 ## Testing Stack
 The testing stack is a core component of this project, reflecting the focus on AQA practices:
