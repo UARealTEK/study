@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 RandomInvalidUserDtoResolver.class
         }
 )
-class CRUDControllerTests extends BaseControllerTest {
+class CRUDUserControllerTests extends BaseControllerTest {
 
     @Test
     void testFindAllUsers(@RandomPageResponseDto(totalElements = 5) PageResponseDTO<UserDto> dto) throws Exception {
