@@ -22,4 +22,6 @@ public interface BorrowRecordsRepository extends JpaRepository<BorrowRecordEntit
     Optional<BorrowRecordEntity> findByUserAndBookAndReturnedAtIsNull(UserEntity user, BookEntity book);
 
     Page<BorrowRecordEntity> findByReturnedAtIsNull(Pageable pageable);
+
+    Page<BorrowRecordEntity> findByReturnedAtIsNotNull(Pageable pageable);
 }

@@ -31,8 +31,13 @@ public class BookService {
     }
 
     public PageResponseDTO<BookDto> findAvailableBooks(Pageable pageable) {
-        PageResponseDTO<BorrowRecordResponseDto> bookDtoPage = borrowService.getActiveBorrowRecords(pageable);
+        PageResponseDTO<BorrowRecordResponseDto> bookDtoPage = borrowService.getAvailableBooksRecords(pageable);
         return mapper.convertData(bookDtoPage, BorrowRecordResponseDto::getBook);
+    }
+
+    public PageResponseDTO<BookDto> findBorrowedBooks(Pageable pageable) {
+        PageResponseDTO<BorrowRecordResponseDto> records = borrowService.getBorrowedBooksRecords(pageable);
+        return mapper.convertData(records, BorrowRecordResponseDto::getBook);
     }
 
     public BookDto findById(Long id) {
@@ -44,8 +49,8 @@ public class BookService {
         return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
     }
 
-    //TODO: think if I really need to return here BookDto ?
-    // if YES - can I return the same stuff that came in to this service?
+    //TODO: Do I have to check the registry for an existing book?
+    // I think I do. Add it
     public BookDto saveBook(BookDto dto) {
         BookEntity userEntity = bookRepository.save(mapper.toEntity(dto));
         return mapper.toDto(userEntity);

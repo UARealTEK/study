@@ -34,8 +34,14 @@ public class BorrowService {
         return borrowRecordMapper.toPageResponse(pageDto);
     }
 
-    public PageResponseDTO<BorrowRecordResponseDto> getActiveBorrowRecords(Pageable pageable) {
+    public PageResponseDTO<BorrowRecordResponseDto> getAvailableBooksRecords(Pageable pageable) {
         Page<BorrowRecordEntity> page = borrowRecordsRepository.findByReturnedAtIsNull(pageable);
+        Page<BorrowRecordResponseDto> pageDto = page.map(borrowRecordMapper::toDto);
+        return borrowRecordMapper.toPageResponse(pageDto);
+    }
+
+    public PageResponseDTO<BorrowRecordResponseDto> getBorrowedBooksRecords(Pageable pageable) {
+        Page<BorrowRecordEntity> page = borrowRecordsRepository.findByReturnedAtIsNotNull(pageable);
         Page<BorrowRecordResponseDto> pageDto = page.map(borrowRecordMapper::toDto);
         return borrowRecordMapper.toPageResponse(pageDto);
     }
