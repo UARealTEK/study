@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
@@ -16,4 +18,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     @Query("SELECT b FROM BookEntity b WHERE b.id IN (SELECT br.book.id FROM BorrowRecordEntity br WHERE br.returnedAt IS NULL)")
     Page<BookEntity> findBorrowedBooks(Pageable pageable);
 
+    boolean existsByNameAndAuthor(String name, String author);
+
+    Optional<BookEntity> findByNameAndAuthor(String name, String author);
 }

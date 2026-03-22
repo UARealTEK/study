@@ -7,6 +7,7 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.repository.BookRepository;
 import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
+import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,11 +50,17 @@ public class BookService {
         return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
     }
 
-    //TODO: Do I have to check the registry for an existing book?
-    // I think I do. Add it
+    public BookDto findByNameAndAuthor(BookDto bookDto) {
+        return bookRepository.findByNameAndAuthor(bookDto.getName(), bookDto.getAuthor())
+                .map(mapper::toDto)
+                .orElseThrow(() -> new BookNotFoundException(bookDto.getName(), bookDto.getAuthor()));
+    }
+
     public BookDto saveBook(BookDto dto) {
-        BookEntity userEntity = bookRepository.save(mapper.toEntity(dto));
-        return mapper.toDto(userEntity);
+        if (isBookExists(dto)) {
+            throw new DuplicateBookException(dto.getName(), dto.getAuthor());
+        }
+        return mapper.toDto(bookRepository.save(mapper.toEntity(dto)));
     }
 
     @Transactional
@@ -93,6 +100,10 @@ public class BookService {
         if (bookBody.getName() != null) {
             bookEntity.setName(bookBody.getName());
         }
+    }
+
+    private boolean isBookExists(BookDto bookDto) {
+        return bookRepository.existsByNameAndAuthor(bookDto.getName(), bookDto.getAuthor());
     }
 
 

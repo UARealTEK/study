@@ -3,6 +3,7 @@ package org.example.study.util.Exceptions.ExceptionHandler;
 import jakarta.validation.ConstraintViolationException;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordExistsException;
+import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -71,7 +72,13 @@ public class ExceptionWorker {
 
     @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<ExceptionDto> handleBookNotFoundException(BookNotFoundException e) {
-        ApiErrorType errorType = ApiErrorType.INTERNAL_SERVER_ERROR;
+        ApiErrorType errorType = ApiErrorType.BOOK_NOT_FOUND;
+        return exceptionResponseBuilder(errorType, null);
+    }
+
+    @ExceptionHandler(DuplicateBookException.class)
+    public ResponseEntity<ExceptionDto> handleDuplicateBookException(DuplicateBookException e) {
+        ApiErrorType errorType = ApiErrorType.DUPLICATE_BOOK;
         return exceptionResponseBuilder(errorType, null);
     }
 

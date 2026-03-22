@@ -21,6 +21,11 @@ public class LibraryController {
         return bookService.saveBook(bookDto);
     }
 
+    @GetMapping
+    public BookDto getSingleBook(@Valid @RequestBody BookDto bookDto) {
+        return bookService.findByNameAndAuthor(bookDto);
+    }
+
     @GetMapping(value = {"/", ""})
     public PageResponseDTO<BookDto> getAllBooks(@PageableDefault(size = 5) Pageable pageable) {
         return bookService.findAllBooks(pageable);
