@@ -1,5 +1,6 @@
 package org.example.study;
 
+import io.qameta.allure.*;
 import org.example.study.Annotations.*;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
@@ -23,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Epic("User Management")
+@Feature("User Service Logic")
 @Unit
 @ExtendWith(
         {
@@ -35,6 +38,8 @@ import static org.mockito.Mockito.*;
 public class CRUDUserServiceTests extends BaseServiceTest {
 
     @Test
+    @Story("Retrieve All Users")
+    @Description("Should retrieve all users from repository")
     void checkGetAllUsers(@RandomPageImplObj(strategy = PageStrategyType.RANDOM, totalElements = 15) Page<UserEntity> page) {
         //given
         Pageable pageable = page.getPageable();
@@ -58,6 +63,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Filtered Retrieval")
+    @Description("Should retrieve users with filters")
     void checkGetAllUsersParametrized(@RandomPageImplObj(strategy = PageStrategyType.SAME, totalElements = 10) Page<UserEntity> page) {
         //given
         Pageable pageable = page.getPageable();
@@ -84,6 +91,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Empty Results")
+    @Description("Should handle empty repository")
     void checkGetAllUsersWhenRepositoryIsEmpty(@RandomPageImplObj(strategy = PageStrategyType.EMPTY) Page<UserEntity> page) {
         Pageable pageable = page.getPageable();
 
@@ -101,6 +110,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Error Handling")
+    @Description("Should throw exception for non-existent user")
     void checkUserNotFoundException() {
         //given
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
@@ -115,6 +126,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Retrieve Single User")
+    @Description("Should retrieve a single user")
     void checkGetUser(@RandomUserEntity UserEntity entity) {
         when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
 
@@ -132,6 +145,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Create User")
+    @Description("Should save a new user")
     void checkSaveUser(@RandomUserEntity UserEntity entity) {
         //given
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
@@ -160,6 +175,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Delete User")
+    @Description("Should delete an existing user")
     void checkDeleteUser(@RandomUserEntity UserEntity entity) {
         //given
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
@@ -181,6 +198,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Error Handling")
+    @Description("Should handle deletion of non-existent user")
     void checkInvalidDelete() {
         //given
         when(repository.existsById(anyLong())).thenReturn(false);
@@ -196,6 +215,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Update User")
+    @Description("Should update an existing user")
     void checkUpdateUser(@RandomUserDto UserDto dto, @RandomUserEntity UserEntity entity) {
         when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
 
@@ -215,6 +236,8 @@ public class CRUDUserServiceTests extends BaseServiceTest {
     }
 
     @Test
+    @Story("Error Handling")
+    @Description("Should handle update of non-existent user")
     void checkInvalidUpdate(@RandomUserDto UserDto dto, @RandomUserEntity UserEntity entity) {
         //given
         when(repository.findById(anyLong())).thenReturn(Optional.empty());

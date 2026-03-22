@@ -21,7 +21,7 @@ public class LibraryController {
         return bookService.saveBook(bookDto);
     }
 
-    @GetMapping("/all")
+    @GetMapping(value = {"/", ""})
     public PageResponseDTO<BookDto> getAllBooks(@PageableDefault(size = 5) Pageable pageable) {
         return bookService.findAllBooks(pageable);
     }

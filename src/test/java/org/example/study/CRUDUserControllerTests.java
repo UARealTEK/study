@@ -1,5 +1,6 @@
 package org.example.study;
 
+import io.qameta.allure.*;
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.Annotations.RandomUserDto;
@@ -38,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 //TODO: adapt using @Nested for better structure of tests. For example, group all tests related to GET /users/{id} in one nested class and so on
 // TODO: mark tests accordingly to the Allure report to make them pretty
+@Epic("User Management")
+@Feature("User CRUD Operations")
 @Smoke
 @ExtendWith(
         {
@@ -49,6 +52,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CRUDUserControllerTests extends BaseControllerTest {
 
     @Test
+    @Story("Retrieve All Users")
+    @Description("Should return all users with default pagination")
     void testFindAllUsers(@RandomPageResponseDto(totalElements = 5) PageResponseDTO<UserDto> dto) throws Exception {
         //given
         when(service.getAllUsers(any(Pageable.class),
@@ -70,6 +75,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Pagination Support")
+    @Description("Should correctly handle pagination parameters")
     void checkPagination(@RandomPageResponseDto(totalElements = 5) PageResponseDTO<UserDto> dto) throws Exception {
         //when
         when(service.getAllUsers(
@@ -110,6 +117,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Retrieve Single User")
+    @Description("Should return a single user by ID")
     void testFindSingleValidUser(@RandomUserDto UserDto userDto) throws Exception {
         //given
         when(service.findById(any(Long.class))).thenReturn(userDto);
@@ -130,6 +139,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Error Handling")
+    @Description("Should handle not found user")
     void checkFindInvalidUser() throws Exception {
         //given
         doThrow(new UserNotFoundException(99L))
@@ -155,6 +166,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Filtered Search")
+    @Description("Should return users based on filter parameters")
     void testFindValidUsersUsingParams(@RandomPageResponseDto(strategy = PageStrategyType.SAME, totalElements = 10) PageResponseDTO<UserDto> pageResponseDTO) throws Exception {
         //given
         List<UserDto> dto = pageResponseDTO.content();
@@ -201,6 +214,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Create User")
+    @Description("Should create a new user")
     void testSaveValidUser(@RandomUserDto UserDto dto) throws Exception {
         //given
         when(service.saveUser(any(UserDto.class))).thenReturn(dto);
@@ -227,6 +242,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Validation")
+    @Description("Should validate user data on creation")
     void checkSaveInvalidUserValidation(@RandomInvalidUserDto(invalidFlag = UserDTOInvalidFlag.FULL_NAME) UserDto dto) throws Exception {
         //when
         MvcResult result = steps.mvcPost(dto)
@@ -248,6 +265,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Update User")
+    @Description("Should update an existing user")
     void checkValidUpdateUser(@RandomUserDto UserDto dto) throws Exception {
         UserDto updatedUser = copy(dto);
         updatedUser.setAge(dto.getAge() + 10);
@@ -271,6 +290,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Validation")
+    @Description("Should validate user data on update")
     void checkUpdateUserUsingInvalidDto(@RandomInvalidUserDto(invalidFlag = UserDTOInvalidFlag.FULL_NAME) UserDto dto) throws Exception {
 
         //using PUT on user with ID 1 but that's not ideal. User might not exist and then the test will die
@@ -291,6 +312,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Delete User")
+    @Description("Should delete a user")
     void checkDeleteValidUser() throws Exception {
         //given
         doNothing().when(service).deleteUser(1L);
@@ -304,6 +327,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
     }
 
     @Test
+    @Story("Error Handling")
+    @Description("Should handle deletion of non-existent user")
     void checkDeleteInvalidUser() throws Exception {
         //given
         doThrow(new UserNotFoundException(1L)).when(service).deleteUser(1L);
@@ -328,6 +353,8 @@ class CRUDUserControllerTests extends BaseControllerTest {
 
     //Checking this method by trying to perform a GET request without /users endpoint
     @Test
+    @Story("Error Handling")
+    @Description("Should handle invalid endpoints")
     void checkNoHandlerFound() throws Exception {
         //when
         MvcResult result = steps.mvcGet(Endpoints.DUMMY_ENDPOINT)
