@@ -2,7 +2,6 @@ package org.example.study.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.example.study.DTOs.BorrowRecordRequestDto;
 import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.PageResponseDTO;
@@ -11,34 +10,35 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-//TODO: Add following things:
-// - Add BorrowStatus to BorrowRecordEntity
 
-@RequestMapping("/borrow")
+//TODO: currently - borrowing by bookId. But I never expose BookID directly.
+// think about changing it to borrowing by bookName and bookAuthor.
+@RequestMapping("/borrows")
 @RestController
 @AllArgsConstructor
 @Validated
 public class BorrowController {
 
-    private BorrowService borrowService;
+    private final BorrowService borrowService;
 
-    @PostMapping
+    @PostMapping(value = {"/", ""})
     public BorrowRecordResponseDto borrowBook(@Valid @RequestBody BorrowRecordRequestDto requestDto) {
         return borrowService.borrowBook(requestDto.bookId(), requestDto.userId());
     }
 
+    //TODO: think. May be it is better to just PATCH /borrows (and set returnedAt). But its fine for now
     @PostMapping("/return")
     public BorrowRecordResponseDto returnBook(@Valid @RequestBody BorrowRecordRequestDto requestDto) {
         return borrowService.returnBook(requestDto.bookId(), requestDto.userId());
     }
 
-    @GetMapping("/listAll")
+    @GetMapping(value = {"/", ""})
     public PageResponseDTO<BorrowRecordResponseDto> getAllRecords(Pageable pageable) {
         return borrowService.getAllBorrowRecords(pageable);
     }
 
     @GetMapping("/{id}")
-    public BorrowRecordResponseDto getBorrowRecordById(@PathVariable @NonNull Long id) {
+    public BorrowRecordResponseDto getBorrowRecordById(@PathVariable Long id) {
         return borrowService.getRecordById(id);
     }
 }

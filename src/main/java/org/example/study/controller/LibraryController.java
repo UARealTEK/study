@@ -45,9 +45,4 @@ public class LibraryController {
         return bookService.findBorrowedBooks(pageable);
     }
 
-    @GetMapping("/{id}")
-    public BookDto getSingleBookStatus(@PathVariable Long id) {
-        return bookService.findById(id);
-    }
-
 }

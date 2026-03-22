@@ -46,6 +46,11 @@ public class BorrowService {
         return borrowRecordMapper.toPageResponse(pageDto);
     }
 
+    public PageResponseDTO<BorrowRecordResponseDto> getBorrowedBooksRecordsByUser(Pageable pageable, Long userId) {
+        Page<BorrowRecordEntity> records = borrowRecordsRepository.findByUserIdAndReturnedAtIsNotNull(pageable,userId);
+        return borrowRecordMapper.toPageResponse(records.map(borrowRecordMapper::toDto));
+    }
+
     @Transactional
     public BorrowRecordResponseDto borrowBook(Long bookId, Long userID) {
         UserEntity user = userService.findEntityById(userID);
