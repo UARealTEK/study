@@ -2,7 +2,6 @@ package org.example.study.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.study.DTOs.BookDto;
-import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.repository.BookRepository;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BookService {
 
-    private final BorrowService borrowService;
     private final BookRepository bookRepository;
     private final BookMapper mapper;
 
@@ -31,13 +29,15 @@ public class BookService {
     }
 
     public PageResponseDTO<BookDto> findAvailableBooks(Pageable pageable) {
-        PageResponseDTO<BorrowRecordResponseDto> bookDtoPage = borrowService.getAvailableBooksRecords(pageable);
-        return mapper.convertData(bookDtoPage, BorrowRecordResponseDto::getBook);
+        Page<BookEntity> bookEntities = bookRepository.findAvailableBooks(pageable);
+        Page<BookDto> bookDtoPage = bookEntities.map(mapper::toDto);
+        return mapper.toPageResponse(bookDtoPage);
     }
 
     public PageResponseDTO<BookDto> findBorrowedBooks(Pageable pageable) {
-        PageResponseDTO<BorrowRecordResponseDto> records = borrowService.getBorrowedBooksRecords(pageable);
-        return mapper.convertData(records, BorrowRecordResponseDto::getBook);
+        Page<BookEntity> bookEntities = bookRepository.findBorrowedBooks(pageable);
+        Page<BookDto> bookDtoPage = bookEntities.map(mapper::toDto);
+        return mapper.toPageResponse(bookDtoPage);
     }
 
     public BookDto findById(Long id) {

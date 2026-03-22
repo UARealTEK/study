@@ -37,8 +37,8 @@ public class LibraryController {
     }
 
     @GetMapping("/{id}")
-    public BookDto getSingleBookStatus(@PathVariable Long bookId) {
-        return bookService.findById(bookId);
+    public BookDto getSingleBookStatus(@PathVariable Long id) {
+        return bookService.findById(id);
     }
 
 }

@@ -69,7 +69,7 @@ public class ExceptionWorker {
         return exceptionResponseBuilder(errorType, null);
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<ExceptionDto> handleBookNotFoundException(BookNotFoundException e) {
         ApiErrorType errorType = ApiErrorType.INTERNAL_SERVER_ERROR;
         return exceptionResponseBuilder(errorType, null);

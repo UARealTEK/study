@@ -45,8 +45,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // Jakarta Validation API (use the latest version, e.g., 3.0.x or 3.1.x)
     implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
-    implementation("org.flywaydb.flyway:org.flywaydb.flyway.gradle.plugin:12.1.1")
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1' // Check for latest version if needed
+    implementation("com.h2database:h2")
 
     // Hibernate Validator (Reference Implementation) (use a compatible version, e.g., 8.0.x)
     implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
