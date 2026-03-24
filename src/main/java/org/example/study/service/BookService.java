@@ -1,5 +1,6 @@
 package org.example.study.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.study.DTOs.BookDto;
 import org.example.study.DTOs.Entities.BookEntity;
@@ -8,12 +9,18 @@ import org.example.study.repository.BookRepository;
 import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
+import org.example.study.util.Exceptions.CustomExceptions.IllegalRequestParameter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+
+import static org.example.study.util.Filtering.LibrarySpecification.byAllFields;
+
 
 @SuppressWarnings("unused")
 @Service
@@ -23,7 +30,8 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper mapper;
 
-    public PageResponseDTO<BookDto> findAllBooks(Pageable pageable, Specification<BookEntity> spec) {
+    public PageResponseDTO<BookDto> findAllBooks(Pageable pageable, String name, String author) {
+        Specification<BookEntity> spec = byAllFields(name, author);
         Page<BookEntity> bookEntities = bookRepository.findAll(spec, normalizePageable(pageable));
         Page<BookDto> bookDtoPage = bookEntities.map(mapper::toDto);
         return mapper.toPageResponse(bookDtoPage);
@@ -106,8 +114,19 @@ public class BookService {
         return bookRepository.existsByNameAndAuthor(bookDto.getName(), bookDto.getAuthor());
     }
 
+    //TODO: extract this into superclass (BaseService)
     private Pageable normalizePageable(Pageable pageable) {
         return PageRequest.of(pageable.getPageNumber(),5 ,pageable.getSort());
+    }
+
+    public void validateParameters(HttpServletRequest request) {
+        Set<String> allowedParams = Set.of("name", "author", "page", "size", "sort");
+
+        for (String allowedParam : request.getParameterMap().keySet()) {
+            if (!allowedParams.contains(allowedParam)) {
+                throw new IllegalRequestParameter(allowedParam);
+            }
+        }
     }
 
 

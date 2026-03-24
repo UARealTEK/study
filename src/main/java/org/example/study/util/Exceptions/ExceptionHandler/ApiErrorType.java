@@ -8,6 +8,7 @@ public enum ApiErrorType {
     MISSING_REQUEST_PARAM(HttpStatus.NOT_FOUND, "Validation error", "Missing request Parameters which are required"),
     BORROW_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "Not Found", "Borrow Record for the specified parameters was not found"),
     BORROW_RECORD_ALREADY_EXISTS(HttpStatus.CONFLICT, "Duplicate Entry", "Borrow Record already exists for such parameters"),
+    ILLEGAL_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "Invalid Request", "Invalid query params were passed"), // TODO: specify which params exactly ?
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "Not found", "User was NOT found"),
     ARGUMENT_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "Argument mismatch", "Incorrect body arguments"),
     NO_HANDLER_FOUND(HttpStatus.NOT_FOUND, "No handler found", "Endpoint does not exist"),

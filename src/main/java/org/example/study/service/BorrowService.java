@@ -91,6 +91,7 @@ public class BorrowService {
                 .orElseThrow(BorrowRecordDoesntExistsException::new);
     }
 
+    //TODO: extract this into superclass (BaseService)
     //Set default page size to 5
     private Pageable normalizePageable(Pageable pageable) {
         return PageRequest.of(pageable.getPageNumber(),5 ,pageable.getSort());

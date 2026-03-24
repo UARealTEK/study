@@ -34,6 +34,12 @@ public class ExceptionWorker {
         return exceptionResponseBuilder(errorType, null);
     }
 
+    @ExceptionHandler(IllegalRequestParameter.class)
+    public ResponseEntity<ExceptionDto> handleIllegalParameter(IllegalRequestParameter e) {
+        ApiErrorType errorType = ApiErrorType.ILLEGAL_REQUEST_PARAMETER;
+        return exceptionResponseBuilder(errorType, null);
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ExceptionDto> handleGetNoUsersException(UserNotFoundException e) {
         ApiErrorType errorType = ApiErrorType.USER_NOT_FOUND;
