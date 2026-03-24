@@ -1,10 +1,7 @@
 package org.example.study.util.Exceptions.ExceptionHandler;
 
 import jakarta.validation.ConstraintViolationException;
-import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
-import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordExistsException;
-import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
-import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
+import org.example.study.util.Exceptions.CustomExceptions.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -27,6 +24,12 @@ public class ExceptionWorker {
 
     @ExceptionHandler(BorrowRecordExistsException.class)
     public ResponseEntity<ExceptionDto> handleBorrowRecordNotFoundException(BorrowRecordExistsException e) {
+        ApiErrorType errorType = ApiErrorType.BORROW_RECORD_ALREADY_EXISTS;
+        return exceptionResponseBuilder(errorType, null);
+    }
+
+    @ExceptionHandler(BorrowRecordDoesntExistsException.class)
+    public ResponseEntity<ExceptionDto> handleBorrowRecordDoesNotExists(BorrowRecordDoesntExistsException e) {
         ApiErrorType errorType = ApiErrorType.BORROW_RECORD_NOT_FOUND;
         return exceptionResponseBuilder(errorType, null);
     }

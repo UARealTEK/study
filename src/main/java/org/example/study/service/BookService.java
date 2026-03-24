@@ -11,6 +11,7 @@ import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +23,8 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper mapper;
 
-    //TODO: for now - Im not doing Working with specifications / Caches / Specific ResponseDTOs which include Page<T> here.
-    // May be added in further iterations
-    public PageResponseDTO<BookDto> findAllBooks(Pageable pageable) {
-        Page<BookEntity> bookEntities = bookRepository.findAll(normalizePageable(pageable));
+    public PageResponseDTO<BookDto> findAllBooks(Pageable pageable, Specification<BookEntity> spec) {
+        Page<BookEntity> bookEntities = bookRepository.findAll(spec, normalizePageable(pageable));
         Page<BookDto> bookDtoPage = bookEntities.map(mapper::toDto);
         return mapper.toPageResponse(bookDtoPage);
     }

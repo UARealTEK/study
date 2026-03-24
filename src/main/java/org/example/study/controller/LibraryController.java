@@ -3,9 +3,11 @@ package org.example.study.controller;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.study.DTOs.BookDto;
+import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.service.BookService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,17 +24,9 @@ public class LibraryController {
         return bookService.saveBook(bookDto);
     }
 
-    @GetMapping("/search")
-    public BookDto getSingleBook(
-             @RequestParam String bookName,
-             @RequestParam String bookAuthor
-    ) {
-        return bookService.findByNameAndAuthor(bookName,bookAuthor);
-    }
-
     @GetMapping(value = {"/", ""})
-    public PageResponseDTO<BookDto> getAllBooks(@PageableDefault(size = 5) Pageable pageable) {
-        return bookService.findAllBooks(pageable);
+    public PageResponseDTO<BookDto> getAllBooks(@PageableDefault(size = 5) Pageable pageable, Specification<BookEntity> spec) {
+        return bookService.findAllBooks(pageable, spec);
     }
 
     @GetMapping("/available")
