@@ -12,6 +12,7 @@ import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordDoesntExis
 import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordExistsException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,25 +30,25 @@ public class BorrowService {
     private final BorrowRecordMapper borrowRecordMapper;
 
     public PageResponseDTO<BorrowRecordResponseDto> getAllBorrowRecords(Pageable pageable) {
-        Page<BorrowRecordEntity> page = borrowRecordsRepository.findAll(pageable);
+        Page<BorrowRecordEntity> page = borrowRecordsRepository.findAll(normalizePageable(pageable));
         Page<BorrowRecordResponseDto> pageDto = page.map(borrowRecordMapper::toDto);
         return borrowRecordMapper.toPageResponse(pageDto);
     }
 
     public PageResponseDTO<BorrowRecordResponseDto> getAvailableBooksRecords(Pageable pageable) {
-        Page<BorrowRecordEntity> page = borrowRecordsRepository.findByReturnedAtIsNull(pageable);
+        Page<BorrowRecordEntity> page = borrowRecordsRepository.findByReturnedAtIsNull(normalizePageable(pageable));
         Page<BorrowRecordResponseDto> pageDto = page.map(borrowRecordMapper::toDto);
         return borrowRecordMapper.toPageResponse(pageDto);
     }
 
     public PageResponseDTO<BorrowRecordResponseDto> getBorrowedBooksRecords(Pageable pageable) {
-        Page<BorrowRecordEntity> page = borrowRecordsRepository.findByReturnedAtIsNotNull(pageable);
+        Page<BorrowRecordEntity> page = borrowRecordsRepository.findByReturnedAtIsNotNull(normalizePageable(pageable));
         Page<BorrowRecordResponseDto> pageDto = page.map(borrowRecordMapper::toDto);
         return borrowRecordMapper.toPageResponse(pageDto);
     }
 
     public PageResponseDTO<BorrowRecordResponseDto> getBorrowedBooksRecordsByUser(Pageable pageable, Long userId) {
-        Page<BorrowRecordEntity> records = borrowRecordsRepository.findByUserIdAndReturnedAtIsNotNull(pageable,userId);
+        Page<BorrowRecordEntity> records = borrowRecordsRepository.findByUserIdAndReturnedAtIsNotNull(normalizePageable(pageable),userId);
         return borrowRecordMapper.toPageResponse(records.map(borrowRecordMapper::toDto));
     }
 
@@ -88,6 +89,11 @@ public class BorrowService {
         BookEntity bookEntity = bookService.findEntityById(bookId);
         return borrowRecordsRepository.findByUserAndBookAndReturnedAtIsNull(userEntity, bookEntity)
                 .orElseThrow(BorrowRecordDoesntExistsException::new);
+    }
+
+    //Set default page size to 5
+    private Pageable normalizePageable(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(),5 ,pageable.getSort());
     }
 
 }

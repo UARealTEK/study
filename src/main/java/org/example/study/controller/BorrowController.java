@@ -7,12 +7,10 @@ import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.service.BorrowService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
-//TODO: currently - borrowing by bookId. But I never expose BookID directly.
-// think about changing it to borrowing by bookName and bookAuthor.
 @RequestMapping("/borrows")
 @RestController
 @AllArgsConstructor
@@ -26,14 +24,13 @@ public class BorrowController {
         return borrowService.borrowBook(requestDto.bookId(), requestDto.userId());
     }
 
-    //TODO: think. May be it is better to just PATCH /borrows (and set returnedAt). But its fine for now
-    @PostMapping("/return")
+    @PatchMapping(value = {"/", ""})
     public BorrowRecordResponseDto returnBook(@Valid @RequestBody BorrowRecordRequestDto requestDto) {
         return borrowService.returnBook(requestDto.bookId(), requestDto.userId());
     }
 
     @GetMapping(value = {"/", ""})
-    public PageResponseDTO<BorrowRecordResponseDto> getAllRecords(Pageable pageable) {
+    public PageResponseDTO<BorrowRecordResponseDto> getAllRecords(@PageableDefault(size = 5) Pageable pageable) {
         return borrowService.getAllBorrowRecords(pageable);
     }
 
