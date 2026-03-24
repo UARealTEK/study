@@ -9,6 +9,7 @@ import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,19 +25,19 @@ public class BookService {
     //TODO: for now - Im not doing Working with specifications / Caches / Specific ResponseDTOs which include Page<T> here.
     // May be added in further iterations
     public PageResponseDTO<BookDto> findAllBooks(Pageable pageable) {
-        Page<BookEntity> bookEntities = bookRepository.findAll(pageable);
+        Page<BookEntity> bookEntities = bookRepository.findAll(normalizePageable(pageable));
         Page<BookDto> bookDtoPage = bookEntities.map(mapper::toDto);
         return mapper.toPageResponse(bookDtoPage);
     }
 
     public PageResponseDTO<BookDto> findAvailableBooks(Pageable pageable) {
-        Page<BookEntity> bookEntities = bookRepository.findAvailableBooks(pageable);
+        Page<BookEntity> bookEntities = bookRepository.findAvailableBooks(normalizePageable(pageable));
         Page<BookDto> bookDtoPage = bookEntities.map(mapper::toDto);
         return mapper.toPageResponse(bookDtoPage);
     }
 
     public PageResponseDTO<BookDto> findBorrowedBooks(Pageable pageable) {
-        Page<BookEntity> bookEntities = bookRepository.findBorrowedBooks(pageable);
+        Page<BookEntity> bookEntities = bookRepository.findBorrowedBooks(normalizePageable(pageable));
         Page<BookDto> bookDtoPage = bookEntities.map(mapper::toDto);
         return mapper.toPageResponse(bookDtoPage);
     }
@@ -104,6 +105,10 @@ public class BookService {
 
     private boolean isBookExists(BookDto bookDto) {
         return bookRepository.existsByNameAndAuthor(bookDto.getName(), bookDto.getAuthor());
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(),5 ,pageable.getSort());
     }
 
 
