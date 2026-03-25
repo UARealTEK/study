@@ -12,7 +12,6 @@ import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordDoesntExis
 import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordExistsException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,7 @@ import static java.time.LocalDateTime.now;
 @SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
-public class BorrowService {
+public class BorrowService extends  BaseService{
 
     private final BookService bookService;
     private final UserService userService;
@@ -89,12 +88,6 @@ public class BorrowService {
         BookEntity bookEntity = bookService.findEntityById(bookId);
         return borrowRecordsRepository.findByUserAndBookAndReturnedAtIsNull(userEntity, bookEntity)
                 .orElseThrow(BorrowRecordDoesntExistsException::new);
-    }
-
-    //TODO: extract this into superclass (BaseService)
-    //Set default page size to 5
-    private Pageable normalizePageable(Pageable pageable) {
-        return PageRequest.of(pageable.getPageNumber(),5 ,pageable.getSort());
     }
 
 }

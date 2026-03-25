@@ -11,7 +11,6 @@ import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
 import org.example.study.util.Exceptions.CustomExceptions.IllegalRequestParameter;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ import static org.example.study.util.Filtering.LibrarySpecification.byAllFields;
 @SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
-public class BookService {
+public class BookService extends BaseService {
 
     private final BookRepository bookRepository;
     private final BookMapper mapper;
@@ -112,11 +111,6 @@ public class BookService {
 
     private boolean isBookExists(BookDto bookDto) {
         return bookRepository.existsByNameAndAuthor(bookDto.getName(), bookDto.getAuthor());
-    }
-
-    //TODO: extract this into superclass (BaseService)
-    private Pageable normalizePageable(Pageable pageable) {
-        return PageRequest.of(pageable.getPageNumber(),5 ,pageable.getSort());
     }
 
     public void validateParameters(HttpServletRequest request) {

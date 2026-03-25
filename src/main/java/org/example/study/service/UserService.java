@@ -13,7 +13,6 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ import static org.example.study.util.Filtering.UserEntitySpecification.byAllFiel
 @Slf4j
 @Service
 @CacheConfig(cacheNames = "users")
-public class UserService {
+public class UserService extends BaseService{
 
     private final UserRepository repository;
     private final UserMapper mapper;
@@ -96,11 +95,5 @@ public class UserService {
          if (body.getGender() != null) {
              userToUpdate.setGender(body.getGender());
          }
-    }
-
-    //TODO: extract this one. Create an abstract service class that will contain this method
-    // think about global constant enum class
-    private Pageable normalizePageable(Pageable pageable) {
-        return PageRequest.of(pageable.getPageNumber(),5 ,pageable.getSort());
     }
 }

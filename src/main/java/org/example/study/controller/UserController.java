@@ -26,9 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 @SuppressWarnings("unused")
 
-//TODO:
-// - Get All books borrowed by user:
-// GET /users/{id}/borrows
 @Validated
 @RestController
 @RequestMapping("/users")
@@ -52,8 +49,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}/borrows")
-    public PageResponseDTO<BorrowRecordResponseDto> getBorrowsByUser(Pageable pageable, @PathVariable Long userId) {
-        return borrowService.getBorrowedBooksRecordsByUser(pageable, userId);
+    public PageResponseDTO<BorrowRecordResponseDto> getBorrowsByUser(Pageable pageable, @PathVariable Long id) {
+        return borrowService.getBorrowedBooksRecordsByUser(pageable, id);
     }
 
     @PostMapping
