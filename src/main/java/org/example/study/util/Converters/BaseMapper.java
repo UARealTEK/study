@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public interface BaseMapper {
 
     default <T> PageResponseDTO<T> toPageResponse(Page<T> page){
@@ -17,7 +18,6 @@ public interface BaseMapper {
         );
     }
 
-    //TODO: where do I use it?
     default <T,U> PageResponseDTO<T> convertData(PageResponseDTO<U> pageResponseDTO, Function<U,T> mapper){
         return new PageResponseDTO<>(
                 pageResponseDTO.content().stream().map(mapper).toList(),

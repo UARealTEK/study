@@ -91,6 +91,16 @@ public class BookService extends BaseService {
         bookRepository.deleteById(bookId);
     }
 
+    public void validateParameters(HttpServletRequest request) {
+        Set<String> allowedParams = Set.of("name", "author", "page", "size", "sort");
+
+        for (String allowedParam : request.getParameterMap().keySet()) {
+            if (!allowedParams.contains(allowedParam)) {
+                throw new IllegalRequestParameter(allowedParam);
+            }
+        }
+    }
+
     /*
     actually believe I don't need it though but OK
      */
@@ -111,16 +121,6 @@ public class BookService extends BaseService {
 
     private boolean isBookExists(BookDto bookDto) {
         return bookRepository.existsByNameAndAuthor(bookDto.getName(), bookDto.getAuthor());
-    }
-
-    public void validateParameters(HttpServletRequest request) {
-        Set<String> allowedParams = Set.of("name", "author", "page", "size", "sort");
-
-        for (String allowedParam : request.getParameterMap().keySet()) {
-            if (!allowedParams.contains(allowedParam)) {
-                throw new IllegalRequestParameter(allowedParam);
-            }
-        }
     }
 
 

@@ -37,7 +37,7 @@ public class ExceptionWorker {
     @ExceptionHandler(IllegalRequestParameter.class)
     public ResponseEntity<ExceptionDto> handleIllegalParameter(IllegalRequestParameter e) {
         ApiErrorType errorType = ApiErrorType.ILLEGAL_REQUEST_PARAMETER;
-        return exceptionResponseBuilder(errorType, null);
+        return exceptionResponseBuilder(errorType, List.of(new FieldErrorDto(ApiErrorType.ILLEGAL_REQUEST_PARAMETER.getType(), e.getMessage())));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
