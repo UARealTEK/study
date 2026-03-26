@@ -6,7 +6,7 @@ import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.Annotations.RandomUserDto;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
-import org.example.study.Util.BaseControllerTest;
+import org.example.study.Util.BaseUserControllerTest;
 import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;
@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 RandomInvalidUserDtoResolver.class
         }
 )
-class CRUDUserControllerTests extends BaseControllerTest {
+class CRUDUserUserControllerTests extends BaseUserControllerTest {
 
     @Test
     @Story("Retrieve All Users")

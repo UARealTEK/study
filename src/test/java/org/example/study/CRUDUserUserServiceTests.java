@@ -5,7 +5,7 @@ import org.example.study.Annotations.*;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.Entities.UserEntity;
-import org.example.study.Util.BaseServiceTest;
+import org.example.study.Util.BaseUserServiceTest;
 import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
 import org.example.study.testData.DTOResolvers.RandomUserDtoResolver;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
                 RandomUserEntityResolver.class
         }
 )
-public class CRUDUserServiceTests extends BaseServiceTest {
+public class CRUDUserUserServiceTests extends BaseUserServiceTest {
 
     @Test
     @Story("Retrieve All Users")

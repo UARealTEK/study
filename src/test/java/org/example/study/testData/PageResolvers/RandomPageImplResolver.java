@@ -1,7 +1,6 @@
 package org.example.study.testData.PageResolvers;
 
 import org.example.study.Annotations.RandomPageImplObj;
-import org.example.study.DTOs.BaseUser;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
+//TODO: make it generic ? so it can be used not only for BaseUser but for any type ?
 public class RandomPageImplResolver extends BaseParameterResolver {
 
     @Override
@@ -28,7 +28,7 @@ public class RandomPageImplResolver extends BaseParameterResolver {
         // Check if it's a parameterized type (e.g., Page<SomeDao>)
         if (!hasParametrizedType(parameterContext)) return false;
 
-        return isParametrizedTypeOf(BaseUser.class, parameterContext);
+        return isParametrizedTypeOf(Object.class, parameterContext);
     }
 
     @Override

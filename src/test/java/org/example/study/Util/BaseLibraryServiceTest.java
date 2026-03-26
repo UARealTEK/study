@@ -5,13 +5,13 @@ import org.example.study.service.BookService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-public abstract class BaseLibraryTest extends BaseTest {
+public abstract class BaseLibraryServiceTest extends BaseTest {
 
     @Mock
-    private BookRepository repository;
+    protected BookRepository repository;
 
     @InjectMocks
-    private BookService service;
+    protected BookService service;
 
     protected void init() {
         service = new BookService(repository, bookMapper);
