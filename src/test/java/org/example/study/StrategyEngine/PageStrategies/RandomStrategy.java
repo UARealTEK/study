@@ -6,6 +6,7 @@ import java.util.List;
 
 import static org.example.study.testData.TestData.getValidListForType;
 
+//TODO: think to make it fully generic
 public class RandomStrategy implements PageGenerationStrategy {
 
     @Override

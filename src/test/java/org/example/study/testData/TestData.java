@@ -2,6 +2,7 @@ package org.example.study.testData;
 
 import net.datafaker.Faker;
 import org.example.study.DTOs.BaseUser;
+import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.Entities.UserEntity;
@@ -26,9 +27,11 @@ public class TestData {
     private static final UserMapper mapper = Mappers.getMapper(UserMapper.class);
     private static final Faker faker = new Faker();
 
+    //TODO: work with it because i cover only TWO classes
     private static final Map<Class<?>, Function<Integer, List<?>>> generators = Map.of(
-        UserDto.class, TestData::getValidUsers,
-        UserEntity.class, TestData::getValidEntities
+            UserDto.class, TestData::getValidUsers,
+            UserEntity.class, TestData::getValidEntities,
+            BookEntity.class, TestData::getValidBooks
     );
 
     private static final Map<Class<? extends BaseUser>, Supplier<? extends BaseUser>> singleGenerators = Map.of(
@@ -49,6 +52,18 @@ public class TestData {
                                 faker.number().numberBetween(0L, 10L),
                                 faker.number().numberBetween(1, 200),
                                 faker.funnyName().name(), random())
+                )
+                .limit(count)
+                .toList();
+    }
+
+    //Generate a list of valid Books using Faker
+    private static List<BookEntity> getValidBooks(int count) {
+        return Stream.generate(() -> BookEntity.builder()
+                        .id(faker.number().numberBetween(0L, 10L))
+                        .name(faker.book().title())
+                        .author(faker.book().author())
+                        .build()
                 )
                 .limit(count)
                 .toList();

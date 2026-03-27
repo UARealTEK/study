@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.example.study.testData.TestData.getSingleValidForType;
 
+//TODO: think to make it fully generic
 public class RandomDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
 

@@ -5,7 +5,7 @@ import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 
 import static org.example.study.testData.TestData.getSingleValidForType;
 
-
+//TODO: think to make it fully generic
 public class InvalidNameStrategy implements InvalidDTOGenerationStrategy {
 
     @Override

@@ -8,6 +8,7 @@ import org.example.study.DTOs.BaseUser;
 
 import java.lang.reflect.Field;
 
+//TODO: think to make it fully generic
 public interface InvalidDTOGenerationStrategy {
     <T extends BaseUser> T generate(Class<T> clazz) throws NoSuchFieldException;
 

@@ -6,6 +6,7 @@ import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import static org.example.study.testData.TestData.getSingleValidForType;
 
 
+//TODO: think to make it fully generic
 public class InvalidAgeStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
