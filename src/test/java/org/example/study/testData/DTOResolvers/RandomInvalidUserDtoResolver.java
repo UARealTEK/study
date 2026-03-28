@@ -18,6 +18,7 @@ import java.util.List;
 
 //TODO: complete this one using refactored InvalidDTOGenerationStrategy
 // FYI: its time to refactor it based on the Annotation parameters and NOT based on the flag (?)
+// this also supports ONLY UserDto (?) Since Ive expanded my invalidator - refactor this as well
 public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
     @Override
