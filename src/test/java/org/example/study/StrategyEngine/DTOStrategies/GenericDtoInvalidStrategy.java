@@ -1,13 +1,19 @@
 package org.example.study.StrategyEngine.DTOStrategies;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.example.study.StrategyEngine.FieldInvalidators.BlankInvalidator;
+import org.example.study.StrategyEngine.FieldInvalidators.MaxInvalidator;
+import org.example.study.StrategyEngine.FieldInvalidators.MinInvalidator;
+import org.example.study.StrategyEngine.FieldInvalidators.SizeInvalidator;
 import org.example.study.StrategyEngine.interfaces.FieldInvalidator;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 import static org.example.study.testData.TestData.getSingleValidForType;
 
@@ -16,41 +22,36 @@ public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
 
     @Override
-    public <T> T generate(Class<T> clazz, Field field) throws IllegalAccessException {
+    public <T> T generate(Class<T> clazz, Field field) throws IllegalAccessException, NoSuchFieldException {
+        Field actualField = clazz.getDeclaredField(field.getName());
         Annotation[] annotations = field.getAnnotations();
         T dao = getSingleValidForType(clazz);
-        invalidateField(dao, field, annotations);
+        invalidateField(dao, actualField, annotations);
         return dao;
     }
 
-    private <T> Field getSpecificField(T obj, Field field) {
-        Field[] fields = getAllFields(obj.getClass());
-        return Arrays.stream(fields).filter(i -> i.getName().equals(field.getName())).findFirst().orElse(null);
-    }
-
     private <T> void invalidateField(T obj, Field field, Annotation... annotations) throws IllegalAccessException {
-        Field currentField = getSpecificField(obj, field);
-        for (Annotation annotation : annotations) {
-            FieldInvalidator fieldInvalidator = fieldInvalidators.get(annotation.annotationType());
-
-            if (fieldInvalidator == null) {
-                throw new RuntimeException(
-                        "No invalidator found for annotation: " + annotation.annotationType()
-                );
-            }
-            fieldInvalidator.invalidate(obj, currentField);
+        if (annotations.length == 0) {
+            throw new IllegalAccessException("No annotations found");
         }
-    }
-
-    private Field[] getAllFields(Class<?> clazz) {
-        List<Field> fields = new ArrayList<>();
-
-        while (clazz != null && !clazz.getSuperclass().equals(Object.class)) {
-            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-            clazz = clazz.getSuperclass();
+        Annotation annotation = annotations[0];
+        FieldInvalidator fieldInvalidator = fieldInvalidators.get(annotation.annotationType());
+        if (fieldInvalidator == null) {
+            throw new IllegalArgumentException(
+                    "No invalidator found for annotation: " + annotation.annotationType()
+            );
         }
 
-        return fields.toArray(new Field[0]);
+        field.setAccessible(true);
+        fieldInvalidator.invalidate(obj, field);
     }
+
+    //TODO: turn this into a pluggable validation engine (like Hibernate Validator)
+    private final Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators = Map.of(
+            Min.class, new MinInvalidator(),
+            Max.class, new MaxInvalidator(),
+            NotBlank.class, new BlankInvalidator(),
+            Size.class, new SizeInvalidator()
+    );
 
 }

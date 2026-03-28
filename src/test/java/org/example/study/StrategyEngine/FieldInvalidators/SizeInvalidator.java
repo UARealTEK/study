@@ -10,11 +10,6 @@ import java.util.Collections;
 public class SizeInvalidator implements FieldInvalidator {
 
     @Override
-    public boolean supports(Field field) {
-        return field.isAnnotationPresent(Size.class);
-    }
-
-    @Override
     public void invalidate(Object obj, Field field) {
         field.setAccessible(true);
 

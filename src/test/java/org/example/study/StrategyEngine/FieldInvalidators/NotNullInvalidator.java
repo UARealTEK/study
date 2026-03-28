@@ -9,11 +9,6 @@ import java.lang.reflect.Field;
 public class NotNullInvalidator implements FieldInvalidator {
 
     @Override
-    public boolean supports(Field field) {
-        return field.isAnnotationPresent(NotNull.class);
-    }
-
-    @Override
     public void invalidate(Object obj, Field field) throws IllegalAccessException {
         field.setAccessible(true);
 
