@@ -74,12 +74,6 @@ public class ExceptionWorker {
         return exceptionResponseBuilder(errorType, list);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ExceptionDto> handleRuntimeException(RuntimeException e) {
-        ApiErrorType errorType = ApiErrorType.INTERNAL_SERVER_ERROR;
-        return exceptionResponseBuilder(errorType, null);
-    }
-
     @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<ExceptionDto> handleBookNotFoundException(BookNotFoundException e) {
         ApiErrorType errorType = ApiErrorType.BOOK_NOT_FOUND;
@@ -92,17 +86,35 @@ public class ExceptionWorker {
         return exceptionResponseBuilder(errorType, null);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionDto> handleUnknown(Exception e) {
-        ApiErrorType errorType = ApiErrorType.INTERNAL_SERVER_ERROR;
-        return exceptionResponseBuilder(errorType, null);
-    }
-
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ExceptionDto> handleMissingParams(MissingServletRequestParameterException e) {
         ApiErrorType errorType = ApiErrorType.MISSING_REQUEST_PARAM;
         return exceptionResponseBuilder(errorType,
                 List.of(new FieldErrorDto(e.getParameterName(), e.getMessage())));
+    }
+
+    @ExceptionHandler(InvalidConstraintConfigurationException.class)
+    public ResponseEntity<ExceptionDto> handleInvalidConstraintConfigurationException(InvalidConstraintConfigurationException e) {
+        ApiErrorType errorType = ApiErrorType.ANNOTATION_CONSTRAINT_VIOLATION;
+        return exceptionResponseBuilder(errorType, List.of(new FieldErrorDto(e.getConstraintName(), e.getMessage())));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ExceptionDto> handleRuntimeException(RuntimeException e) {
+        ApiErrorType errorType = ApiErrorType.INTERNAL_SERVER_ERROR;
+        return exceptionResponseBuilder(errorType, null);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionDto> handleIllegalArgumentException(IllegalArgumentException e) {
+        ApiErrorType errorType = ApiErrorType.ILLEGAL_ARGUMENT_EXCEPTION;
+        return exceptionResponseBuilder(errorType, List.of(new FieldErrorDto("IllegalArgument", e.getMessage())));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionDto> handleUnknown(Exception e) {
+        ApiErrorType errorType = ApiErrorType.INTERNAL_SERVER_ERROR;
+        return exceptionResponseBuilder(errorType, null);
     }
 
     private ResponseEntity<ExceptionDto> exceptionResponseBuilder(ApiErrorType errorType, List<FieldErrorDto> list) {

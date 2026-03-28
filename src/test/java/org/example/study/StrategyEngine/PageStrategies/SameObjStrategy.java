@@ -7,11 +7,10 @@ import java.util.stream.Stream;
 
 import static org.example.study.testData.TestData.getValidListForType;
 
-//TODO: think to make it fully generic
 public class SameObjStrategy implements PageGenerationStrategy {
     @Override
-    public List<?> generate(Class<?> clazz, int count) {
-        List<?> list = getValidListForType(clazz,1);
+    public <T> List<T> generate(Class<T> clazz, int count) {
+        List<T> list = getValidListForType(clazz,1);
         return Stream.generate(list::getFirst).limit(count).toList();
     }
 }

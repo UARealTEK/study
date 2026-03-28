@@ -3,6 +3,7 @@ package org.example.study.testData;
 import net.datafaker.Faker;
 import org.example.study.DTOs.BaseUser;
 import org.example.study.DTOs.Entities.BookEntity;
+import org.example.study.DTOs.Entities.BorrowRecordEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
 import org.example.study.DTOs.Entities.UserEntity;
@@ -27,14 +28,16 @@ public class TestData {
     private static final UserMapper mapper = Mappers.getMapper(UserMapper.class);
     private static final Faker faker = new Faker();
 
-    //TODO: work with it because i cover only TWO classes
+    //TODO: work with it. It is tightly coupled to the types that I give it
     private static final Map<Class<?>, Function<Integer, List<?>>> generators = Map.of(
             UserDto.class, TestData::getValidUsers,
             UserEntity.class, TestData::getValidEntities,
-            BookEntity.class, TestData::getValidBooks
+            BookEntity.class, TestData::getValidBooks,
+            BorrowRecordEntity.class, TestData::getValidRecordEntities
     );
 
-    private static final Map<Class<? extends BaseUser>, Supplier<? extends BaseUser>> singleGenerators = Map.of(
+    //TODO: working here with BaseUser is fine for now? But Ill think I might refactor this to support all DTOs
+    private static final Map<Class<?>, Supplier<?>> singleGenerators = Map.of(
         UserDto.class, TestData::getSingleValidUser,
         UserEntity.class, TestData::getSingleValidEntity
     );
@@ -69,17 +72,29 @@ public class TestData {
                 .toList();
     }
 
-    public static List<?> getValidListForType(Class<?> clazz, int count) {
+    private static List<BorrowRecordEntity> getValidRecordEntities(int count) {
+        return Stream.generate(() -> BorrowRecordEntity.builder()
+                        .id(faker.number().numberBetween(0L, 10L))
+                        .user(getSingleValidEntity())
+                        .book(getSingleValidBook())
+                        .build()
+                )
+                .limit(count)
+                .toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> getValidListForType(Class<T> clazz, int count) {
         Function<Integer, List<?>> generator = generators.get(clazz);
         if (generator == null) {
             throw new IllegalArgumentException("Unsupported class type: " + clazz.getName());
         }
-        return generator.apply(count);
+        return (List<T>) generator.apply(count);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends BaseUser> T getSingleValidForType(Class<T> clazz) {
-        Supplier<? extends BaseUser> generator = singleGenerators.get(clazz);
+    public static <T> T getSingleValidForType(Class<T> clazz) {
+        Supplier<?> generator = singleGenerators.get(clazz);
         if (generator == null) {
             throw new IllegalArgumentException("Unsupported class type: " + clazz.getName());
         }
@@ -122,6 +137,14 @@ public class TestData {
     // Single UserDto with empty name
     public static UserDto getSingleUserWithEmptyName() {
         return new UserDto(faker.number().numberBetween(1, 200), "", random());
+    }
+
+    public static BookEntity getSingleValidBook() {
+        return BookEntity.builder()
+                .id(faker.number().numberBetween(0L, 10L))
+                .name(faker.book().title())
+                .author(faker.book().author())
+                .build();
     }
 
     // Single UserEntity with empty name

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class EmptyStrategy implements PageGenerationStrategy {
     @Override
-    public List<?> generate(Class<?> clazz, int count) {
+    public <T> List<T> generate(Class<T> clazz, int count) {
         return List.of();
     }
 }
