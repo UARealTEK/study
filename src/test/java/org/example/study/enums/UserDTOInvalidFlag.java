@@ -1,8 +1,11 @@
 package org.example.study.enums;
 
+
+import java.util.List;
+
 public enum UserDTOInvalidFlag {
     AGE,
     FULL_NAME,
-    GENDER,
+    ENUM,
     RANDOM_INVALID
 }

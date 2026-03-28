@@ -1,15 +1,10 @@
 package org.example.study.testData;
 
-import org.example.study.StrategyEngine.DTOStrategies.InvalidAgeStrategy;
-import org.example.study.StrategyEngine.DTOStrategies.InvalidNameStrategy;
-import org.example.study.StrategyEngine.DTOStrategies.RandomDtoInvalidStrategy;
 import org.example.study.StrategyEngine.PageStrategies.EmptyStrategy;
 import org.example.study.StrategyEngine.PageStrategies.RandomStrategy;
 import org.example.study.StrategyEngine.PageStrategies.SameObjStrategy;
-import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 import org.example.study.enums.PageStrategyType;
-import org.example.study.enums.UserDTOInvalidFlag;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -75,12 +70,5 @@ public abstract class BaseParameterResolver implements ParameterResolver {
             PageStrategyType.RANDOM, new RandomStrategy(),
             PageStrategyType.SAME, new SameObjStrategy(),
             PageStrategyType.EMPTY, new EmptyStrategy()
-    );
-
-    protected static final Map<UserDTOInvalidFlag, InvalidDTOGenerationStrategy> invalidDtoStrategyMap = Map.of(
-            UserDTOInvalidFlag.FULL_NAME, new InvalidNameStrategy(),
-            UserDTOInvalidFlag.AGE, new InvalidAgeStrategy(),
-            UserDTOInvalidFlag.GENDER, new InvalidNameStrategy(),
-            UserDTOInvalidFlag.RANDOM_INVALID, new RandomDtoInvalidStrategy()
     );
 }

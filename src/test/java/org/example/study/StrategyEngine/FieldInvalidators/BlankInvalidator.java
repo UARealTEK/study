@@ -26,7 +26,7 @@ public class BlankInvalidator implements FieldInvalidator {
                         "@NotBlank not supported for type: " + field.getType()
                 );
             }
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to set field: " + field.getName(), e);
         }
     }
