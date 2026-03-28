@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.util.List;
 
+//TODO: complete this one using refactored InvalidDTOGenerationStrategy
 public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
     @Override
