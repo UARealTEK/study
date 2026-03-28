@@ -24,13 +24,10 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
     @Override
     public boolean supportsParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
 
-        boolean isEligibleForSingle = isAnnotatedWith(parameterContext, RandomInvalidUserDto.class) &&
-                isSuperOf(UserDto.class, parameterContext);
+        boolean isEligibleForSingle = isAnnotatedWith(parameterContext, RandomInvalidUserDto.class);
         boolean isEligibleForList = isAnnotatedWith(parameterContext, RandomInvalidUserDtoList.class) &&
                 isSuperOf(List.class, parameterContext) &&
-                hasParametrizedType(parameterContext) &&
-                isParametrizedTypeOf(UserDto.class, parameterContext);
-
+                hasParametrizedType(parameterContext);
         return isEligibleForList || isEligibleForSingle;
     }
 
