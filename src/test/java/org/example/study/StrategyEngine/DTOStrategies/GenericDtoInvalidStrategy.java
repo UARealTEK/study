@@ -20,7 +20,6 @@ import static org.example.study.testData.TestData.getSingleValidForType;
 //TODO: Test it, complete it
 public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
-
     @Override
     public <T> T generate(Class<T> clazz, Field field) throws IllegalAccessException, NoSuchFieldException {
         Field actualField = clazz.getDeclaredField(field.getName());

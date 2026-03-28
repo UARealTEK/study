@@ -1,7 +1,7 @@
 package org.example.study.enums;
 
 
-import java.util.List;
+//TODO: get Rid of it. Validating using Annotations
 
 public enum UserDTOInvalidFlag {
     AGE,
