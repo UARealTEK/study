@@ -4,9 +4,8 @@ import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
 import org.example.study.Annotations.RandomUserDtoList;
 import org.example.study.DTOs.UserDto;
-import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
+import org.example.study.StrategyEngine.DTOStrategies.GenericDtoInvalidStrategy;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
-import org.example.study.enums.UserDTOInvalidFlag;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -14,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.List;
 
 //TODO: complete this one using refactored InvalidDTOGenerationStrategy
@@ -31,19 +32,25 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
         return isEligibleForList || isEligibleForSingle;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         if (isAnnotatedWith(parameterContext, RandomInvalidUserDto.class)) {
-            UserDTOInvalidFlag flag = parameterContext.findAnnotation(RandomInvalidUserDto.class)
-                    .orElseThrow(() -> new ParameterResolutionException("Missing @RandomInvalidUserDto annotation"))
-                    .invalidFlag();
+            Class<?> rawType = parameterContext.getParameter().getType();
+            RandomInvalidUserDto annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDto.class);
+            Class<? extends Annotation> annotationToBreak = annotation.constraintToBreak();
+            String fieldName = annotation.fieldName();
 
-            InvalidDTOGenerationStrategy strategy = invalidDtoStrategyMap.get(flag);
             try {
-                return strategy.generate(UserDto.class);
+                Field field = rawType.getDeclaredField(fieldName);
+                Class<Object> clazz = (Class<Object>) field.getType();
+                return new GenericDtoInvalidStrategy().generate(clazz,field,annotationToBreak);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException("Error generating invalid UserDto due to field mismatch: " + e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Invalid Class provided");
             }
+            //TODO: finish this one. Probably need a separate Generator to support LIST (?)
         } else if (isAnnotatedWith(parameterContext, RandomUserDtoList.class)) {
             RandomInvalidUserDtoList annotation = parameterContext.findAnnotation(RandomInvalidUserDtoList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomInvalidUserDtoList annotation"));

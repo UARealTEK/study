@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.example.study.Annotations.NoConstraint;
 import org.example.study.StrategyEngine.FieldInvalidators.BlankInvalidator;
 import org.example.study.StrategyEngine.FieldInvalidators.MaxInvalidator;
 import org.example.study.StrategyEngine.FieldInvalidators.MinInvalidator;
@@ -21,31 +22,37 @@ import static org.example.study.testData.TestData.getSingleValidForType;
 public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
-    public <T> T generate(Class<T> clazz, Field field) throws IllegalAccessException, NoSuchFieldException {
+    public <T, U extends Annotation> T generate(Class<T> clazz, Field field, Class<U> annotation) throws IllegalAccessException, NoSuchFieldException {
         Field actualField = clazz.getDeclaredField(field.getName());
-        Annotation[] annotations = field.getAnnotations();
         T dao = getSingleValidForType(clazz);
-        invalidateField(dao, actualField, annotations);
+        invalidateField(dao, actualField, annotation);
         return dao;
     }
 
-    private <T> void invalidateField(T obj, Field field, Annotation... annotations) throws IllegalAccessException {
-        if (annotations.length == 0) {
-            throw new IllegalAccessException("No annotations found");
+    @SuppressWarnings("SuspiciousMethodCalls")
+    private <T, U extends Annotation> void invalidateField(T obj, Field field, Class<U> annotation) throws IllegalAccessException {
+        field.setAccessible(true);
+        if (annotation == NoConstraint.class) {
+            Annotation[] annotations = field.getAnnotations();
+            for (Annotation ann : annotations) {
+                FieldInvalidator invalidator = fieldInvalidators.get(ann);
+                if (invalidator == null) {
+                    throw new IllegalStateException("No invalidator found for field " + ann);
+                }
+                invalidator.invalidate(obj,field);
+            }
         }
-        Annotation annotation = annotations[0];
-        FieldInvalidator fieldInvalidator = fieldInvalidators.get(annotation.annotationType());
+
+        FieldInvalidator fieldInvalidator = fieldInvalidators.get(annotation);
         if (fieldInvalidator == null) {
             throw new IllegalArgumentException(
-                    "No invalidator found for annotation: " + annotation.annotationType()
+                    "No invalidator found for annotation: " + annotation
             );
         }
 
-        field.setAccessible(true);
         fieldInvalidator.invalidate(obj, field);
     }
 
-    //TODO: turn this into a pluggable validation engine (like Hibernate Validator)
     private final Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators = Map.of(
             Min.class, new MinInvalidator(),
             Max.class, new MaxInvalidator(),

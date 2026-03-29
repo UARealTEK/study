@@ -11,7 +11,6 @@ import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;
 import org.example.study.enums.PageStrategyType;
-import org.example.study.enums.UserDTOInvalidFlag;
 import org.example.study.testData.DTOResolvers.RandomInvalidUserDtoResolver;
 import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.example.study.testData.DTOResolvers.RandomUserDtoResolver;
@@ -243,7 +242,7 @@ class CRUDUserUserControllerTests extends BaseUserControllerTest {
     @Test
     @Story("Validation")
     @Description("Should validate user data on creation")
-    void checkSaveInvalidUserValidation(@RandomInvalidUserDto(invalidFlag = UserDTOInvalidFlag.FULL_NAME) UserDto dto) throws Exception {
+    void checkSaveInvalidUserValidation(@RandomInvalidUserDto UserDto dto) throws Exception {
         //when
         MvcResult result = steps.mvcPost(dto)
                 .andExpect(status().isBadRequest())
@@ -291,7 +290,7 @@ class CRUDUserUserControllerTests extends BaseUserControllerTest {
     @Test
     @Story("Validation")
     @Description("Should validate user data on update")
-    void checkUpdateUserUsingInvalidDto(@RandomInvalidUserDto(invalidFlag = UserDTOInvalidFlag.FULL_NAME) UserDto dto) throws Exception {
+    void checkUpdateUserUsingInvalidDto(@RandomInvalidUserDto UserDto dto) throws Exception {
 
         //using PUT on user with ID 1 but that's not ideal. User might not exist and then the test will die
         MvcResult result = steps.mvcPut(1L, dto)
