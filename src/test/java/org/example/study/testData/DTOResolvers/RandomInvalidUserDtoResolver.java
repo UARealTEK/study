@@ -3,7 +3,6 @@ package org.example.study.testData.DTOResolvers;
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
 import org.example.study.Annotations.RandomUserDtoList;
-import org.example.study.DTOs.UserDto;
 import org.example.study.StrategyEngine.DTOStrategies.GenericDtoInvalidStrategy;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
@@ -49,16 +48,19 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Invalid Class provided");
             }
-            //TODO: finish this one. Probably need a separate Generator to support LIST (?)
         } else if (isAnnotatedWith(parameterContext, RandomUserDtoList.class)) {
-            RandomInvalidUserDtoList annotation = parameterContext.findAnnotation(RandomInvalidUserDtoList.class).
-                    orElseThrow(() -> new ParameterResolutionException("Missing @RandomInvalidUserDtoList annotation"));
+            //TODO: finish it. I can reuse PageGenerationStrategy for generating the valid list and then invalidate it using the same strategy as above
+            RandomInvalidUserDtoList annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDtoList.class);
 
             int count = annotation.count();
             PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
+//            try {
+//
+//            }
+//            List<?> list = strategy.generate(UserDto.class, count);
 
-            return strategy.generate(UserDto.class, count);
+            return null;
         }
 
         throw new ParameterResolutionException(

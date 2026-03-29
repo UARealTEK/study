@@ -39,7 +39,9 @@ public class TestData {
     //TODO: working here with BaseUser is fine for now? But Ill think I might refactor this to support all DTOs
     private static final Map<Class<?>, Supplier<?>> singleGenerators = Map.of(
         UserDto.class, TestData::getSingleValidUser,
-        UserEntity.class, TestData::getSingleValidEntity
+        UserEntity.class, TestData::getSingleValidEntity,
+            BookEntity.class, TestData::getSingleValidBook,
+            BorrowRecordEntity.class, TestData::getSingleValidRecordEntity
     );
 
     // Generate a list of valid UserDto using Faker
@@ -144,6 +146,14 @@ public class TestData {
                 .id(faker.number().numberBetween(0L, 10L))
                 .name(faker.book().title())
                 .author(faker.book().author())
+                .build();
+    }
+    //TODO: generates a record with NULL borrowedAt / returnedAt variables
+    public static BorrowRecordEntity getSingleValidRecordEntity() {
+        return BorrowRecordEntity.builder()
+                .id(faker.number().numberBetween(0L, 10L))
+                .user(getSingleValidEntity())
+                .book(getSingleValidBook())
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package org.example.study.StrategyEngine.DTOStrategies;
 
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,11 +15,16 @@ import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.example.study.testData.TestData.getSingleValidForType;
+import static org.example.study.testData.TestData.getValidListForType;
 
 //TODO: Test it, complete it
+// Integrate it with general PageGenerationStrategy (!)
 public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
@@ -28,17 +34,36 @@ public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
         return dao;
     }
 
-    private <T, U extends Annotation> void invalidateField(T obj, Field field, Class<U> annotation) throws IllegalAccessException {
+    @Override
+    public List<?> generateList(Class<?> clazz, int count) throws IllegalAccessException {
+        List<?> list = getValidListForType(clazz, count);
+        for (Object o : list) {
+            invalidateRandomField(o);
+        }
+        return list;
+    }
+
+    private <T> void invalidateField(T obj, Field field, Class<? extends Annotation> annotation) throws IllegalAccessException {
+        if (field.isAnnotationPresent(Id.class)) {
+            throw new IllegalArgumentException("Cannot invalidate an ID field.");
+        }
         field.setAccessible(true);
+        if (!isFieldTypeCompatible(field, obj)) {
+            throw new IllegalArgumentException("Field type does not match the generated object's type.");
+        }
         if (annotation == NoConstraint.class) {
-            Annotation[] annotations = field.getAnnotations();
-            for (Annotation ann : annotations) {
-                FieldInvalidator invalidator = fieldInvalidators.get(ann.annotationType());
-                if (invalidator == null) {
-                    throw new IllegalStateException("No invalidator found for field " + ann);
-                }
-                invalidator.invalidate(obj,field);
+            List<? extends Annotation> annotations = getMatchedAnnotations(field);
+            if (annotations.isEmpty()) {
+                throw new IllegalStateException("No constraints found on the field to invalidate.");
             }
+
+            Annotation randomAnnotation = annotations.get(ThreadLocalRandom.current().nextInt(annotations.size()));
+
+            FieldInvalidator invalidator = fieldInvalidators.get(randomAnnotation.annotationType());
+            if (invalidator == null) {
+                throw new IllegalStateException("No invalidator found for field " + randomAnnotation);
+            }
+            invalidator.invalidate(obj,field);
             return;
         }
 
@@ -50,6 +75,37 @@ public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
         }
 
         fieldInvalidator.invalidate(obj, field);
+    }
+
+    private <T> void invalidateRandomField(T obj) throws IllegalAccessException {
+        List<Field> fields = Arrays.stream(obj.getClass().getDeclaredFields())
+                .filter(f -> f.getAnnotations().length > 0)
+                .filter(f -> !f.isAnnotationPresent(Id.class))
+                .toList();
+        if (fields.isEmpty()) {
+            throw new IllegalStateException("No fields found in the object to invalidate.");
+        }
+
+        Field randomField = fields.get(ThreadLocalRandom.current().nextInt(fields.size()));
+        randomField.setAccessible(true);
+        List<? extends Annotation> annotations = getMatchedAnnotations(randomField);
+
+        if (annotations.isEmpty()) {
+            throw new IllegalStateException("No constraints found on the field to invalidate.");
+        }
+
+        Annotation randomAnnotation = annotations.get(ThreadLocalRandom.current().nextInt(annotations.size()));
+        invalidateField(obj, randomField, randomAnnotation.annotationType());
+    }
+
+    private boolean isFieldTypeCompatible(Field field, Object value) {
+        return field.getDeclaringClass().isAssignableFrom(value.getClass());
+    }
+
+    private List<? extends Annotation> getMatchedAnnotations(Field field) {
+        return Arrays.stream(field.getAnnotations())
+                .filter(a -> fieldInvalidators.containsKey(a.annotationType()))
+                .toList();
     }
 
     private final Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators = Map.of(
