@@ -32,7 +32,6 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
         return isEligibleForList || isEligibleForSingle;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         if (isAnnotatedWith(parameterContext, RandomInvalidUserDto.class)) {
@@ -43,7 +42,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
             try {
                 Field field = rawType.getDeclaredField(fieldName);
-                Class<Object> clazz = (Class<Object>) field.getType();
+                Class<?> clazz = field.getType();
                 return new GenericDtoInvalidStrategy().generate(clazz,field,annotationToBreak);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException("Error generating invalid UserDto due to field mismatch: " + e.getMessage(), e);

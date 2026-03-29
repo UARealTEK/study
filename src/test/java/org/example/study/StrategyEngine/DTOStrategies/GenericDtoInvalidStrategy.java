@@ -22,25 +22,24 @@ import static org.example.study.testData.TestData.getSingleValidForType;
 public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
-    public <T, U extends Annotation> T generate(Class<T> clazz, Field field, Class<U> annotation) throws IllegalAccessException, NoSuchFieldException {
-        Field actualField = clazz.getDeclaredField(field.getName());
-        T dao = getSingleValidForType(clazz);
-        invalidateField(dao, actualField, annotation);
+    public Object generate(Class<?> clazz, Field field, Class<? extends Annotation> annotation) throws IllegalAccessException, NoSuchFieldException {
+        Object dao = getSingleValidForType(clazz);
+        invalidateField(dao, field, annotation);
         return dao;
     }
 
-    @SuppressWarnings("SuspiciousMethodCalls")
     private <T, U extends Annotation> void invalidateField(T obj, Field field, Class<U> annotation) throws IllegalAccessException {
         field.setAccessible(true);
         if (annotation == NoConstraint.class) {
             Annotation[] annotations = field.getAnnotations();
             for (Annotation ann : annotations) {
-                FieldInvalidator invalidator = fieldInvalidators.get(ann);
+                FieldInvalidator invalidator = fieldInvalidators.get(ann.annotationType());
                 if (invalidator == null) {
                     throw new IllegalStateException("No invalidator found for field " + ann);
                 }
                 invalidator.invalidate(obj,field);
             }
+            return;
         }
 
         FieldInvalidator fieldInvalidator = fieldInvalidators.get(annotation);
