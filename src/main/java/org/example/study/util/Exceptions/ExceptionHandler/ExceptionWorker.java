@@ -99,6 +99,12 @@ public class ExceptionWorker {
         return exceptionResponseBuilder(errorType, List.of(new FieldErrorDto(e.getConstraintName(), e.getMessage())));
     }
 
+    @ExceptionHandler(NoSuchFieldException.class)
+    public ResponseEntity<ExceptionDto> handleIllegalAccessException(NoSuchFieldException e) {
+        ApiErrorType errorType = ApiErrorType.NO_SUCH_FIELD_EXCEPTION;
+        return exceptionResponseBuilder(errorType, List.of(new FieldErrorDto(null,e.getMessage())));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionDto> handleRuntimeException(RuntimeException e) {
         ApiErrorType errorType = ApiErrorType.INTERNAL_SERVER_ERROR;
