@@ -68,6 +68,4 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
                         parameterContext.getParameter().getName()
         );
     }
-
-
 }
