@@ -4,14 +4,12 @@ import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 public abstract class BaseUserServiceTest extends BaseTest {
 
     @Mock
     protected UserRepository repository;
-    @InjectMocks
     protected UserService service;
 
     @BeforeEach

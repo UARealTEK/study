@@ -5,12 +5,14 @@ import org.example.study.DTOs.BookDto;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.Util.BaseLibraryServiceTest;
+import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,11 +26,12 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     //TODO: can use argument captor to check if the correct specification is being passed to the repository
     @Test
-    void checkGetAllBooks(@RandomPageImplObj Page<BookEntity> entityPage) {
+    void checkGetAllBooks(@RandomPageImplObj(strategy = PageStrategyType.RANDOM, totalElements = 15) Page<BookEntity> entityPage) {
         //given
         Pageable pageable = entityPage.getPageable();
         //when
-        when(repository.findAll(anySpec(),eq(pageable))).thenReturn(entityPage);
+        when(repository.findAll(anySpec(), eq(pageable)))
+                .thenReturn(entityPage);
         PageResponseDTO<BookDto> response = service.findAllBooks(pageable, null, null);
         //then
 

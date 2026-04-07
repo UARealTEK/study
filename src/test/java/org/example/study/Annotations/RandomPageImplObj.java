@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RandomPageImplObj {
-    int size() default 20;
+    int size() default 5;
     int page() default 0;
     int totalElements() default 0;
     PageStrategyType strategy() default PageStrategyType.RANDOM;
