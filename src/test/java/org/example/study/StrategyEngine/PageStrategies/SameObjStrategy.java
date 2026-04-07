@@ -18,12 +18,12 @@ public class SameObjStrategy implements PageGenerationStrategy {
     }
 
     @Override
-    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException {
+    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) {
         return null;
     }
 
     @Override
-    public List<?> generateInvalidObjList(Class<?> clazz, int count) throws NoSuchFieldException, IllegalAccessException {
+    public List<?> generateInvalidObjList(Class<?> clazz, int count) {
         return List.of();
     }
 }
