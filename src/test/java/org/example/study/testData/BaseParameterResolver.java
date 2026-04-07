@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -41,6 +42,31 @@ public abstract class BaseParameterResolver implements ParameterResolver {
         if (genericType instanceof Class<?> generic) {
             return clazz.isAssignableFrom(generic);
         } else throw new IllegalArgumentException("Type argument is not a Class");
+    }
+
+    /**
+     * Finds a field by name, walking up the class hierarchy to support inherited fields.
+     *
+     * This is necessary because UserDto extends BaseUser, and fields like 'age', 'fullName'
+     * are declared in BaseUser, not UserDto directly.
+     *
+     * @param clazz the class to search (starting point)
+     * @param fieldName the name of the field to find
+     * @return the Field object
+     * @throws NoSuchFieldException if the field is not found in this class or any superclass
+     */
+    protected Field findField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        Class<?> current = clazz;
+
+        while (current != null && current != Object.class) {
+            try {
+                return current.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                current = current.getSuperclass();
+            }
+        }
+
+        throw new NoSuchFieldException("Field '" + fieldName + "' not found in class " + clazz.getName() + " or its superclasses");
     }
 
     protected Class<?> getGenericType(ParameterContext parameterContext) {

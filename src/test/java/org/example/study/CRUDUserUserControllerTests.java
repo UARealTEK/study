@@ -1,6 +1,7 @@
 package org.example.study;
 
 import io.qameta.allure.*;
+import jakarta.validation.constraints.Min;
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.Annotations.RandomUserDto;
@@ -242,7 +243,7 @@ class CRUDUserUserControllerTests extends BaseUserControllerTest {
     @Test
     @Story("Validation")
     @Description("Should validate user data on creation")
-    void checkSaveInvalidUserValidation(@RandomInvalidUserDto UserDto dto) throws Exception {
+    void checkSaveInvalidUserValidation(@RandomInvalidUserDto(fieldName = "age", constraintToBreak = Min.class, strategy = PageStrategyType.RANDOM) UserDto dto) throws Exception {
         //when
         MvcResult result = steps.mvcPost(dto)
                 .andExpect(status().isBadRequest())
@@ -290,7 +291,7 @@ class CRUDUserUserControllerTests extends BaseUserControllerTest {
     @Test
     @Story("Validation")
     @Description("Should validate user data on update")
-    void checkUpdateUserUsingInvalidDto(@RandomInvalidUserDto UserDto dto) throws Exception {
+    void checkUpdateUserUsingInvalidDto(@RandomInvalidUserDto(fieldName = "age", constraintToBreak = Min.class, strategy = PageStrategyType.RANDOM) UserDto dto) throws Exception {
 
         //using PUT on user with ID 1 but that's not ideal. User might not exist and then the test will die
         MvcResult result = steps.mvcPut(1L, dto)
