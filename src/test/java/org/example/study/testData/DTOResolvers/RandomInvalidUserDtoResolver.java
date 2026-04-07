@@ -3,6 +3,8 @@ package org.example.study.testData.DTOResolvers;
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
 import org.example.study.StrategyEngine.DTOStrategies.GenericDtoInvalidStrategy;
+import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -34,13 +36,13 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
         if (isAnnotatedWith(parameterContext, RandomInvalidUserDto.class)) {
             Class<?> rawType = parameterContext.getParameter().getType();
             RandomInvalidUserDto annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDto.class);
-            Class<? extends Annotation> annotationToBreak = annotation.constraintToBreak();
+            Class<? extends Annotation> constraintToBreak = annotation.constraintToBreak();
             String fieldName = annotation.fieldName();
 
             try {
+                PageGenerationStrategy pageStrategy = pageStrategyMap.get(annotation.strategy());
                 Field field = rawType.getDeclaredField(fieldName);
-                Class<?> clazz = field.getType();
-                return new GenericDtoInvalidStrategy().generate(clazz,field,annotationToBreak);
+                return pageStrategy.generateInvalidObj(rawType, field, constraintToBreak);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException("Error generating invalid UserDto due to field mismatch: " + e.getMessage(), e);
             } catch (IllegalAccessException e) {
@@ -51,10 +53,14 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             RandomInvalidUserDtoList annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDtoList.class);
 
             int count = annotation.count();
+            PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+
             try {
-                return new GenericDtoInvalidStrategy().generateList(getGenericType(parameterContext), count);
+                return strategy.generateInvalidObjList(getGenericType(parameterContext), count);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Invalid Class provided for list generation: " + e.getMessage(), e);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException("Error generating invalid a list due to field mismatch: " + e.getMessage(), e);
             }
         }
 
