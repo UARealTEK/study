@@ -12,5 +12,4 @@ import java.lang.annotation.Target;
 public @interface RandomInvalidUserDtoList {
 
     int count() default 5; // Default count of UserDto objects to generate
-    PageStrategyType strategy() default PageStrategyType.RANDOM; // Default strategy for generating the list
 }

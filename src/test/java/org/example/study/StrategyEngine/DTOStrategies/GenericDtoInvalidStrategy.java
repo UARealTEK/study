@@ -23,8 +23,13 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.example.study.testData.TestData.getSingleValidForType;
 import static org.example.study.testData.TestData.getValidListForType;
 
-//TODO: Test it, complete it
-// Integrate it with general PageGenerationStrategy (!)
+/**
+ * Generates invalid DTOs by violating constraint annotations on specific fields.
+ * 
+ * This strategy creates objects with all constraints satisfied, then invalidates
+ * specific fields by breaking their constraint annotations. Supports both single
+ * object and list generation with optional random field invalidation.
+ */
 public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
@@ -108,6 +113,12 @@ public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
                 .toList();
     }
 
+    /**
+        * Map of supported constraint annotations to their corresponding invalidators.
+         * This allows for easy extension by simply adding new annotations and their invalidators to the map.
+     *
+     * Currently, supports Min, Max, NotBlank, and Size annotations. ID fields are explicitly excluded from invalidation.
+     */
     private final Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators = Map.of(
             Min.class, new MinInvalidator(),
             Max.class, new MaxInvalidator(),

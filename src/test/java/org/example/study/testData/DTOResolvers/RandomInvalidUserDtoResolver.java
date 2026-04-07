@@ -2,9 +2,7 @@ package org.example.study.testData.DTOResolvers;
 
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
-import org.example.study.Annotations.RandomUserDtoList;
 import org.example.study.StrategyEngine.DTOStrategies.GenericDtoInvalidStrategy;
-import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -46,21 +44,18 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException("Error generating invalid UserDto due to field mismatch: " + e.getMessage(), e);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Invalid Class provided");
+                throw new RuntimeException("Invalid Class provided for object generation: " + e.getMessage(), e);
             }
-        } else if (isAnnotatedWith(parameterContext, RandomUserDtoList.class)) {
+        } else if (isAnnotatedWith(parameterContext, RandomInvalidUserDtoList.class)) {
             //TODO: finish it. I can reuse PageGenerationStrategy for generating the valid list and then invalidate it using the same strategy as above
             RandomInvalidUserDtoList annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDtoList.class);
 
             int count = annotation.count();
-            PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
-            validateStrategyType(annotation.strategy(), count);
-//            try {
-//
-//            }
-//            List<?> list = strategy.generate(UserDto.class, count);
-
-            return null;
+            try {
+                return new GenericDtoInvalidStrategy().generateList(getGenericType(parameterContext), count);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Invalid Class provided for list generation: " + e.getMessage(), e);
+            }
         }
 
         throw new ParameterResolutionException(

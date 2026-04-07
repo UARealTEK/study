@@ -1,52 +1,347 @@
-# Study Project
+# Study: Book Borrowing Library API
 
 ## Purpose
-Pet project to learn Java and testing. Builds a library API with CRUD operations and book borrowing logic. Focuses on AQA skills in automated testing.
+
+A pet project to practice Java development and testing. Implements a library REST API with book borrowing system. Focus on AQA skills and automated testing excellence.
 
 ## Tech Stack
-- **Java 21**: The programming language used for development.
-- **Spring Boot 4.0.1**: Framework for building the REST API, providing dependency injection, web MVC, and data JPA.
-- **Spring Data JPA**: For ORM and database interactions.
-- **MySQL**: Primary database for production (with MySQL Connector/J).
-- **H2 Database**: In-memory database for testing.
-- **Lombok**: Reduces boilerplate code with annotations.
-- **MapStruct**: For object mapping between DTOs and entities.
-- **Hibernate Validator**: For bean validation.
-- **SpringDoc OpenAPI**: Generates API documentation.
-- **JUnit 5**: Testing framework, including support for tags to enable custom test runs (e.g., grouping tests by type or feature).
-- **Mockito**: For mocking dependencies in unit tests.
-- **RestAssured**: For API integration testing.
-- **Allure**: For generating detailed test reports.
-- **Spring RestDocs**: For API documentation generation.
 
-## Database Setup
-This project requires a local MySQL database to run. Set up MySQL and create the following schema:
+### Core Framework
+- **Spring Boot 4.0.1** - Application framework with MVC, Data JPA, Validation
+- **MySQL 9.3** - Production database
+- **Java 21** - Programming language
+- **Lombok** - Boilerplate reduction
 
-### Tables
-- **users**
-  - `id` BIGINT PRIMARY KEY AUTO_INCREMENT
-  - `full_name` VARCHAR(255) NOT NULL
-  - `age` INT NOT NULL
-  - `gender` VARCHAR(50) NOT NULL
+### API & Mappers
+- **SpringDoc/Swagger** - OpenAPI documentation
+- **MapStruct** - DTO/Entity mapping with compile-time validation
 
-- **books**
-  - `id` BIGINT PRIMARY KEY AUTO_INCREMENT
-  - `name` VARCHAR(255) NOT NULL
-  - `author` VARCHAR(255) NOT NULL
+### Testing (Core Focus)
+- **JUnit 5** - Test framework with parameterization and tags
+- **Mockito** - Dependency mocking for unit/integration tests
+- **RestAssured** - API endpoint testing
+- **Allure** - Test reporting and metrics
 
-- **borrow_records**
-  - `id` BIGINT PRIMARY KEY AUTO_INCREMENT
-  - `user_id` BIGINT NOT NULL, FOREIGN KEY REFERENCES users(id)
-  - `book_id` BIGINT NOT NULL, FOREIGN KEY REFERENCES books(id)
-  - `borrowed_at` DATETIME NOT NULL
-  - `returned_at` DATETIME NULL
+### Design Patterns
+- **Strategy Pattern** - DTO generation strategies (valid/invalid objects)
+- **Method Source** - Custom parameterized test data via annotations
+- **Custom Annotations** - Test data generation with @RandomUserDto, @RandomPageResponseDto
+- **DTOs** - Separated request/response models
 
-Update `application.properties` or `application.yml` with your MySQL connection details (e.g., URL, username, password).
+## Service Layer
 
-## Testing Stack
-The testing stack is a core component of this project, reflecting the focus on AQA practices:
-- **Unit Testing**: Service layer tests (logic testing) using Mockito for mocking and JUnit 5 for assertions.
-- **API Slice Testing**: Controller tests simulating API endpoints with MockMvc.
+Each service encapsulates domain logic and repository access:
+
+### UserService
+Manages user profiles with search, filtering, and caching support.
+
+### BookService
+Manages book catalog with availability tracking (borrowed/available status).
+
+### BorrowService  
+Handles book lending/returning with transaction management and active borrow tracking.
+
+## Database Schema
+
+**users**
+```
+id (PK, auto) | full_name (NOT NULL) | age (NOT NULL) | gender | created_at
+```
+
+**books**
+```
+id (PK, auto) | name (NOT NULL) | author (NOT NULL) | isbn | created_at
+```
+
+**borrow_records**
+```
+id (PK, auto) | user_id (FK) | book_id (FK) | borrowed_at | returned_at | created_at
+Constraint: UNIQUE(user_id, book_id) WHERE returned_at IS NULL
+```
+
+## Test Architecture
+
+### Test Abstraction Layers
+
+```
+BaseTest (Test configuration & utilities)
+├── BaseControllerTest (MockMvc setup for HTTP testing)
+│   ├── BaseUserControllerTest
+│   │   └── CRUDUserUserControllerTests
+│   ├── BaseBookControllerTest
+│   └── BaseB orrowControllerTest
+│
+└── BaseServiceTest (Service layer setup)
+    ├── UserServiceTest
+    ├── BookServiceTest
+    └── BorrowServiceTest
+```
+
+### Test Slice Types
+
+**Controller Tests** (`@WebMvcTest`)
+- API contract testing via HTTP layer simulation
+- Tests request validation, response structure, status codes
+- Mocks service dependencies
+- Uses MockMvc for endpoint invocation
+
+Example:
+```java
+@WebMvcTest(UserController.class)
+class UserControllerTests extends BaseUserControllerTest {
+    // HTTP layer testing - validates API contracts
+}
+```
+
+**Service Tests**  
+- Business logic testing in isolation
+- Tests service methods with repository mocking
+- Validates business rules and transformations
+- Pure unit testing without HTTP layer
+
+Example:
+```java
+class UserServiceTest extends BaseServiceTest {
+    // Service logic testing - validates calculations, state changes, workflows
+}
+```
+
+## Test Data Generation
+
+### ParameterResolver Pattern
+Custom JUnit 5 ParameterResolvers provide automatic test data injection:
+
+- `RandomUserDtoResolver` - Generates valid UserDto
+- `RandomInvalidUserDtoResolver` - Generates UserDto with constraint violations  
+- `RandomPageResponseDTOResolver` - Generates paginated responses
+
+### PageGenerationStrategy Interface
+Central strategy interface for both valid and invalid DTO generation:
+
+```java
+public interface PageGenerationStrategy {
+    <T> List<T> generate(Class<T> clazz, int count);  // Valid objects
+    Object generateInvalidObj(...);  // Single invalid object
+    List<?> generateInvalidObjList(Class<?> clazz, int count);  // Invalid list
+}
+```
+
+**Implementations:**
+- `RandomStrategy` - Random valid objects
+- `SameObjStrategy` - Repeating same object
+- `EmptyStrategy` - Empty list
+
+### GenericDtoInvalidStrategy
+Generates DTOs with specific constraint violations for negative testing. Supports:
+- `@NotBlank` - Violates non-empty requirement
+- `@Size` - Violates size boundaries
+- `@Min/@Max` - Violates numeric ranges
+
+### Usage Examples
+
+```java
+@Test
+void testSave(@RandomUserDto UserDto user) {
+    // user is auto-injected and valid
+}
+
+@Test
+void testValidation(@RandomInvalidUserDto UserDto invalid) {
+    // invalid user violates one constraint
+}
+
+@ParameterizedTest  
+@RandomPageResponseDto(strategy = PageStrategyType.RANDOM, size = 10)
+void testPagination(PageResponseDTO<UserDto> page) {
+    // page with 10 random users
+}
+```
+
+## Test Tags & Custom Runs
+
+Control test execution with custom tags:
+
+```java
+@Smoke  // Critical smoke tests
+@Feature("User Management")  // Feature grouping
+@Story("User CRUD")  // Story mapping
+@Epic("User Management")  // Epic categorization
+```
+
+Run specific tests:
+```bash
+./gradlew test --tests @Smoke
+./gradlew test --tests *User*
+./gradlew test --tests CRUDUserUserControllerTests
+```
+
+## Testing Tools & Techniques
+
+**ArgumentCaptor** - Capture and verify method arguments:
+```java
+ArgumentCaptor<UserDto> captor = ArgumentCaptor.forClass(UserDto.class);
+verify(service).saveUser(captor.capture());
+assertEquals(expected, captor.getValue());
+```
+
+**assertAll()** - Group multiple assertions:
+```java
+assertAll(
+    () -> assertEquals(200, status),
+    () -> assertNotNull(body),
+    () -> assertTrue(body.getId() > 0)
+);
+```
+
+**Recursive Comparison** - Deep object comparison:
+```java
+assertThat(actual)
+    .usingRecursiveComparison()
+    .isEqualTo(expected);
+```
+
+## DTO Structure
+
+### Request/Response DTOs
+- `UserDto` - User profile model
+- `BookDto` - Book catalog model
+- `BorrowRecordRequestDto` - Borrow/return request
+- `BorrowRecordResponseDto` - Borrow record with mapped relationships
+
+### Pagination Response
+All list endpoints return `PageResponseDTO<T>`:
+```json
+{
+    "content": [...],
+    "pageNumber": 0,
+    "pageSize": 5,
+    "totalElements": 42,
+    "totalPages": 9
+}
+```
+
+## Allure Test Reporting
+
+Tests include Allure annotations for detailed metrics:
+
+```java
+@Epic("User Management")
+@Feature("CRUD Operations")
+@Story("Create Users")
+@DisplayName("Should save valid user")
+void testSaveValidUser(@RandomUserDto UserDto user) { }
+```
+
+Generate reports:
+```bash
+./gradlew test
+./gradlew allureReport
+open build/reports/allure/index.html
+```
+
+## Local Development Setup
+
+### Prerequisites
+- Java 21+
+- MySQL 9.3+
+- Gradle 9.x
+
+### Database Setup
+
+```sql
+CREATE DATABASE study_db;
+USE study_db;
+
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    age INT NOT NULL,
+    gender VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE books (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    isbn VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_book (name, author)
+);
+
+CREATE TABLE borrow_records (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    book_id BIGINT NOT NULL,
+    borrowed_at TIMESTAMP NOT NULL,
+    returned_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY active_borrow (user_id, book_id, returned_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+);
+```
+
+Update `application.properties` with MySQL connection details.
+
+### Run Application
+
+```bash
+./gradlew bootRun
+# http://localhost:8080
+# http://localhost:8080/swagger-ui.html
+```
+
+### Run Tests
+
+```bash
+./gradlew test                      # All tests
+./gradlew test --tests "*Controller*"  # Only controller tests
+./gradlew test --tests "*Service*"     # Only service tests
+./gradlew test --tests CRUDUserUserControllerTests
+```
+
+## API Endpoints
+
+### Users
+- `GET /users` - List with pagination
+- `GET /users/{id}` - Get user
+- `GET /users/{id}/borrows` - User's borrow history
+- `POST /users` - Create user
+- `PUT/PATCH /users/{id}` - Update user
+- `DELETE /users/{id}` - Delete user
+
+### Books
+- `GET /books` - List with filtering
+- `GET /books/available` - Available books only
+- `GET /books/borrowed` - Borrowed books only
+- `GET /books/{id}` - Get book
+- `POST /books` - Add book
+- `PUT/PATCH /books/{id}` - Update book
+- `DELETE /books/{id}` - Delete book
+
+### Borrows
+- `GET /borrows` - List all borrows
+- `POST /borrows` - Borrow book
+- `PATCH /borrows` - Return book
+- `GET /borrows/{id}` - Get record
+
+## Coverage
+
+**Base CRUD:** Create, Read, Update, Delete, List for all entities
+
+**Domain Features:**
+- Book availability status
+- Active borrow tracking
+- User borrow history
+- Input validation
+- Error handling
+
+## Validation Rules
+
+- **User**: fullName (NotBlank), age (18-120), gender (MALE/FEMALE/OTHER)
+- **Book**: name (NotBlank), author (NotBlank), isbn (optional)
+- **Borrow**: bookId + userId must exist, unique active borrow per pair
 - **Integration Testing**: Full application context tests where needed.
 - **Parameterized Tests**: Leveraging JUnit 5's Method Source and custom Parameter Resolvers for data-driven testing.
 - **Custom Annotations and Tags**: For categorizing and running specific test suites.
