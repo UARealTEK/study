@@ -1,6 +1,5 @@
 package org.example.study.StrategyEngine.PageStrategies;
 
-import org.example.study.StrategyEngine.DTOStrategies.GenericDtoInvalidStrategy;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 
 import java.lang.annotation.Annotation;
@@ -9,26 +8,29 @@ import java.util.List;
 
 /**
  * Generates empty lists (no objects).
- * Delegates invalid generation to GenericDtoInvalidStrategy.
  */
 public class EmptyStrategy implements PageGenerationStrategy {
-
-    private static final GenericDtoInvalidStrategy invalidStrategy = new GenericDtoInvalidStrategy();
 
     @Override
     public <T> List<T> generate(Class<T> clazz, int count) {
         return List.of();
     }
 
+    /**
+     * This method is not supported in EmptyStrategy since it generates empty lists and does not create any objects.
+     * @return UnsupportedOperationException indicating that invalid object generation is not supported.
+     */
     @Override
-    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException {
-        return invalidStrategy.generate(clazz, field, annotationToBreak);
+    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) {
+        throw new UnsupportedOperationException("EmptyStrategy does not support generating invalid objects.");
     }
 
+    /**
+     * This method is not supported in EmptyStrategy since it generates empty lists and does not create any objects.
+     * @return UnsupportedOperationException indicating that invalid object generation is not supported.
+     */
     @Override
-    public List<?> generateInvalidObjList(Class<?> clazz, int count) throws NoSuchFieldException, IllegalAccessException {
-        return invalidStrategy.generateList(clazz, count);
+    public List<?> generateInvalidObjList(Class<?> clazz, int count) {
+        throw new UnsupportedOperationException("EmptyStrategy does not support generating lists of invalid objects.");
     }
 }
-
-
