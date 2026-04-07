@@ -50,10 +50,14 @@ public class CRUDUserUserServiceTests extends BaseUserServiceTest {
         //then
 
         verify(repository, times(1)).findAll(anySpec(), eq(pageable));
-        assertEquals(page.getContent().size(), result.content().size());
-        assertEquals(pageable.getPageNumber(), result.number());
-        assertEquals(pageable.getPageSize(), result.size());
-        assertEquals(page.getTotalElements(), result.totalElements());
+
+        assertAll(
+                () -> assertEquals(page.getContent().size(), result.content().size()),
+                () -> assertEquals(page.getNumber(), result.number()),
+                () -> assertEquals(page.getSize(), result.size()),
+                () -> assertEquals(page.getTotalPages(), result.totalPages()),
+                () -> assertEquals(page.getTotalElements(), result.totalElements())
+        );
 
         for (int i = 0; i < result.content().size(); i++) {
             assertEquals(result.content().get(i).getFullName(), page.getContent().get(i).getFullName());
