@@ -37,7 +37,6 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         verify(repository, times(1)).findAll(bookEntitySpecCaptor.capture(), eq(pageable));
 
         assertNotNull(bookEntitySpecCaptor.getValue());
-
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertNotNull(response.content()),
