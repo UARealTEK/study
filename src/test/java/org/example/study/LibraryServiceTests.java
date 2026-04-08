@@ -34,7 +34,6 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
         PageResponseDTO<BookDto> response = service.findAllBooks(pageable, null, null);
         //then
-
         verify(repository, times(1)).findAll(bookEntitySpecCaptor.capture(), eq(pageable));
 
         assertNotNull(bookEntitySpecCaptor.getValue());
