@@ -1,6 +1,6 @@
 package org.example.study.DTOs;
 
-import org.springframework.data.domain.Page;
+import lombok.Getter;
 
 import java.util.List;
 

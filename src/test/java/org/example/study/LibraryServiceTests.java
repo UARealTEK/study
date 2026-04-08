@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -48,7 +49,32 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
     }
 
     @Test
-    void checkGetAllBooksWithNotNullArgs() {
+    void checkGetAllBooksWithNotNullArgs(@RandomPageImplObj(strategy = PageStrategyType.RANDOM, totalElements = 15) Page<BookEntity> entityPage) {
+        //given
+        Pageable pageable = entityPage.getPageable();
+        String bookName = entityPage.getContent().getFirst().getName();
+        String authorName = entityPage.getContent().getFirst().getAuthor();
+        //when
 
+            when(repository.findAll(anySpec(), eq(pageable)))
+                    .thenReturn(entityPage);
+        //then
+        PageResponseDTO<BookDto> response = service.findAllBooks(pageable, bookName, authorName);
+
+        verify(repository, times(1)).findAll(anySpec(), eq(pageable));
+
+        assertAll(
+                () -> assertEquals(response.content().getFirst().getName(), bookName),
+                () -> assertEquals(response.content().getFirst().getAuthor(), authorName)
+        );
+
+        assertAll(
+                () -> assertNotNull(response),
+                () -> assertNotNull(response.content()),
+                () -> assertEquals(response.size(), entityPage.getSize()),
+                () -> assertEquals(response.number(), entityPage.getNumber()),
+                () -> assertEquals(response.totalPages(), entityPage.getTotalPages()),
+                () -> assertEquals(response.totalElements(),entityPage.getTotalElements())
+        );
     }
 }

@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface BookMapper extends BaseMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "borrowRecords", ignore = true)
     BookEntity toEntity(BookDto dto);
 
     BookDto toDto(BookEntity dto);
