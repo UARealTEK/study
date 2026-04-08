@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,18 +23,21 @@ import static org.mockito.Mockito.*;
 )
 public class LibraryServiceTests extends BaseLibraryServiceTest {
 
-    //TODO: can use argument captor to check if the correct specification is being passed to the repository
     @Test
     void checkGetAllBooks(@RandomPageImplObj(strategy = PageStrategyType.RANDOM, totalElements = 15) Page<BookEntity> entityPage) {
         //given
         Pageable pageable = entityPage.getPageable();
+
         //when
         when(repository.findAll(anySpec(), eq(pageable)))
                 .thenReturn(entityPage);
+
         PageResponseDTO<BookDto> response = service.findAllBooks(pageable, null, null);
         //then
 
-        verify(repository, times(1)).findAll(anySpec(), eq(pageable));
+        verify(repository, times(1)).findAll(bookEntitySpecCaptor.capture(), eq(pageable));
+
+        assertNotNull(bookEntitySpecCaptor.getValue());
 
         assertAll(
                 () -> assertNotNull(response),
