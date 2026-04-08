@@ -47,4 +47,9 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
                 () -> assertEquals(response.totalElements(),entityPage.getTotalElements())
         );
     }
+
+    @Test
+    void checkGetAllBooksWithNotNullArgs() {
+
+    }
 }
