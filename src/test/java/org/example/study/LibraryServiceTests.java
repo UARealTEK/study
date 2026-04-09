@@ -12,6 +12,7 @@ import org.example.study.testData.DTOResolvers.RandomBookEntityResolver;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -103,7 +104,27 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     @Test
     void checkSaveBook(@RandomBookEntity BookEntity bookEntity) {
+        //given
+        when(repository.save(any(BookEntity.class))).thenReturn(bookEntity);
+        ArgumentCaptor<BookEntity> bookEntityCaptor = ArgumentCaptor.forClass(BookEntity.class);
+        BookDto bookDto = bookMapper.toDto(bookEntity);
 
+        //when
+        BookDto result = service.saveBook(bookDto);
+        //then
+        verify(repository, times(1)).save(bookEntityCaptor.capture());
+        BookEntity capturedVal = bookEntityCaptor.getValue();
+
+        assertAll(
+                () -> assertEquals(capturedVal.getName(), bookDto.getName()),
+                () -> assertEquals(capturedVal.getAuthor(), bookDto.getAuthor())
+        );
+
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(result.getName(), bookEntity.getName()),
+                () -> assertEquals(result.getAuthor(), bookEntity.getAuthor())
+        );
     }
 
 
