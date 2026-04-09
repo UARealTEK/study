@@ -96,11 +96,9 @@ class CRUDUserUserControllerTests extends BaseUserControllerTest {
         );
 
         verify(service).getAllUsers(argThat(
-                pageable -> {
-                    assertThat(pageable.getPageNumber()).isEqualTo(dto.number());
-                    assertThat(pageable.getPageSize()).isEqualTo(dto.size());
-                    return true;
-                }
+                pageable ->
+                    pageable.getPageNumber() == dto.number() &&
+                    pageable.getPageSize() == dto.size()
         ),
                 isNull(),
                 isNull(),

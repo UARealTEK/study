@@ -1,15 +1,9 @@
 package org.example.study.StrategyEngine.DTOStrategies;
 
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.example.study.Annotations.NoConstraint;
-import org.example.study.StrategyEngine.FieldInvalidators.BlankInvalidator;
-import org.example.study.StrategyEngine.FieldInvalidators.MaxInvalidator;
-import org.example.study.StrategyEngine.FieldInvalidators.MinInvalidator;
-import org.example.study.StrategyEngine.FieldInvalidators.SizeInvalidator;
+import org.example.study.StrategyEngine.FieldInvalidators.*;
 import org.example.study.StrategyEngine.interfaces.FieldInvalidator;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 
@@ -25,7 +19,6 @@ import static org.example.study.testData.TestData.getValidListForType;
 
 /**
  * Generates invalid DTOs by violating constraint annotations on specific fields.
- * 
  * This strategy creates objects with all constraints satisfied, then invalidates
  * specific fields by breaking their constraint annotations. Supports both single
  * object and list generation with optional random field invalidation.
@@ -117,13 +110,14 @@ public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
         * Map of supported constraint annotations to their corresponding invalidators.
          * This allows for easy extension by simply adding new annotations and their invalidators to the map.
      *
-     * Currently, supports Min, Max, NotBlank, and Size annotations. ID fields are explicitly excluded from invalidation.
+     * Currently, supports Min, Max, NotBlank, NotNull and Size annotations. ID fields are explicitly excluded from invalidation.
      */
     private final Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators = Map.of(
             Min.class, new MinInvalidator(),
             Max.class, new MaxInvalidator(),
             NotBlank.class, new BlankInvalidator(),
-            Size.class, new SizeInvalidator()
+            Size.class, new SizeInvalidator(),
+            NotNull.class, new NotNullInvalidator()
     );
 
 }

@@ -101,5 +101,10 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         );
     }
 
+    @Test
+    void checkSaveBook(@RandomBookEntity BookEntity bookEntity) {
+
+    }
+
 
 }
