@@ -133,12 +133,9 @@ public class CRUDUserUserServiceTests extends BaseUserServiceTest {
     @Story("Retrieve Single User")
     @Description("Should retrieve a single user")
     void checkGetUser(@RandomUserEntity UserEntity entity) {
-        when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
 
         UserDto dto = service.findById(entity.getId());
-
-        System.out.println(entity);
-        System.out.println(dto);
 
         verify(repository, times(1)).findById(entity.getId());
         assertAll(

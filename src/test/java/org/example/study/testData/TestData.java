@@ -1,7 +1,7 @@
 package org.example.study.testData;
 
 import net.datafaker.Faker;
-import org.example.study.DTOs.BaseUser;
+import org.example.study.DTOs.BookDto;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.Entities.BorrowRecordEntity;
 import org.example.study.DTOs.PageResponseDTO;
@@ -31,15 +31,17 @@ public class TestData {
     //TODO: work with it. It is tightly coupled to the types that I give it
     private static final Map<Class<?>, Function<Integer, List<?>>> generators = Map.of(
             UserDto.class, TestData::getValidUsers,
+            BookDto.class, TestData::getValidBooks,
             UserEntity.class, TestData::getValidEntities,
-            BookEntity.class, TestData::getValidBooks,
+            BookEntity.class, TestData::getValidBookEntities,
             BorrowRecordEntity.class, TestData::getValidRecordEntities
     );
 
     //TODO: working here with BaseUser is fine for now? But Ill think I might refactor this to support all DTOs
     private static final Map<Class<?>, Supplier<?>> singleGenerators = Map.of(
-        UserDto.class, TestData::getSingleValidUser,
-        UserEntity.class, TestData::getSingleValidEntity,
+            UserDto.class, TestData::getSingleValidUser,
+            BookDto.class, TestData::getSingleValidBookDto,
+            UserEntity.class, TestData::getSingleValidEntity,
             BookEntity.class, TestData::getSingleValidBook,
             BorrowRecordEntity.class, TestData::getSingleValidRecordEntity
     );
@@ -47,6 +49,17 @@ public class TestData {
     // Generate a list of valid UserDto using Faker
     private static List<UserDto> getValidUsers(int count) {
         return Stream.generate(() -> new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), random()))
+                .limit(count)
+                .toList();
+    }
+
+    // Generate a list of valid UserDto using Faker
+    private static List<BookDto> getValidBooks(int count) {
+        return Stream.generate(() -> BookDto.builder()
+                        .name(faker.book().title())
+                        .author(faker.book().author())
+                        .build()
+                )
                 .limit(count)
                 .toList();
     }
@@ -63,7 +76,7 @@ public class TestData {
     }
 
     //Generate a list of valid Books using Faker
-    private static List<BookEntity> getValidBooks(int count) {
+    private static List<BookEntity> getValidBookEntities(int count) {
         return Stream.generate(() -> BookEntity.builder()
                         .id(faker.number().numberBetween(0L, 10L))
                         .name(faker.book().title())
@@ -148,7 +161,15 @@ public class TestData {
                 .author(faker.book().author())
                 .build();
     }
-    //TODO: generates a record with NULL borrowedAt / returnedAt variables
+
+    public static BookDto getSingleValidBookDto() {
+        return BookDto.builder()
+                .name(faker.book().title())
+                .author(faker.book().author())
+                .build();
+    }
+
+    //generates a record with NULL borrowedAt / returnedAt variables
     public static BorrowRecordEntity getSingleValidRecordEntity() {
         return BorrowRecordEntity.builder()
                 .id(faker.number().numberBetween(0L, 10L))

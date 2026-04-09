@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 import static org.example.study.testData.TestData.getSingleValidEntity;
 
-//TODO: look into it. Probably works)
+//TODO: look into it
 public class RandomUserEntityResolver implements ParameterResolver {
 
     @Override

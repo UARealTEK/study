@@ -1,26 +1,33 @@
 package org.example.study;
 
+import org.example.study.Annotations.RandomBookEntity;
 import org.example.study.Annotations.RandomPageImplObj;
 import org.example.study.DTOs.BookDto;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.Util.BaseLibraryServiceTest;
 import org.example.study.enums.PageStrategyType;
+import org.example.study.testData.DTOResolvers.RandomBookDtoResolver;
+import org.example.study.testData.DTOResolvers.RandomBookEntityResolver;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(
-        {MockitoExtension.class,
-        RandomPageImplResolver.class}
+@ExtendWith({
+        MockitoExtension.class,
+        RandomPageImplResolver.class,
+        RandomBookDtoResolver.class,
+        RandomBookEntityResolver.class,
+        }
 )
 public class LibraryServiceTests extends BaseLibraryServiceTest {
 
@@ -77,4 +84,22 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
                 () -> assertEquals(response.totalElements(),entityPage.getTotalElements())
         );
     }
+
+    @Test
+    void checkGetSingleBook(@RandomBookEntity BookEntity bookEntity) {
+        //given
+        when(repository.findById(eq(bookEntity.getId()))).thenReturn(Optional.of(bookEntity));
+        //when
+        BookDto result = service.findById(bookEntity.getId());
+        //then
+
+        verify(repository, times(1)).findById(eq(bookEntity.getId()));
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(result.getName(), bookEntity.getName()),
+                () -> assertEquals(result.getAuthor(), bookEntity.getAuthor())
+        );
+    }
+
+
 }

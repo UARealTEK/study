@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
-//TODO: make it generic ? so it can be used not only for BaseUser but for any type ?
 public class RandomPageImplResolver extends BaseParameterResolver {
 
     @Override
