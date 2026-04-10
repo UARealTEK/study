@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * Strategy for generating valid and invalid DTOs.
- * 
  * Valid generation creates instances with all constraints satisfied.
  * Invalid generation creates instances with specific constraints violated.
  */

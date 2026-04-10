@@ -28,7 +28,6 @@ public class TestData {
     private static final UserMapper mapper = Mappers.getMapper(UserMapper.class);
     private static final Faker faker = new Faker();
 
-    //TODO: work with it. It is tightly coupled to the types that I give it
     private static final Map<Class<?>, Function<Integer, List<?>>> generators = Map.of(
             UserDto.class, TestData::getValidUsers,
             BookDto.class, TestData::getValidBooks,
@@ -37,7 +36,6 @@ public class TestData {
             BorrowRecordEntity.class, TestData::getValidRecordEntities
     );
 
-    //TODO: working here with BaseUser is fine for now? But Ill think I might refactor this to support all DTOs
     private static final Map<Class<?>, Supplier<?>> singleGenerators = Map.of(
             UserDto.class, TestData::getSingleValidUser,
             BookDto.class, TestData::getSingleValidBookDto,
