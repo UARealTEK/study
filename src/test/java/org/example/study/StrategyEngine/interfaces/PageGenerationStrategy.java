@@ -18,8 +18,6 @@ public interface PageGenerationStrategy {
      */
     <T> List<T> generate(Class<T> clazz, int count);
 
-    //TODO: Refactor ParameterResolvers / annotations to support flexible generation
-    // look into RandomInvalidUserDtoResolver for example of how to pass specific field and constraint information to the strategy
     /**
      * Generate a single invalid object with a specific field violating the given constraint.
      * @param clazz the class to generate an instance of
