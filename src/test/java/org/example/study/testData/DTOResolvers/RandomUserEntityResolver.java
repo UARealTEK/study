@@ -15,7 +15,6 @@ import java.util.List;
 
 import static org.example.study.testData.TestData.getSingleValidEntity;
 
-//TODO: look into it
 public class RandomUserEntityResolver extends BaseParameterResolver {
 
     @Override
