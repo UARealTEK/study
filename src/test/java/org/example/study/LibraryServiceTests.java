@@ -195,11 +195,11 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
     void checkSaveBookWhenBookAlreadyExists(@RandomBookEntity BookEntity bookEntity) {
         //given
         BookDto bookDto = bookMapper.toDto(bookEntity);
-        when(repository.existsByNameAndAuthor(anyString(),anyString())).thenReturn(true);
+        when(repository.existsByNameAndAuthor(eq(bookDto.getName()),eq(bookDto.getAuthor()))).thenReturn(true);
         //then
         Exception ex = assertThrows(DuplicateBookException.class, () -> service.saveBook(bookDto));
 
-        verify(repository, times(1)).existsByNameAndAuthor(eq(bookEntity.getName()), eq(bookEntity.getAuthor()));
+        verify(repository).existsByNameAndAuthor(eq(bookEntity.getName()), eq(bookEntity.getAuthor()));
         verify(repository, never()).save(any(BookEntity.class));
 
         assertAll(
