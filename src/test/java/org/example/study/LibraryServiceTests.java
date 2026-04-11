@@ -17,6 +17,7 @@ import org.example.study.testData.DTOResolvers.RandomBookDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomBookEntityResolver;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
+import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -165,7 +166,7 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
     @Severity(SeverityLevel.NORMAL)
     void checkSaveBook(@RandomBookEntity BookEntity bookEntity) {
         //given
-        when(repository.save(any(BookEntity.class))).thenReturn(bookEntity);
+        when(repository.save(eq(bookEntity))).thenReturn(bookEntity);
         ArgumentCaptor<BookEntity> bookEntityCaptor = ArgumentCaptor.forClass(BookEntity.class);
         BookDto bookDto = bookMapper.toDto(bookEntity);
 
@@ -184,6 +185,26 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
                 () -> assertNotNull(result),
                 () -> assertEquals(result.getName(), bookEntity.getName()),
                 () -> assertEquals(result.getAuthor(), bookEntity.getAuthor())
+        );
+    }
+
+    @Test
+    @Story("Create new book")
+    @Description("Test saving EXISTING book to the library. Verifies that the exception is thrown in case of saving existing book.")
+    @Severity(SeverityLevel.NORMAL)
+    void checkSaveBookWhenBookAlreadyExists(@RandomBookEntity BookEntity bookEntity) {
+        //given
+        BookDto bookDto = bookMapper.toDto(bookEntity);
+        when(repository.existsByNameAndAuthor(anyString(),anyString())).thenReturn(true);
+        //then
+        Exception ex = assertThrows(DuplicateBookException.class, () -> service.saveBook(bookDto));
+
+        verify(repository, times(1)).existsByNameAndAuthor(eq(bookEntity.getName()), eq(bookEntity.getAuthor()));
+        verify(repository, never()).save(any(BookEntity.class));
+
+        assertAll(
+                () -> assertEquals(ex.getMessage(), new DuplicateBookException(bookDto.getName(),bookDto.getAuthor()).getMessage()),
+                () -> assertInstanceOf(DuplicateBookException.class, ex)
         );
     }
 
