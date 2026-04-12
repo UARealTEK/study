@@ -109,7 +109,6 @@ public class GenericDtoInvalidStrategy implements InvalidDTOGenerationStrategy {
     /**
         * Map of supported constraint annotations to their corresponding invalidators.
          * This allows for easy extension by simply adding new annotations and their invalidators to the map.
-     *
      * Currently, supports Min, Max, NotBlank, NotNull and Size annotations. ID fields are explicitly excluded from invalidation.
      */
     private final Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators = Map.of(

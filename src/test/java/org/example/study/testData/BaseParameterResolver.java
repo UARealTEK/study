@@ -45,8 +45,7 @@ public abstract class BaseParameterResolver implements ParameterResolver {
     }
 
     /**
-     * Finds a field by name, walking up the class hierarchy to support inherited fields.
-     *
+     * Finds a field by name, walking up the class hierarchy to support inherited fields.*
      * This is necessary because UserDto extends BaseUser, and fields like 'age', 'fullName'
      * are declared in BaseUser, not UserDto directly.
      *
@@ -56,6 +55,10 @@ public abstract class BaseParameterResolver implements ParameterResolver {
      * @throws NoSuchFieldException if the field is not found in this class or any superclass
      */
     protected Field findField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        if (clazz == null) {
+            throw new IllegalArgumentException("Class cannot be null");
+        }
+
         Class<?> current = clazz;
 
         while (current != null && current != Object.class) {

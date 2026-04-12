@@ -135,12 +135,5 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         );
     }
 
-    @Test
-    void checkUpdateBook(@RandomBookEntity BookEntity bookEntity) {
-        //given
-        //when
-        //then
-    }
-
 
 }

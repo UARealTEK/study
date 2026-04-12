@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.util.List;
 
-//TODO: make it generic ? so it can be used not only for BaseUser but for any type ?
 @SuppressWarnings("unused")
 public class RandomPageResponseDTOResolver extends BaseParameterResolver {
 
@@ -38,7 +37,7 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
         int page = annotation.number();
         int size = annotation.size();
         int totalElements = annotation.totalElements();
-        int totalPages = (int) Math.ceil((double) totalElements / size);
+        int totalPages = (int) Math.ceil((double) totalElements / size); // manually calculate totalPages to ensure consistency with the provided totalElements and size
         PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
 
         validateStrategyType(annotation.strategy(), totalElements);

@@ -49,12 +49,12 @@ public class BookService extends BaseService {
     }
 
     public BookDto findById(Long id) {
-        BookEntity entity = bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
+        BookEntity entity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
         return mapper.toDto(entity);
     }
 
     public BookEntity findEntityById(Long id) {
-        return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
+        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
     }
 
     public BookDto findByNameAndAuthor(String bookName, String bookAuthor) {
