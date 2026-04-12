@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+//TODO: introduce @ModelAttribute for parametrized requests
 @RequestMapping("/borrows")
 @RestController
 @AllArgsConstructor

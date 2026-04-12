@@ -17,15 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Also Add:
- * - ReadME
- * - Integration tests ? (Testcontainers)
- * - Database migrations (?)
- */
-
 @SuppressWarnings("unused")
 
+//TODO: introduce @ModelAttribute for parametrized requests
 @Validated
 @RestController
 @RequestMapping("/users")
