@@ -73,6 +73,13 @@ public class BookService extends BaseService {
     @Transactional
     public BookDto updateBook(Long bookId, BookDto bookBody) {
         BookEntity entity = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+
+        //This checks if ANOTHER record in the database has the same name / author.
+        // This allows idempotent operations. (update the same row with the same data and NOT throw an exception)
+        if (bookRepository.existsByNameAndAuthorAndIdNot(bookBody.getName(),bookBody.getAuthor(),entity.getId())) {
+            throw new DuplicateBookException(bookBody.getName(), bookBody.getAuthor());
+        }
+
         updateBookData(entity, bookBody);
         return mapper.toDto(entity);
     }
@@ -91,6 +98,11 @@ public class BookService extends BaseService {
         bookRepository.deleteById(bookId);
     }
 
+    /**
+     * Makes sure that only a specified parameter names are allowed
+     * @param request - an incoming http request that is received
+     */
+    //TODO: create an ENUM which provides centralized place in which valid parameters are stored
     public void validateParameters(HttpServletRequest request) {
         Set<String> allowedParams = Set.of("name", "author", "page", "size", "sort");
 

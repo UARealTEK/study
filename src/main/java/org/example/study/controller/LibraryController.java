@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+//TODO: introduce @ModelAttribute for parametrized requests
 @RestController
 @RequestMapping("/library")
 @AllArgsConstructor
@@ -39,6 +40,21 @@ public class LibraryController {
     @GetMapping("/borrowed")
     public PageResponseDTO<BookDto> getBorrowedBooks(Pageable pageable) {
         return bookService.findBorrowedBooks(pageable);
+    }
+
+    @PutMapping("/{id}")
+    public BookDto updateBook(@PathVariable Long id,@Valid @RequestBody BookDto bookDto) {
+        return bookService.updateBook(id,bookDto);
+    }
+
+    @PatchMapping("/{id}")
+    public BookDto patchBook(@PathVariable Long id,@Valid @RequestBody BookDto bookDto) {
+        return bookService.patchBook(id,bookDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
     }
 
 }

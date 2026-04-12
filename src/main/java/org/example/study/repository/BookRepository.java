@@ -1,5 +1,7 @@
 package org.example.study.repository;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +24,6 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
     boolean existsByNameAndAuthor(String name, String author);
 
     Optional<BookEntity> findByNameAndAuthor(String name, String author);
+
+    boolean existsByNameAndAuthorAndIdNot(String name, String author, Long id);
 }
