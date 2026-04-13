@@ -86,6 +86,7 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         );
     }
 
+    //TODO: complete it
     @Test
     void checkGetAllBooksWhenRepositoryIsEmpty(@RandomPageImplObj(strategy = PageStrategyType.EMPTY) Page<BookEntity> entityPage) {
         //given
