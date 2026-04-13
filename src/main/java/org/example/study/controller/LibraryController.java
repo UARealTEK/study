@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 //TODO: introduce @ModelAttribute for parametrized requests
+// This is done to get rid of request param validations (also think how to validate requests which are going to invalid params)
 @RestController
 @RequestMapping("/library")
 @AllArgsConstructor
