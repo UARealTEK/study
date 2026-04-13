@@ -44,7 +44,8 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     @Test
     @Story("Retrieve all books with pagination")
-    @Description("Test retrieving all books from the library with pagination parameters. Verifies that the service correctly maps entities to DTOs and returns proper page metadata.")
+    @Description("Test retrieving all books from the library with pagination parameters. " +
+            "Verifies that the service correctly maps entities to DTOs and returns proper page metadata.")
     @Severity(SeverityLevel.NORMAL)
     void checkGetAllBooks(@RandomPageImplObj(strategy = PageStrategyType.RANDOM, totalElements = 15) Page<BookEntity> entityPage) {
         //given
@@ -70,7 +71,8 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     @Test
     @Story("Retrieve books with filtering")
-    @Description("Test retrieving books filtered by name and author parameters. Verifies that the service applies filtering criteria correctly and returns matching results.")
+    @Description("Test retrieving books filtered by name and author parameters. " +
+            "Verifies that the service applies filtering criteria correctly and returns matching results.")
     @Severity(SeverityLevel.NORMAL)
     void checkGetAllBooksWithNotNullArgs(@RandomPageImplObj(strategy = PageStrategyType.RANDOM, totalElements = 15) Page<BookEntity> entityPage) {
         //given
@@ -103,7 +105,8 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     @Test
     @Story("Handle empty repository")
-    @Description("Test behavior when the repository is empty. Verifies that the service returns an empty page with correct metadata when no books exist.")
+    @Description("Test behavior when the repository is empty. " +
+            "Verifies that the service returns an empty page with correct metadata when no books exist.")
     @Severity(SeverityLevel.NORMAL)
     void checkGetAllBooksWhenRepositoryIsEmpty(@RandomPageImplObj(strategy = PageStrategyType.EMPTY) Page<BookEntity> entityPage) {
         //given
@@ -126,7 +129,8 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     @Test
     @Story("Retrieve single book by ID")
-    @Description("Test retrieving a single book by its ID. Verifies that the service correctly finds and maps the book entity to DTO when the book exists.")
+    @Description("Test retrieving a single book by its ID. " +
+            "Verifies that the service correctly finds and maps the book entity to DTO when the book exists.")
     @Severity(SeverityLevel.NORMAL)
     void checkGetSingleBook(@RandomBookEntity BookEntity bookEntity) {
         //given
@@ -145,7 +149,8 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     @Test
     @Story("Create new book")
-    @Description("Test saving a new book to the library. Verifies that the service correctly maps DTO to entity, saves it to repository, and returns the saved book as DTO.")
+    @Description("Test saving a new book to the library. " +
+            "Verifies that the service correctly maps DTO to entity, saves it to repository, and returns the saved book as DTO.")
     @Severity(SeverityLevel.NORMAL)
     void checkSaveBook(@RandomBookEntity BookEntity bookEntity) {
         //given
@@ -173,7 +178,8 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     @Test
     @Story("Prevent duplicate book creation")
-    @Description("Test error handling when attempting to save a book that already exists. Verifies that the service throws DuplicateBookException and prevents duplicate entries.")
+    @Description("Test error handling when attempting to save a book that already exists. " +
+            "Verifies that the service throws DuplicateBookException and prevents duplicate entries.")
     @Severity(SeverityLevel.CRITICAL)
     void checkSaveExistingBook(@RandomBookDto BookDto dto) {
         //given
@@ -188,6 +194,28 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
                 () -> assertNotNull(ex),
                 () -> assertInstanceOf(DuplicateBookException.class, ex),
                 () -> assertEquals(new DuplicateBookException(dto.getName(), dto.getAuthor()).getMessage(), ex.getMessage())
+        );
+    }
+
+    @Test
+    @Story("Check valid book deletion")
+    @Description("Valid book deletion from the library by ID. " +
+            "Verifies that the service checks for book existence and deletes it properly, interacting with the repository as expected.")
+    @Severity(SeverityLevel.CRITICAL)
+    void checkDeleteBook(@RandomBookEntity BookEntity entity) {
+        //given
+        ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
+        when(repository.existsById(eq(entity.getId()))).thenReturn(true);
+        //when
+        service.deleteBook(entity.getId());
+        //then
+        verify(repository, times(1)).existsById(longCaptor.capture());
+        verify(repository, times(1)).deleteById(longCaptor.capture());
+        verifyNoMoreInteractions(repository);
+
+        assertAll(
+                () -> assertEquals(entity.getId(),longCaptor.getAllValues().getFirst()),
+                () -> assertEquals(entity.getId(),longCaptor.getAllValues().getLast())
         );
     }
 
