@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 @SuppressWarnings("unused")
 
-//TODO: introduce @ModelAttribute for parametrized requests
 @Validated
 @RestController
 @RequestMapping("/users")
