@@ -90,9 +90,21 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
     @Test
     void checkGetAllBooksWhenRepositoryIsEmpty(@RandomPageImplObj(strategy = PageStrategyType.EMPTY) Page<BookEntity> entityPage) {
         //given
-
+        Pageable pageable = entityPage.getPageable();
+        when(repository.findAll(anySpec(), eq(pageable))).thenReturn(entityPage);
         //when
+
+        PageResponseDTO<BookDto> response = service.findAllBooks(pageable, null, null);
         //then
+        verify(repository, times(1)).findAll(anySpec(), eq(pageable));
+
+        assertAll(
+                () -> assertTrue(response.content().isEmpty()),
+                () -> assertEquals(response.number(), entityPage.getNumber()),
+                () -> assertEquals(response.size(), entityPage.getSize()),
+                () -> assertEquals(0, response.totalElements()),
+                () -> assertEquals(0, response.totalPages())
+        );
     }
 
     @Test

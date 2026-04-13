@@ -2,7 +2,6 @@ package org.example.study.testData.PageResolvers;
 
 import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.DTOs.PageResponseDTO;
-import org.example.study.DTOs.UserDto;
 import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
@@ -37,12 +36,17 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
         int page = annotation.number();
         int size = annotation.size();
         int totalElements = annotation.totalElements();
+
+        int start = page * size;
+        int remaining = Math.max(0, totalElements - start);
+        int currentPageSize = Math.min(size,remaining);
         int totalPages = (int) Math.ceil((double) totalElements / size); // manually calculate totalPages to ensure consistency with the provided totalElements and size
         PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
 
         validateStrategyType(annotation.strategy(), totalElements);
+        Class<?> elementType = getGenericType(parameterContext);
 
-        List<?> data = strategy.generate(UserDto.class, totalElements);
+        List<?> data = strategy.generate(elementType, currentPageSize);
 
         return new PageResponseDTO<>(data, page, size, totalElements, totalPages);
     }

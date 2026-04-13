@@ -14,6 +14,9 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
+//TODO: look into my PageImpl resolvers. Make sure it works correctly in accordance to .size() and not to .totalElements()
+// Implement realistic logic for generating a proper structure in case LAST page is requested (no overlapping in case size > amount of elements on the last page)
+// refactor the logic in LIST portion of my resolvers
 public class RandomPageImplResolver extends BaseParameterResolver {
 
     @Override
@@ -37,6 +40,10 @@ public class RandomPageImplResolver extends BaseParameterResolver {
         int page = annotation.page();
         int size = annotation.size();
         int totalElements = annotation.totalElements();
+
+        int start = page * size;
+        int remaining = Math.max(0, totalElements - start);
+        int currentPageSize = Math.min(size,remaining);
         PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
 
         validateStrategyType(annotation.strategy(), totalElements);
@@ -44,7 +51,7 @@ public class RandomPageImplResolver extends BaseParameterResolver {
         Class<?> elementType = getGenericType(parameterContext);
 
         // Use the generic method to get the list
-        List<?> list = strategy.generate(elementType, totalElements);
+        List<?> list = strategy.generate(elementType, currentPageSize);
 
         // Create and return the PageImpl
         return new PageImpl<>(list, PageRequest.of(page, size), totalElements);

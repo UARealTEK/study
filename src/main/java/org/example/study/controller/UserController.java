@@ -7,7 +7,6 @@ import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.Models.UserRequestModel;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserPatchDto;
-import org.example.study.enums.Gender;
 import org.example.study.DTOs.UserDto;
 import org.example.study.service.BorrowService;
 import org.example.study.service.UserService;
