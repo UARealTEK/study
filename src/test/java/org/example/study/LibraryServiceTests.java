@@ -40,7 +40,6 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         //when
         when(repository.findAll(anySpec(), eq(pageable)))
                 .thenReturn(entityPage);
-
         PageResponseDTO<BookDto> response = service.findAllBooks(pageable, null, null);
         //then
         verify(repository, times(1)).findAll(bookEntitySpecCaptor.capture(), eq(pageable));
