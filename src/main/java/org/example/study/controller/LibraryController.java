@@ -1,9 +1,9 @@
 package org.example.study.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.example.study.DTOs.BookDto;
+import org.example.study.DTOs.Models.BookRequestModel;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.service.BookService;
 import org.springframework.data.domain.Pageable;
@@ -26,11 +26,9 @@ public class LibraryController {
 
     @GetMapping(value = {"/", ""})
     public PageResponseDTO<BookDto> getAllBooks(@PageableDefault(size = 5) Pageable pageable,
-                                                @RequestParam(required = false) String name,
-                                                @RequestParam(required = false) String author,
-                                                HttpServletRequest request) {
-        bookService.validateParameters(request);
-        return bookService.findAllBooks(pageable, name, author);
+                                                @ModelAttribute @Valid BookRequestModel bookRequestModel
+                                                ) {
+        return bookService.findAllBooks(pageable, bookRequestModel.name(), bookRequestModel.author());
     }
 
     @GetMapping("/available")

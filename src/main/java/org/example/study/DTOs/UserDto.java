@@ -30,6 +30,7 @@ public class UserDto extends BaseUser {
         return super.getFullName();
     }
 
+    //TODO: how do I validate invalid input for GENDER ?
     @NotNull
     public Gender getGender() {
         return super.getGender();

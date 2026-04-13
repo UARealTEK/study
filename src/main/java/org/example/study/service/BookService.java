@@ -98,21 +98,6 @@ public class BookService extends BaseService {
         bookRepository.deleteById(bookId);
     }
 
-    /**
-     * Makes sure that only a specified parameter names are allowed
-     * @param request - an incoming http request that is received
-     */
-    //TODO: create an ENUM which provides centralized place in which valid parameters are stored
-    public void validateParameters(HttpServletRequest request) {
-        Set<String> allowedParams = Set.of("name", "author", "page", "size", "sort");
-
-        for (String allowedParam : request.getParameterMap().keySet()) {
-            if (!allowedParams.contains(allowedParam)) {
-                throw new IllegalRequestParameter(allowedParam);
-            }
-        }
-    }
-
     /*
     actually believe I don't need it though but OK
      */

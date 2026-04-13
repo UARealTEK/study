@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 //TODO: introduce @ModelAttribute for parametrized requests
+// Think about it because I might not need it for borrow records
 @RequestMapping("/borrows")
 @RestController
 @AllArgsConstructor

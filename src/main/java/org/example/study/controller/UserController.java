@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.example.study.DTOs.BorrowRecordResponseDto;
+import org.example.study.DTOs.Models.UserRequestModel;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserPatchDto;
 import org.example.study.enums.Gender;
@@ -31,10 +32,8 @@ public class UserController {
 
     @GetMapping(value = {"/", ""})
     public PageResponseDTO<UserDto> searchUsers(@PageableDefault(size = 5, sort = "age") Pageable page,
-                                                @RequestParam(required = false) Integer age,
-                                                @RequestParam(required = false) String fullName,
-                                                @RequestParam(required = false) Gender gender) {
-        return userService.getAllUsers(page, age,fullName,gender);
+                                                @ModelAttribute @Valid UserRequestModel userRequestModel) {
+        return userService.getAllUsers(page, userRequestModel.age(), userRequestModel.fullName(), userRequestModel.gender());
     }
 
     @GetMapping("/{id}")
