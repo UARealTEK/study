@@ -98,9 +98,6 @@ public class BookService extends BaseService {
         bookRepository.deleteById(bookId);
     }
 
-    /*
-    actually believe I don't need it though but OK
-     */
     private void updateBookData(BookEntity bookEntity, BookDto bookBody) {
         bookEntity.setAuthor(bookBody.getAuthor());
         bookEntity.setName(bookBody.getName());

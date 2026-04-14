@@ -86,7 +86,8 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         //then
         PageResponseDTO<BookDto> response = service.findAllBooks(pageable, bookName, authorName);
 
-        verify(repository, times(1)).findAll(anySpec(), eq(pageable));
+        verify(repository, times(1)).findAll(bookEntitySpecCaptor.capture(), eq(pageable));
+        assertNotNull(bookEntitySpecCaptor.getValue());
 
         assertAll(
                 () -> assertEquals(response.content().getFirst().getName(), bookName),
@@ -116,7 +117,9 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
         PageResponseDTO<BookDto> response = service.findAllBooks(pageable, null, null);
         //then
-        verify(repository, times(1)).findAll(anySpec(), eq(pageable));
+        verify(repository, times(1)).findAll(bookEntitySpecCaptor.capture(), eq(pageable));
+        //todo: is this really null? If there were NO name / author passed in - it will return unrestricted(). Can this be counted as null ?
+        assertNull(bookEntitySpecCaptor.getValue());
 
         assertAll(
                 () -> assertTrue(response.content().isEmpty()),
@@ -194,6 +197,37 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
                 () -> assertNotNull(ex),
                 () -> assertInstanceOf(DuplicateBookException.class, ex),
                 () -> assertEquals(new DuplicateBookException(dto.getName(), dto.getAuthor()).getMessage(), ex.getMessage())
+        );
+    }
+
+    @Test
+    @Story("Check book updating")
+    @Description("Book update using provided bookDTO" +
+            "Verifies that service correctly checks for existence of ANOTHER book with the same data and then " +
+            "correctly updates EXISTING book entity with the provided data")
+    @Severity(SeverityLevel.CRITICAL)
+    void checkUpdateBook(@RandomBookEntity BookEntity bookEntity,@RandomBookDto BookDto dto) {
+        //given
+        when(repository.findById(eq(bookEntity.getId()))).thenReturn(Optional.of(bookEntity));
+        when(repository.existsByNameAndAuthorAndIdNot(dto.getName(), dto.getAuthor(), bookEntity.getId())).thenReturn(false);
+        //when
+        var result = service.updateBook(bookEntity.getId(), dto);
+        //then
+        verify(repository).findById(eq(bookEntity.getId()));
+        verify(repository).existsByNameAndAuthorAndIdNot(eq(dto.getName()), eq(dto.getAuthor()), eq(bookEntity.getId()));
+        verify(repository, never()).save(any(BookEntity.class));
+
+        assertAll(
+                () -> assertEquals(result.getName(), dto.getName()),
+                () -> assertEquals(result.getAuthor(), dto.getAuthor())
+        );
+
+        /*
+        Makes sure that the ENTITY itself was mutated => update was done IN PLACE
+         */
+        assertAll(
+                () -> assertEquals(bookEntity.getAuthor(), result.getAuthor()),
+                () -> assertEquals(bookEntity.getName(), result.getName())
         );
     }
 

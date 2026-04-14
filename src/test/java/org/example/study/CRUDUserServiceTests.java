@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
                 RandomUserEntityResolver.class
         }
 )
-public class CRUDUserUserServiceTests extends BaseUserServiceTest {
+public class CRUDUserServiceTests extends BaseUserServiceTest {
 
     @Test
     @Story("Retrieve All Users")
@@ -219,7 +219,7 @@ public class CRUDUserUserServiceTests extends BaseUserServiceTest {
     @Story("Update User")
     @Description("Should update an existing user")
     void checkUpdateUser(@RandomUserDto UserDto dto, @RandomUserEntity UserEntity entity) {
-        when(repository.findById(anyLong())).thenReturn(Optional.of(entity));
+        when(repository.findById(eq(entity.getId()))).thenReturn(Optional.of(entity));
 
         //when
         UserDto returnedUser = service.updateUser(dto,entity.getId());
