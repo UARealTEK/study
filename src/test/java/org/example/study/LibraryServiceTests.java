@@ -255,7 +255,7 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
     @Story("Check valid book deletion")
     @Description("Valid book deletion from the library by ID. " +
             "Verifies that the service checks for book existence and deletes it properly, interacting with the repository as expected.")
-    @Severity(SeverityLevel.CRITICAL)
+    @Severity(SeverityLevel.NORMAL)
     void checkDeleteBook(@RandomBookEntity BookEntity entity) {
         //given
         ArgumentCaptor<Long> longCaptor = ArgumentCaptor.forClass(Long.class);
