@@ -1,7 +1,7 @@
 package org.example.study.StrategyEngine.PageStrategies;
 
 import org.example.study.StrategyEngine.DTOStrategies.GenericDtoInvalidStrategy;
-import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -13,12 +13,12 @@ import static org.example.study.testData.TestData.getValidListForType;
  * Generates lists of random valid objects.
  * Delegates invalid generation to GenericDtoInvalidStrategy.
  */
-public class RandomStrategy implements PageGenerationStrategy {
+public class RandomStrategy implements ValidDTOGenerationStrategy {
 
     private static final GenericDtoInvalidStrategy invalidStrategy = new GenericDtoInvalidStrategy();
 
     @Override
-    public <T> List<T> generate(Class<T> clazz, int count) {
+    public <T> List<T> generateList(Class<T> clazz, int count) {
         return getValidListForType(clazz, 10);
     }
 

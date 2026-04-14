@@ -1,0 +1,21 @@
+package org.example.study.StrategyEngine.interfaces;
+
+import java.util.List;
+
+//TODO: violates SRP (Im working with valid AND invalid object generation)
+// separate concerns. Already have InvalidDTOGenerationStrategy  which generates invalid data
+/**
+ * Strategy for generating valid DTOs.
+ * Valid generation creates instances with all constraints satisfied.
+ */
+public interface ValidDTOGenerationStrategy {
+    /**
+     * Generate a list of valid objects of the specified class.
+     * @param clazz the class to generate instances of
+     * @param count number of instances to generate
+     * @return list of valid instances
+     */
+    <T> List<T> generateList(Class<T> clazz, int count);
+
+    //TODO: probably will need generate() method to generate a single Object
+}

@@ -3,7 +3,7 @@ package org.example.study.testData.DTOResolvers;
 import org.example.study.Annotations.RandomBookDto;
 import org.example.study.Annotations.RandomBookDtoList;
 import org.example.study.DTOs.BookDto;
-import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -38,10 +38,10 @@ public class RandomBookDtoResolver extends BaseParameterResolver {
             RandomBookDtoList annotation = parameterContext.findAnnotation(RandomBookDtoList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomBookDtoList annotation"));
             int count = annotation.count();
-            PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+            ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
 
-            return strategy.generate(BookDto.class, count);
+            return strategy.generateList(BookDto.class, count);
         }
 
         throw new ParameterResolutionException(

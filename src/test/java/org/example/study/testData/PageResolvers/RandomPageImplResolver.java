@@ -1,7 +1,7 @@
 package org.example.study.testData.PageResolvers;
 
 import org.example.study.Annotations.RandomPageImplObj;
-import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -44,14 +44,14 @@ public class RandomPageImplResolver extends BaseParameterResolver {
         int start = page * size;
         int remaining = Math.max(0, totalElements - start);
         int currentPageSize = Math.min(size,remaining);
-        PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+        ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
 
         validateStrategyType(annotation.strategy(), totalElements);
 
         Class<?> elementType = getGenericType(parameterContext);
 
         // Use the generic method to get the list
-        List<?> list = strategy.generate(elementType, currentPageSize);
+        List<?> list = strategy.generateList(elementType, currentPageSize);
 
         // Create and return the PageImpl
         return new PageImpl<>(list, PageRequest.of(page, size), totalElements);

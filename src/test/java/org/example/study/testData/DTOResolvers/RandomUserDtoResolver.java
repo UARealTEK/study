@@ -3,7 +3,7 @@ package org.example.study.testData.DTOResolvers;
 import org.example.study.Annotations.RandomUserDto;
 import org.example.study.Annotations.RandomUserDtoList;
 import org.example.study.DTOs.UserDto;
-import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -38,10 +38,10 @@ public class RandomUserDtoResolver extends BaseParameterResolver {
             RandomUserDtoList annotation = parameterContext.findAnnotation(RandomUserDtoList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomUserDtoList annotation"));
             int count = annotation.count();
-            PageGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+            ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
 
-            return strategy.generate(UserDto.class, count);
+            return strategy.generateList(UserDto.class, count);
         }
 
         throw new ParameterResolutionException(

@@ -1,6 +1,6 @@
 package org.example.study.StrategyEngine.PageStrategies;
 
-import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -9,10 +9,10 @@ import java.util.List;
 /**
  * Generates empty lists (no objects).
  */
-public class EmptyStrategy implements PageGenerationStrategy {
+public class EmptyStrategy implements ValidDTOGenerationStrategy {
 
     @Override
-    public <T> List<T> generate(Class<T> clazz, int count) {
+    public <T> List<T> generateList(Class<T> clazz, int count) {
         return List.of();
     }
 

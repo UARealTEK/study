@@ -3,7 +3,7 @@ package org.example.study.testData;
 import org.example.study.StrategyEngine.PageStrategies.EmptyStrategy;
 import org.example.study.StrategyEngine.PageStrategies.RandomStrategy;
 import org.example.study.StrategyEngine.PageStrategies.SameObjStrategy;
-import org.example.study.StrategyEngine.interfaces.PageGenerationStrategy;
+import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.enums.PageStrategyType;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -95,7 +95,7 @@ public abstract class BaseParameterResolver implements ParameterResolver {
         }
     }
 
-    protected static final Map<PageStrategyType, PageGenerationStrategy> pageStrategyMap = Map.of(
+    protected static final Map<PageStrategyType, ValidDTOGenerationStrategy> pageStrategyMap = Map.of(
             PageStrategyType.RANDOM, new RandomStrategy(),
             PageStrategyType.SAME, new SameObjStrategy(),
             PageStrategyType.EMPTY, new EmptyStrategy()
