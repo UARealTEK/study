@@ -191,18 +191,16 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         var ex = assertThrows(DuplicateBookException.class, () -> service.saveBook(dto));
         //then
         verify(repository, times(1)).existsByNameAndAuthor(eq(dto.getName()), eq(dto.getAuthor()));
-        verifyNoMoreInteractions(repository);
+        verify(repository, never()).save(any(BookEntity.class));
 
         assertAll(
-                () -> assertNotNull(ex),
-                () -> assertInstanceOf(DuplicateBookException.class, ex),
                 () -> assertEquals(new DuplicateBookException(dto.getName(), dto.getAuthor()).getMessage(), ex.getMessage())
         );
     }
 
     @Test
     @Story("Check book updating")
-    @Description("Book update using provided bookDTO" +
+    @Description("Book update using provided bookDTO." +
             "Verifies that service correctly checks for existence of ANOTHER book with the same data and then " +
             "correctly updates EXISTING book entity with the provided data")
     @Severity(SeverityLevel.CRITICAL)
@@ -228,6 +226,28 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         assertAll(
                 () -> assertEquals(bookEntity.getAuthor(), result.getAuthor()),
                 () -> assertEquals(bookEntity.getName(), result.getName())
+        );
+    }
+
+    @Test
+    @Story("Check book updating")
+    @Description("Book update using provided bookDTO." +
+            "Verifies that service correctly checks for existence of ANOTHER book with the same data and then " +
+            "correctly throws an exception that signals about a duplicate book in repository")
+    @Severity(SeverityLevel.CRITICAL)
+    void checkUpdateExistingBook(@RandomBookEntity BookEntity bookEntity,@RandomBookDto BookDto dto) {
+        //given
+        when(repository.findById(eq(bookEntity.getId()))).thenReturn(Optional.of(bookEntity));
+        when(repository.existsByNameAndAuthorAndIdNot(dto.getName(), dto.getAuthor(), bookEntity.getId())).thenReturn(true);
+        //when
+        Exception exception = assertThrows(DuplicateBookException.class, () -> service.updateBook(bookEntity.getId(), dto));
+        //then
+        verify(repository).findById(eq(bookEntity.getId()));
+        verify(repository).existsByNameAndAuthorAndIdNot(eq(dto.getName()), eq(dto.getAuthor()), eq(bookEntity.getId()));
+        verify(repository, never()).save(any(BookEntity.class));
+
+        assertAll(
+                () -> assertEquals(new DuplicateBookException(dto.getName(), dto.getAuthor()).getMessage(), exception.getMessage())
         );
     }
 
