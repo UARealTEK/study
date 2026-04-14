@@ -4,6 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
+// This logic may be placed inside Each concrete strategy with each own implementation
+// but for now - separate interface which is further injected in OTHER required places and reused -> fine
+
 /**
  * Generic strategy interface for generating invalid DTOs.
  * Implementations can create invalid instances by violating specific constraints on fields.
