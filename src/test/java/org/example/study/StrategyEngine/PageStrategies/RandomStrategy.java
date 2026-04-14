@@ -10,10 +10,7 @@ import java.util.List;
 
 import static org.example.study.testData.TestData.getValidListForType;
 
-/**
- * Generates lists of random valid objects.
- * Delegates invalid generation to GenericDtoInvalidStrategy.
- */
+//TODO: should generate data and then use InvalidationService to invalidate a specific given field
 public class RandomStrategy implements ValidDTOGenerationStrategy, InvalidDTOGenerationStrategy {
 
     private FieldInvalidationService service;
