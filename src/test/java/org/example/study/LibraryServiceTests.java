@@ -9,6 +9,7 @@ import io.qameta.allure.Story;
 import org.example.study.Annotations.RandomBookDto;
 import org.example.study.Annotations.RandomBookEntity;
 import org.example.study.Annotations.RandomPageImplObj;
+import org.example.study.Annotations.Unit;
 import org.example.study.DTOs.BookDto;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.PageResponseDTO;
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@Unit
 @Epic("Library Management")
 @Feature("Book Service Operations")
 @ExtendWith({
