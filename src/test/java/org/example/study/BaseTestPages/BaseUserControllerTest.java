@@ -32,6 +32,7 @@ public abstract class BaseUserControllerTest extends BaseTest {
 
 
     //TODO: look into this chain of initialization. make sure it works
+    // Look into how JUnit works with ParameterResolver and how it uses declared fields in those custom resolvers
     @BeforeEach
     protected void init() {
         steps = new Steps(mvc, usersEndpoint);
