@@ -1,6 +1,5 @@
 package org.example.study.StrategyEngine.PageStrategies;
 
-import org.example.study.StrategyEngine.DTOStrategies.GenericDtoInvalidStrategy;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 
@@ -33,11 +32,6 @@ public class SameObjStrategy implements ValidDTOGenerationStrategy, InvalidDTOGe
 
     @Override
     public List<?> generateInvalidList(Class<?> clazz, int count) throws NoSuchFieldException, IllegalAccessException {
-        return List.of();
-    }
-
-    @Override
-    public List<?> generateInvalidObjList(Class<?> clazz, int count) throws IllegalAccessException {
         List<?> list = getValidListForType(clazz, count);
         for (Object o : list) {
             invalidateRandomField(o);

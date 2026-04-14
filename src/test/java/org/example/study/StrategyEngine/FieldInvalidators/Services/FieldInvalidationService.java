@@ -17,6 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 //TODO: make it work and refactor the structure so it fits my resolvers
+    //TODO: have a look at invalidateField and invalidateRandomField methods. Need to make sure that these are valid
 public class FieldInvalidationService {
 
     private FieldInvalidatorRegistry fieldInvalidatorRegistry;

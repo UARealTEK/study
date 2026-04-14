@@ -1,6 +1,6 @@
 package org.example.study.StrategyEngine.PageStrategies;
 
-import org.example.study.StrategyEngine.DTOStrategies.GenericDtoInvalidStrategy;
+import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalidationService;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 
@@ -16,7 +16,7 @@ import static org.example.study.testData.TestData.getValidListForType;
  */
 public class RandomStrategy implements ValidDTOGenerationStrategy, InvalidDTOGenerationStrategy {
 
-    private static final GenericDtoInvalidStrategy invalidStrategy = new GenericDtoInvalidStrategy();
+    private FieldInvalidationService service;
 
     @Override
     public <T> List<T> generateValidList(Class<T> clazz, int count) {
@@ -25,12 +25,12 @@ public class RandomStrategy implements ValidDTOGenerationStrategy, InvalidDTOGen
 
     @Override
     public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException {
-        return invalidStrategy.generateInvalidObj(clazz, field, annotationToBreak);
+        return null;
     }
 
     @Override
     public List<?> generateInvalidList(Class<?> clazz, int count) throws NoSuchFieldException, IllegalAccessException {
-        return invalidStrategy.generateInvalidList(clazz, count);
+        return null;
     }
 }
 
