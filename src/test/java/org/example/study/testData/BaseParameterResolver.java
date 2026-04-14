@@ -3,6 +3,7 @@ package org.example.study.testData;
 import org.example.study.StrategyEngine.PageStrategies.EmptyStrategy;
 import org.example.study.StrategyEngine.PageStrategies.RandomStrategy;
 import org.example.study.StrategyEngine.PageStrategies.SameObjStrategy;
+import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.enums.PageStrategyType;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -94,10 +95,4 @@ public abstract class BaseParameterResolver implements ParameterResolver {
             throw  new ParameterResolutionException("totalElements must be bigger than 0 for SAME strategy");
         }
     }
-
-    protected static final Map<PageStrategyType, ValidDTOGenerationStrategy> pageStrategyMap = Map.of(
-            PageStrategyType.RANDOM, new RandomStrategy(),
-            PageStrategyType.SAME, new SameObjStrategy(),
-            PageStrategyType.EMPTY, new EmptyStrategy()
-    );
 }

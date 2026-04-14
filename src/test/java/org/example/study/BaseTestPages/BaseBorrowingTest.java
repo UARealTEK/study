@@ -1,5 +1,5 @@
 
-package org.example.study.Util;
+package org.example.study.BaseTestPages;
 
 import org.example.study.DTOs.Entities.BorrowRecordEntity;
 import org.example.study.repository.BorrowRecordsRepository;

@@ -46,7 +46,7 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
         validateStrategyType(annotation.strategy(), totalElements);
         Class<?> elementType = getGenericType(parameterContext);
 
-        List<?> data = strategy.generateList(elementType, currentPageSize);
+        List<?> data = strategy.generateValidList(elementType, currentPageSize);
 
         return new PageResponseDTO<>(data, page, size, totalElements, totalPages);
     }

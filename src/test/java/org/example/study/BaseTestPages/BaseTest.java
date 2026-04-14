@@ -1,4 +1,4 @@
-package org.example.study.Util;
+package org.example.study.BaseTestPages;
 
 import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Converters.BorrowRecordMapper;

@@ -41,7 +41,7 @@ public class RandomBookDtoResolver extends BaseParameterResolver {
             ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
 
-            return strategy.generateList(BookDto.class, count);
+            return strategy.generateValidList(BookDto.class, count);
         }
 
         throw new ParameterResolutionException(

@@ -2,6 +2,7 @@ package org.example.study.testData.DTOResolvers;
 
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
+import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
+
+import static org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy.pageStrategyMap;
 
 /**
  * Generates invalid UserDto instances with specific constraint violations.
@@ -40,7 +43,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             String fieldName = annotation.fieldName();
 
             try {
-                ValidDTOGenerationStrategy pageStrategy = pageStrategyMap.get(annotation.strategy());
+                InvalidDTOGenerationStrategy pageStrategy = pageStrategyMap.get(annotation.strategy());
                 Field field = findField(rawType, fieldName);
                 return pageStrategy.generateInvalidObj(rawType, field, constraintToBreak);
             } catch (NoSuchFieldException e) {

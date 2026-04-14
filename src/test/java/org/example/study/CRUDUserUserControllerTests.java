@@ -7,7 +7,7 @@ import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.Annotations.RandomUserDto;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.DTOs.UserDto;
-import org.example.study.Util.BaseUserControllerTest;
+import org.example.study.BaseTestPages.BaseUserControllerTest;
 import org.example.study.Annotations.Smoke;
 import org.example.study.enums.Endpoints;
 import org.example.study.enums.Gender;

@@ -51,7 +51,7 @@ public class RandomPageImplResolver extends BaseParameterResolver {
         Class<?> elementType = getGenericType(parameterContext);
 
         // Use the generic method to get the list
-        List<?> list = strategy.generateList(elementType, currentPageSize);
+        List<?> list = strategy.generateValidList(elementType, currentPageSize);
 
         // Create and return the PageImpl
         return new PageImpl<>(list, PageRequest.of(page, size), totalElements);

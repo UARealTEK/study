@@ -1,4 +1,4 @@
-package org.example.study.Util;
+package org.example.study.BaseTestPages;
 
 import org.example.study.DTOs.UserDto;
 import org.example.study.controller.UserController;

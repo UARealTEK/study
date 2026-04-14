@@ -1,5 +1,6 @@
 package org.example.study.StrategyEngine.PageStrategies;
 
+import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
@@ -9,28 +10,21 @@ import java.util.List;
 /**
  * Generates empty lists (no objects).
  */
-public class EmptyStrategy implements ValidDTOGenerationStrategy {
+public class EmptyStrategy implements ValidDTOGenerationStrategy, InvalidDTOGenerationStrategy {
 
     @Override
-    public <T> List<T> generateList(Class<T> clazz, int count) {
+    public <T> List<T> generateValidList(Class<T> clazz, int count) {
         return List.of();
     }
 
-    /**
-     * This method is not supported in EmptyStrategy since it generates empty lists and does not create any objects.
-     * @return UnsupportedOperationException indicating that invalid object generation is not supported.
-     */
     @Override
-    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) {
+    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException {
         throw new UnsupportedOperationException("EmptyStrategy does not support generating invalid objects.");
     }
 
-    /**
-     * This method is not supported in EmptyStrategy since it generates empty lists and does not create any objects.
-     * @return UnsupportedOperationException indicating that invalid object generation is not supported.
-     */
     @Override
-    public List<?> generateInvalidObjList(Class<?> clazz, int count) {
-        throw new UnsupportedOperationException("EmptyStrategy does not support generating lists of invalid objects.");
+    public List<?> generateInvalidList(Class<?> clazz, int count) throws NoSuchFieldException, IllegalAccessException {
+        throw new UnsupportedOperationException("EmptyStrategy does not support generating invalid objects.");
     }
+
 }

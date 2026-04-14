@@ -13,7 +13,7 @@ import org.example.study.Annotations.Unit;
 import org.example.study.DTOs.BookDto;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.PageResponseDTO;
-import org.example.study.Util.BaseLibraryServiceTest;
+import org.example.study.BaseTestPages.BaseLibraryServiceTest;
 import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.DTOResolvers.RandomBookDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomBookEntityResolver;

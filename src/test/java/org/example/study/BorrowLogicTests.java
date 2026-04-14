@@ -2,8 +2,7 @@ package org.example.study;
 
 import io.qameta.allure.*;
 import org.example.study.Annotations.Smoke;
-import org.example.study.Util.BaseBorrowingTest;
-import org.example.study.Util.BaseTest;
+import org.example.study.BaseTestPages.BaseBorrowingTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

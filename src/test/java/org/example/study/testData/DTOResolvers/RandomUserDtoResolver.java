@@ -41,7 +41,7 @@ public class RandomUserDtoResolver extends BaseParameterResolver {
             ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
 
-            return strategy.generateList(UserDto.class, count);
+            return strategy.generateValidList(UserDto.class, count);
         }
 
         throw new ParameterResolutionException(

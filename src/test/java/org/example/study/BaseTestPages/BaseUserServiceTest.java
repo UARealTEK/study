@@ -1,4 +1,4 @@
-package org.example.study.Util;
+package org.example.study.BaseTestPages;
 
 import org.example.study.repository.UserRepository;
 import org.example.study.service.UserService;
