@@ -1,5 +1,6 @@
 package org.example.study.StrategyEngine.FieldInvalidators.Factories;
 
+import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalidationService;
 import org.example.study.StrategyEngine.PageStrategies.EmptyStrategy;
 import org.example.study.StrategyEngine.PageStrategies.RandomStrategy;
 import org.example.study.StrategyEngine.PageStrategies.SameObjStrategy;
@@ -15,10 +16,10 @@ public class InvalidStrategyFactory {
 
     Map<PageStrategyType, InvalidDTOGenerationStrategy> pageStrategyMap;
 
-    InvalidStrategyFactory() {
+    public InvalidStrategyFactory() {
         this.pageStrategyMap = Map.of(
-                PageStrategyType.RANDOM, new RandomStrategy(),
-                PageStrategyType.SAME, new SameObjStrategy(),
+                PageStrategyType.RANDOM, new RandomStrategy(new FieldInvalidationService(new FieldInvalidatorRegistry())),
+                PageStrategyType.SAME, new SameObjStrategy(new FieldInvalidationService(new FieldInvalidatorRegistry())),
                 PageStrategyType.EMPTY, new EmptyStrategy()
         );
     }

@@ -8,12 +8,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static org.example.study.testData.TestData.getSingleValidForType;
 import static org.example.study.testData.TestData.getValidListForType;
 
 //TODO: should generate data and then use InvalidationService to invalidate a specific given field
 public class RandomStrategy implements ValidDTOGenerationStrategy, InvalidDTOGenerationStrategy {
 
-    private FieldInvalidationService service;
+    private final FieldInvalidationService service;
+
+    public RandomStrategy(FieldInvalidationService service) {
+        this.service = service;
+    }
 
     @Override
     public <T> List<T> generateValidList(Class<T> clazz, int count) {
@@ -21,13 +26,19 @@ public class RandomStrategy implements ValidDTOGenerationStrategy, InvalidDTOGen
     }
 
     @Override
-    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException {
-        return null;
+    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws IllegalAccessException {
+        Object obj = getSingleValidForType(clazz);
+        service.invalidateField(obj, field, annotationToBreak);
+        return obj;
     }
 
     @Override
-    public List<?> generateInvalidList(Class<?> clazz, int count) throws NoSuchFieldException, IllegalAccessException {
-        return null;
+    public List<?> generateInvalidList(Class<?> clazz, int count) throws IllegalAccessException {
+        List<?> list = getValidListForType(clazz, count);
+        for (Object o : list) {
+            service.invalidateRandomField(o);
+        }
+        return list;
     }
 }
 

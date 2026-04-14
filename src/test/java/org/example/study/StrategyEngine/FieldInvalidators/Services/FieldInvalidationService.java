@@ -22,7 +22,7 @@ public class FieldInvalidationService {
 
     private FieldInvalidatorRegistry fieldInvalidatorRegistry;
 
-    FieldInvalidationService(FieldInvalidatorRegistry fieldInvalidatorRegistry) {
+    public FieldInvalidationService(FieldInvalidatorRegistry fieldInvalidatorRegistry) {
         this.fieldInvalidatorRegistry = fieldInvalidatorRegistry;
     }
 
@@ -60,7 +60,7 @@ public class FieldInvalidationService {
         fieldInvalidator.invalidate(obj, field);
     }
 
-    private <T> void invalidateRandomField(T obj) throws IllegalAccessException {
+    public <T> void invalidateRandomField(T obj) throws IllegalAccessException {
         List<Field> fields = Arrays.stream(obj.getClass().getDeclaredFields())
                 .filter(f -> f.getAnnotations().length > 0)
                 .filter(f -> !f.isAnnotationPresent(Id.class))
