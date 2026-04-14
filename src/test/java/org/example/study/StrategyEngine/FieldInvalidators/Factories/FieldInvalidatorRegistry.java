@@ -14,7 +14,7 @@ public class FieldInvalidatorRegistry {
 
     private Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators;
 
-    FieldInvalidatorRegistry() {
+    public FieldInvalidatorRegistry() {
         this.fieldInvalidators = Map.of(
                 Min.class, new MinInvalidator(),
                 Max.class, new MaxInvalidator(),

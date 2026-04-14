@@ -31,9 +31,6 @@ public class FieldInvalidationService {
             throw new IllegalArgumentException("Cannot invalidate an ID field.");
         }
         field.setAccessible(true);
-        if (!isFieldTypeCompatible(field, obj)) {
-            throw new IllegalArgumentException("Field type does not match the generated object's type.");
-        }
         if (annotation == NoConstraint.class) {
             List<? extends Annotation> annotations = getMatchedAnnotations(field);
             if (annotations.isEmpty()) {
@@ -79,10 +76,6 @@ public class FieldInvalidationService {
 
         Annotation randomAnnotation = annotations.get(ThreadLocalRandom.current().nextInt(annotations.size()));
         invalidateField(obj, randomField, randomAnnotation.annotationType());
-    }
-
-    private boolean isFieldTypeCompatible(Field field, Object value) {
-        return field.getDeclaringClass().isAssignableFrom(value.getClass());
     }
 
     private List<? extends Annotation> getMatchedAnnotations(Field field) {

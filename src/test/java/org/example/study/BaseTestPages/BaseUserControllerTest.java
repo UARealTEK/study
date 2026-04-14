@@ -1,6 +1,9 @@
 package org.example.study.BaseTestPages;
 
 import org.example.study.DTOs.UserDto;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.FieldInvalidatorRegistry;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.InvalidStrategyFactory;
+import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalidationService;
 import org.example.study.controller.UserController;
 import org.example.study.enums.Endpoints;
 import org.example.study.service.UserService;
@@ -25,10 +28,16 @@ public abstract class BaseUserControllerTest extends BaseTest {
     protected UserService service;
     protected final Endpoints usersEndpoint = Endpoints.USERS;
     protected Steps steps;
+    protected InvalidStrategyFactory strategyFactory;
 
+
+    //TODO: look into this chain of initialization. make sure it works
     @BeforeEach
     protected void init() {
         steps = new Steps(mvc, usersEndpoint);
+        FieldInvalidatorRegistry registry = new FieldInvalidatorRegistry();
+        FieldInvalidationService service = new FieldInvalidationService(registry);
+        strategyFactory = new InvalidStrategyFactory(service);
     }
 
     @SuppressWarnings("InnerClassMayBeStatic")

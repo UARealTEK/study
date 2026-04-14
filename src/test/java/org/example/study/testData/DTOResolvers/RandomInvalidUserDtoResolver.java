@@ -22,7 +22,11 @@ import java.util.List;
  */
 public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
-    private InvalidStrategyFactory strategyFactory = new InvalidStrategyFactory();
+    private InvalidStrategyFactory strategyFactory;
+
+    public RandomInvalidUserDtoResolver(InvalidStrategyFactory factory) {
+        this.strategyFactory = factory;
+    }
 
     @Override
     public boolean supportsParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {

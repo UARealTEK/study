@@ -14,17 +14,17 @@ import java.util.Map;
  */
 public class InvalidStrategyFactory {
 
-    Map<PageStrategyType, InvalidDTOGenerationStrategy> pageStrategyMap;
+    Map<PageStrategyType, InvalidDTOGenerationStrategy> strategies;
 
-    public InvalidStrategyFactory() {
-        this.pageStrategyMap = Map.of(
-                PageStrategyType.RANDOM, new RandomStrategy(new FieldInvalidationService(new FieldInvalidatorRegistry())),
-                PageStrategyType.SAME, new SameObjStrategy(new FieldInvalidationService(new FieldInvalidatorRegistry())),
+    public InvalidStrategyFactory(FieldInvalidationService service) {
+        this.strategies = Map.of(
+                PageStrategyType.RANDOM, new RandomStrategy(service),
+                PageStrategyType.SAME, new SameObjStrategy(service),
                 PageStrategyType.EMPTY, new EmptyStrategy()
         );
     }
 
-    public InvalidDTOGenerationStrategy getInvalidDTOGenerationStrategy(PageStrategyType pageStrategyType) {
-        return pageStrategyMap.get(pageStrategyType);
+    public InvalidDTOGenerationStrategy getInvalidDTOGenerationStrategy(PageStrategyType type) {
+        return strategies.get(type);
     }
 }
