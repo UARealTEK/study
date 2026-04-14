@@ -21,7 +21,7 @@ import static java.time.LocalDateTime.now;
 @SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
-public class BorrowService extends  BaseService{
+public class BorrowService extends BaseService{
 
     private final BookService bookService;
     private final UserService userService;

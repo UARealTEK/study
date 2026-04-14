@@ -2,8 +2,10 @@ package org.example.study.enums;
 
 import lombok.Getter;
 
-//TODO: need to look into it to make sure I reuse it both in controllers AND in tests
-// Also need to make sure I use different endpoint enum classes for different controllers
+/**
+ * ENUM for testing purposes that holds endpoints for Controller testing
+ * FYI -> this might be a redundant component but I've decided to have it anyway since it looks cleaner
+ */
 @Getter
 public enum Endpoints {
     USERS("/users"),

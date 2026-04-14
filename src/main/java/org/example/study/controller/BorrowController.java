@@ -11,8 +11,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-//TODO: introduce @ModelAttribute for parametrized requests
-// Think about it because I might not need it for borrow records
 @RequestMapping("/borrows")
 @RestController
 @AllArgsConstructor
@@ -31,6 +29,11 @@ public class BorrowController {
         return borrowService.returnBook(requestDto.bookId(), requestDto.userId());
     }
 
+    /*
+    Fetch all available borrow records
+    No query parameters are available for this record
+    (Maybe I need to add it here. Not sure yet)
+     */
     @GetMapping(value = {"/", ""})
     public PageResponseDTO<BorrowRecordResponseDto> getAllRecords(@PageableDefault(size = 5) Pageable pageable) {
         return borrowService.getAllBorrowRecords(pageable);
