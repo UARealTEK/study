@@ -18,6 +18,7 @@ import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.DTOResolvers.RandomBookDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomBookEntityResolver;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
+import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -195,9 +196,7 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         verify(repository, times(1)).existsByNameAndAuthor(eq(dto.getName()), eq(dto.getAuthor()));
         verify(repository, never()).save(any(BookEntity.class));
 
-        assertAll(
-                () -> assertEquals(new DuplicateBookException(dto.getName(), dto.getAuthor()).getMessage(), ex.getMessage())
-        );
+        assertEquals(new DuplicateBookException(dto.getName(), dto.getAuthor()).getMessage(), ex.getMessage());
     }
 
     @Test
@@ -248,13 +247,12 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         verify(repository).existsByNameAndAuthorAndIdNot(eq(dto.getName()), eq(dto.getAuthor()), eq(bookEntity.getId()));
         verify(repository, never()).save(any(BookEntity.class));
 
-        assertAll(
-                () -> assertEquals(new DuplicateBookException(dto.getName(), dto.getAuthor()).getMessage(), exception.getMessage())
-        );
+        assertEquals(new DuplicateBookException(dto.getName(), dto.getAuthor()).getMessage(), exception.getMessage());
+
     }
 
     @Test
-    @Story("Check valid book deletion")
+    @Story("Check book deletion")
     @Description("Valid book deletion from the library by ID. " +
             "Verifies that the service checks for book existence and deletes it properly, interacting with the repository as expected.")
     @Severity(SeverityLevel.NORMAL)
@@ -273,6 +271,23 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
                 () -> assertEquals(entity.getId(),longCaptor.getAllValues().getFirst()),
                 () -> assertEquals(entity.getId(),longCaptor.getAllValues().getLast())
         );
+    }
+
+    @Test
+    @Story("Check book deletion")
+    @Description("Invalid book deletion from the library by ID. " +
+            "Verifies that the service checks for book existence and throws an exceptions once the book is not found.")
+    @Severity(SeverityLevel.NORMAL)
+    void checkDeleteNotExistingBook(@RandomBookEntity BookEntity entity) {
+        //given
+        when(repository.existsById(eq(entity.getId()))).thenReturn(false);
+        //when
+        Exception ex = assertThrows(BookNotFoundException.class, () -> service.deleteBook(entity.getId()));
+        //then
+        verify(repository).existsById(eq(entity.getId()));
+        verify(repository, never()).deleteById(anyLong());
+
+        assertEquals(new BookNotFoundException(entity.getId()).getMessage(), ex.getMessage());
     }
 
 
