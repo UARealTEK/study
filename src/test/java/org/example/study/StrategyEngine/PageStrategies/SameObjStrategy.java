@@ -31,14 +31,14 @@ public class SameObjStrategy implements ValidDTOGenerationStrategy, InvalidDTOGe
     }
 
     @Override
-    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException {
+    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws IllegalAccessException {
         Object dao = getSingleValidForType(clazz);
         service.invalidateField(dao, field, annotationToBreak);
         return dao;
     }
 
     @Override
-    public List<?> generateInvalidList(Class<?> clazz, int count) throws NoSuchFieldException, IllegalAccessException {
+    public List<?> generateInvalidList(Class<?> clazz, int count) throws IllegalAccessException {
         List<?> list = getValidListForType(clazz, count);
         for (Object o : list) {
             service.invalidateRandomField(o);

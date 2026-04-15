@@ -11,7 +11,6 @@ import java.util.List;
 import static org.example.study.testData.TestData.getSingleValidForType;
 import static org.example.study.testData.TestData.getValidListForType;
 
-//TODO: should generate data and then use InvalidationService to invalidate a specific given field
 public class RandomStrategy implements ValidDTOGenerationStrategy, InvalidDTOGenerationStrategy {
 
     private final FieldInvalidationService service;
