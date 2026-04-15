@@ -28,7 +28,6 @@ public class RandomBookDtoResolver extends BaseParameterResolver {
 
     @Override
     public boolean supportsParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
-
         boolean isEligibleForSingle = isAnnotatedWith(parameterContext, RandomBookDto.class) &&
                 isSuperOf(BookDto.class, parameterContext);
         boolean isEligibleForList = isAnnotatedWith(parameterContext, RandomBookDtoList.class) &&

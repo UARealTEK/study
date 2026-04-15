@@ -18,18 +18,21 @@ import java.util.Map;
  * NOT really a factory though. Just a centralized tool to access a map that contains currently available strategies
  */
 
-//TODO: look into it. Why it is tied up to INVALID data generation. Each strategy could be both
-// add a separate getter / map of strategies for VALID strategies
+
+    //TODO: SPLIT IT into two DISPATCHERS !
 public class StrategyFactory {
 
-    Map<PageStrategyType, InvalidDTOGenerationStrategy> invalidStrategies;
-    Map<PageStrategyType, ValidDTOGenerationStrategy> validStrategies;
+    private Map<PageStrategyType, InvalidDTOGenerationStrategy> invalidStrategies;
+    private Map<PageStrategyType, ValidDTOGenerationStrategy> validStrategies;
 
     public StrategyFactory(FieldInvalidationService service) {
         this.invalidStrategies = Map.of(
                 PageStrategyType.RANDOM, new RandomObjInvalidStrategy(service),
                 PageStrategyType.SAME, new SameObjInvalidStrategy(service),
                 PageStrategyType.EMPTY, new EmptyObjInvalidStrategy());
+    }
+
+    public StrategyFactory() {
         this.validStrategies = Map.of(
                 PageStrategyType.RANDOM, new RandomObjValidStrategy(),
                 PageStrategyType.SAME, new SameObjValidStrategy(),
