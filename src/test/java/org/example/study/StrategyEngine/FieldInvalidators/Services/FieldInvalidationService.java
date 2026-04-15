@@ -2,7 +2,7 @@ package org.example.study.StrategyEngine.FieldInvalidators.Services;
 
 import jakarta.persistence.Id;
 import org.example.study.Annotations.NoConstraint;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.FieldInvalidatorRegistry;
+import org.example.study.StrategyEngine.FieldInvalidators.Registries.FieldInvalidatorRegistry;
 import org.example.study.StrategyEngine.interfaces.FieldInvalidator;
 
 import java.lang.annotation.Annotation;

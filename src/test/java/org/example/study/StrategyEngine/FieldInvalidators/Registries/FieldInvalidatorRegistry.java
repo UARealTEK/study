@@ -1,4 +1,4 @@
-package org.example.study.StrategyEngine.FieldInvalidators.Factories;
+package org.example.study.StrategyEngine.FieldInvalidators.Registries;
 
 import jakarta.validation.constraints.*;
 import org.example.study.StrategyEngine.FieldInvalidators.*;

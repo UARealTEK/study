@@ -1,10 +1,10 @@
 package org.example.study.BaseTestPages;
 
 import org.example.study.DTOs.Entities.BookEntity;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.FieldInvalidatorRegistry;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.StrategyFactory;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.InvalidStrategyFactory;
+import org.example.study.StrategyEngine.FieldInvalidators.Registries.FieldInvalidatorRegistry;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalidationService;
-import org.example.study.StrategyEngine.interfaces.FieldInvalidator;
 import org.example.study.repository.BookRepository;
 import org.example.study.service.BookService;
 import org.example.study.testData.DTOResolvers.RandomBookDtoResolver;
@@ -24,8 +24,8 @@ public abstract class BaseLibraryServiceTest extends BaseTest {
     @Captor
     protected ArgumentCaptor<Specification<BookEntity>> bookEntitySpecCaptor;
     protected RandomBookDtoResolver resolver;
-    protected StrategyFactory validFactory;
-    protected StrategyFactory invalidFactory;
+    protected ValidStrategyFactory validFactory;
+    protected InvalidStrategyFactory invalidFactory;
     protected FieldInvalidationService invalidationService;
     protected FieldInvalidatorRegistry registry;
 
@@ -34,11 +34,13 @@ public abstract class BaseLibraryServiceTest extends BaseTest {
         service = new BookService(repository, bookMapper);
         registry = new FieldInvalidatorRegistry();
         invalidationService = new FieldInvalidationService(registry);
-        validFactory = new StrategyFactory();
-        invalidFactory = new StrategyFactory(invalidationService);
+        validFactory = new ValidStrategyFactory();
+        invalidFactory = new InvalidStrategyFactory(invalidationService);
+        resolver = new RandomBookDtoResolver(validFactory);
     }
 
     protected void cleanUp() {
         service = null;
+        repository = null;
     }
 }

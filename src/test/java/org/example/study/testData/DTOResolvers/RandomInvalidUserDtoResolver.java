@@ -2,7 +2,7 @@ package org.example.study.testData.DTOResolvers;
 
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.StrategyFactory;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
@@ -22,10 +22,10 @@ import java.util.List;
  */
 public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
-    private StrategyFactory strategyFactory;
+    private ValidStrategyFactory validStrategyFactory;
 
-    public RandomInvalidUserDtoResolver(StrategyFactory factory) {
-        this.strategyFactory = factory;
+    public RandomInvalidUserDtoResolver(ValidStrategyFactory factory) {
+        this.validStrategyFactory = factory;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             String fieldName = annotation.fieldName();
 
             try {
-                InvalidDTOGenerationStrategy pageStrategy = strategyFactory.getInvalidDTOGenerationStrategy(annotation.strategy());
+                InvalidDTOGenerationStrategy pageStrategy = validStrategyFactory.getInvalidDTOGenerationStrategy(annotation.strategy());
                 Field field = findField(rawType, fieldName);
                 return pageStrategy.generateInvalidObj(rawType, field, constraintToBreak);
             } catch (NoSuchFieldException e) {
@@ -59,7 +59,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             RandomInvalidUserDtoList annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDtoList.class);
 
             int count = annotation.count();
-            InvalidDTOGenerationStrategy strategy = strategyFactory.getInvalidDTOGenerationStrategy(annotation.strategy());
+            InvalidDTOGenerationStrategy strategy = validStrategyFactory.getInvalidDTOGenerationStrategy(annotation.strategy());
 
             try {
                 return strategy.generateInvalidList(getGenericType(parameterContext), count);

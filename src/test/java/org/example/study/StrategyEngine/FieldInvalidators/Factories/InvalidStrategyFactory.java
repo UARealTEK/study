@@ -18,33 +18,18 @@ import java.util.Map;
  * NOT really a factory though. Just a centralized tool to access a map that contains currently available strategies
  */
 
-
-    //TODO: SPLIT IT into two DISPATCHERS !
-public class StrategyFactory {
+public class InvalidStrategyFactory {
 
     private Map<PageStrategyType, InvalidDTOGenerationStrategy> invalidStrategies;
-    private Map<PageStrategyType, ValidDTOGenerationStrategy> validStrategies;
 
-    public StrategyFactory(FieldInvalidationService service) {
+    public InvalidStrategyFactory(FieldInvalidationService service) {
         this.invalidStrategies = Map.of(
                 PageStrategyType.RANDOM, new RandomObjInvalidStrategy(service),
                 PageStrategyType.SAME, new SameObjInvalidStrategy(service),
                 PageStrategyType.EMPTY, new EmptyObjInvalidStrategy());
     }
 
-    public StrategyFactory() {
-        this.validStrategies = Map.of(
-                PageStrategyType.RANDOM, new RandomObjValidStrategy(),
-                PageStrategyType.SAME, new SameObjValidStrategy(),
-                PageStrategyType.EMPTY, new EmptyObjValidStrategy()
-        );
-    }
-
     public InvalidDTOGenerationStrategy getInvalidDTOGenerationStrategy(PageStrategyType type) {
         return invalidStrategies.get(type);
-    }
-
-    public ValidDTOGenerationStrategy getValidDTOGenerationStrategy(PageStrategyType type) {
-        return validStrategies.get(type);
     }
 }
