@@ -6,8 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
-//TODO: violates SRP (Im working with valid AND invalid object generation)
-// separate concerns. Already have InvalidDTOGenerationStrategy  which generates invalid data
+//TODO: Create concrete implementations for this interface
 /**
  * Strategy for generating valid DTOs.
  * Valid generation creates instances with all constraints satisfied.

@@ -1,40 +1,28 @@
-package org.example.study.StrategyEngine.PageStrategies;
+package org.example.study.StrategyEngine.PageStrategies.InvalidStrategies;
 
 import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalidationService;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
-import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.example.study.testData.TestData.getSingleValidForType;
 import static org.example.study.testData.TestData.getValidListForType;
 
-/**
- * Generates lists with the same valid object repeated.
- * Delegates invalid generation to GenericDtoInvalidStrategy.
- */
-public class SameObjStrategy implements ValidDTOGenerationStrategy, InvalidDTOGenerationStrategy {
+public class RandomObjInvalidStrategy implements InvalidDTOGenerationStrategy {
 
     private final FieldInvalidationService service;
 
-    public SameObjStrategy(FieldInvalidationService service) {
+    public RandomObjInvalidStrategy(FieldInvalidationService service) {
         this.service = service;
     }
 
     @Override
-    public <T> List<T> generateValidList(Class<T> clazz, int count) {
-        List<T> list = getValidListForType(clazz, 1);
-        return Stream.generate(list::getFirst).limit(count).toList();
-    }
-
-    @Override
     public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws IllegalAccessException {
-        Object dao = getSingleValidForType(clazz);
-        service.invalidateField(dao, field, annotationToBreak);
-        return dao;
+        Object obj = getSingleValidForType(clazz);
+        service.invalidateField(obj, field, annotationToBreak);
+        return obj;
     }
 
     @Override
@@ -43,7 +31,7 @@ public class SameObjStrategy implements ValidDTOGenerationStrategy, InvalidDTOGe
         for (Object o : list) {
             service.invalidateRandomField(o);
         }
-        return Stream.generate(list::getFirst).limit(count).toList();
+        return list;
     }
 }
 

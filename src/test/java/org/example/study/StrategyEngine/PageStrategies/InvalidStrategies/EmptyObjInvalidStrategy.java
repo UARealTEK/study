@@ -1,7 +1,6 @@
-package org.example.study.StrategyEngine.PageStrategies;
+package org.example.study.StrategyEngine.PageStrategies.InvalidStrategies;
 
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
-import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -10,12 +9,7 @@ import java.util.List;
 /**
  * Generates empty lists (no objects).
  */
-public class EmptyStrategy implements ValidDTOGenerationStrategy, InvalidDTOGenerationStrategy {
-
-    @Override
-    public <T> List<T> generateValidList(Class<T> clazz, int count) {
-        return List.of();
-    }
+public class EmptyObjInvalidStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
     public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException {

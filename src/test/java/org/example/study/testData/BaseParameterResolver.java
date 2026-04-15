@@ -1,10 +1,5 @@
 package org.example.study.testData;
 
-import org.example.study.StrategyEngine.PageStrategies.EmptyStrategy;
-import org.example.study.StrategyEngine.PageStrategies.RandomStrategy;
-import org.example.study.StrategyEngine.PageStrategies.SameObjStrategy;
-import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
-import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.enums.PageStrategyType;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -14,7 +9,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Map;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public abstract class BaseParameterResolver implements ParameterResolver {

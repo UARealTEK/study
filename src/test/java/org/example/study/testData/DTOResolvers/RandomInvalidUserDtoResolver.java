@@ -2,7 +2,7 @@ package org.example.study.testData.DTOResolvers;
 
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.InvalidStrategyFactory;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.StrategyFactory;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
@@ -22,9 +22,9 @@ import java.util.List;
  */
 public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
-    private InvalidStrategyFactory strategyFactory;
+    private StrategyFactory strategyFactory;
 
-    public RandomInvalidUserDtoResolver(InvalidStrategyFactory factory) {
+    public RandomInvalidUserDtoResolver(StrategyFactory factory) {
         this.strategyFactory = factory;
     }
 
