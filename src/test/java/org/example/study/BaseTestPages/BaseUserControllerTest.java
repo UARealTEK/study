@@ -28,19 +28,16 @@ public abstract class BaseUserControllerTest extends BaseTest {
     protected UserService service;
     protected final Endpoints usersEndpoint = Endpoints.USERS;
     protected Steps steps;
-    protected ValidStrategyFactory validStrategyFactory;
-    protected FieldInvalidatorRegistry invalidatorRegistry;
-    protected FieldInvalidationService invalidationService;
-
 
     //TODO: look into this chain of initialization. make sure it works
     // Look into how JUnit works with ParameterResolver and how it uses declared fields in those custom resolvers
     @BeforeEach
     protected void init() {
         steps = new Steps(mvc, usersEndpoint);
-        invalidatorRegistry = new FieldInvalidatorRegistry();
-        invalidationService = new FieldInvalidationService(invalidatorRegistry);
-        validStrategyFactory = new ValidStrategyFactory();
+    }
+
+    protected void cleanUp() {
+        steps = null;
     }
 
     @SuppressWarnings("InnerClassMayBeStatic")

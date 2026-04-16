@@ -5,6 +5,7 @@ import org.example.study.Annotations.RandomBookDtoList;
 import org.example.study.DTOs.BookDto;
 import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
+import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -14,24 +15,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.util.List;
 
-import static org.example.study.testData.TestData.getSingleValidBookDto;
-//TODO: look into it and do the same resolver which needs this
-// use this approach to instantiate my factory in the resolver
-//private ValidStrategyFactory getFactory(ExtensionContext context) {
-//    return context.getStore(ExtensionContext.Namespace.GLOBAL)
-//        .getOrComputeIfAbsent("validFactory",
-//            key -> new ValidStrategyFactory(),
-//            ValidStrategyFactory.class);
-//}
-
-//TODO: complete it
 public class RandomBookDtoResolver extends BaseParameterResolver {
-
-    private ValidStrategyFactory factory;
-
-    public RandomBookDtoResolver(ValidStrategyFactory factory) {
-        this.factory = factory;
-    }
 
     @Override
     public boolean supportsParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
@@ -47,14 +31,16 @@ public class RandomBookDtoResolver extends BaseParameterResolver {
 
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+        ValidStrategyFactory validStrategyFactory = getValidFactory(extensionContext);
         if (isAnnotatedWith(parameterContext, RandomBookDto.class)) {
-            //TODO: this bypasses everything. Use factory now instead
-            return getSingleValidBookDto();
+            return validStrategyFactory
+                    .getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
+                    .generateValidObject(BookDto.class);
         } else if (isAnnotatedWith(parameterContext, RandomBookDtoList.class)) {
             RandomBookDtoList annotation = parameterContext.findAnnotation(RandomBookDtoList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomBookDtoList annotation"));
             int count = annotation.count();
-            ValidDTOGenerationStrategy strategy = factory.getValidDTOGenerationStrategy(annotation.strategy());
+            ValidDTOGenerationStrategy strategy = validStrategyFactory.getValidDTOGenerationStrategy(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
 
             return strategy.generateValidList(BookDto.class, count);

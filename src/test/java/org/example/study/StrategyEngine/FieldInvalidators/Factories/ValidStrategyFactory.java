@@ -17,7 +17,7 @@ import java.util.Map;
     //TODO: SPLIT IT into two DISPATCHERS !
 public class ValidStrategyFactory {
 
-    private Map<PageStrategyType, ValidDTOGenerationStrategy> validStrategies;
+    private final Map<PageStrategyType, ValidDTOGenerationStrategy> validStrategies;
 
     public ValidStrategyFactory() {
         this.validStrategies = Map.of(

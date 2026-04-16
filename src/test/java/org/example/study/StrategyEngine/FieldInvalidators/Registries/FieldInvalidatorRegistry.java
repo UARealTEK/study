@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class FieldInvalidatorRegistry {
 
-    private Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators;
+    private final Map<Class<? extends Annotation>, FieldInvalidator> fieldInvalidators;
 
     public FieldInvalidatorRegistry() {
         this.fieldInvalidators = Map.of(

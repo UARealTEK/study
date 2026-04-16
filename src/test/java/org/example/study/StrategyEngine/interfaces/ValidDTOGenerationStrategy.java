@@ -20,5 +20,7 @@ public interface ValidDTOGenerationStrategy {
      */
     <T> List<T> generateValidList(Class<T> clazz, int count);
 
+    Object generateValidObject(Class<?> clazz);
+
     //TODO: probably will need generate() method to generate a single Object
 }

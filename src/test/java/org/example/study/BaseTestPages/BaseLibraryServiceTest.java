@@ -23,20 +23,10 @@ public abstract class BaseLibraryServiceTest extends BaseTest {
     protected BookService service;
     @Captor
     protected ArgumentCaptor<Specification<BookEntity>> bookEntitySpecCaptor;
-    protected RandomBookDtoResolver resolver;
-    protected ValidStrategyFactory validFactory;
-    protected InvalidStrategyFactory invalidFactory;
-    protected FieldInvalidationService invalidationService;
-    protected FieldInvalidatorRegistry registry;
 
     @BeforeEach
     protected void init() {
         service = new BookService(repository, bookMapper);
-        registry = new FieldInvalidatorRegistry();
-        invalidationService = new FieldInvalidationService(registry);
-        validFactory = new ValidStrategyFactory();
-        invalidFactory = new InvalidStrategyFactory(invalidationService);
-        resolver = new RandomBookDtoResolver(validFactory);
     }
 
     protected void cleanUp() {

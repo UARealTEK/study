@@ -2,8 +2,9 @@ package org.example.study.testData.DTOResolvers;
 
 import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.InvalidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
+import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -22,12 +23,6 @@ import java.util.List;
  */
 public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
-    private ValidStrategyFactory validStrategyFactory;
-
-    public RandomInvalidUserDtoResolver(ValidStrategyFactory factory) {
-        this.validStrategyFactory = factory;
-    }
-
     @Override
     public boolean supportsParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
 
@@ -40,6 +35,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
 
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+        InvalidStrategyFactory factory = getInvalidFactory(extensionContext);
         if (isAnnotatedWith(parameterContext, RandomInvalidUserDto.class)) {
             Class<?> rawType = parameterContext.getParameter().getType();
             RandomInvalidUserDto annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDto.class);
@@ -47,9 +43,9 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             String fieldName = annotation.fieldName();
 
             try {
-                InvalidDTOGenerationStrategy pageStrategy = validStrategyFactory.getInvalidDTOGenerationStrategy(annotation.strategy());
+                InvalidDTOGenerationStrategy strategy = factory.getInvalidDTOGenerationStrategy(PageStrategyType.RANDOM);
                 Field field = findField(rawType, fieldName);
-                return pageStrategy.generateInvalidObj(rawType, field, constraintToBreak);
+                return strategy.generateInvalidObj(rawType, field, constraintToBreak);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException("Error generating invalid UserDto due to field mismatch: " + e.getMessage(), e);
             } catch (IllegalAccessException e) {
@@ -59,7 +55,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             RandomInvalidUserDtoList annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDtoList.class);
 
             int count = annotation.count();
-            InvalidDTOGenerationStrategy strategy = validStrategyFactory.getInvalidDTOGenerationStrategy(annotation.strategy());
+            InvalidDTOGenerationStrategy strategy = factory.getInvalidDTOGenerationStrategy(annotation.strategy());
 
             try {
                 return strategy.generateInvalidList(getGenericType(parameterContext), count);

@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class InvalidStrategyFactory {
 
-    private Map<PageStrategyType, InvalidDTOGenerationStrategy> invalidStrategies;
+    private final Map<PageStrategyType, InvalidDTOGenerationStrategy> invalidStrategies;
 
     public InvalidStrategyFactory(FieldInvalidationService service) {
         this.invalidStrategies = Map.of(

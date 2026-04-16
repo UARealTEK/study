@@ -11,6 +11,11 @@ public class SameObjValidStrategy implements ValidDTOGenerationStrategy {
     public <T> List<T> generateValidList(Class<T> clazz, int count) {
         return List.of();
     }
+
+    @Override
+    public Object generateValidObject(Class<?> clazz) {
+        return null;
+    }
 }
 
 

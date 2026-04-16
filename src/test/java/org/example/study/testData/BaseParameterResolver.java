@@ -1,6 +1,11 @@
 package org.example.study.testData;
 
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.InvalidStrategyFactory;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
+import org.example.study.StrategyEngine.FieldInvalidators.Registries.FieldInvalidatorRegistry;
+import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalidationService;
 import org.example.study.enums.PageStrategyType;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -12,6 +17,24 @@ import java.lang.reflect.Type;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public abstract class BaseParameterResolver implements ParameterResolver {
+
+    protected static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(BaseParameterResolver.class);
+
+    protected ValidStrategyFactory getValidFactory(ExtensionContext context) {
+        return context.getStore(NAMESPACE)
+                .computeIfAbsent(
+                        ValidStrategyFactory.class.getName(),
+                        key -> new ValidStrategyFactory(), ValidStrategyFactory.class
+                );
+    }
+
+    protected InvalidStrategyFactory getInvalidFactory(ExtensionContext context) {
+        return context.getStore(NAMESPACE)
+                .computeIfAbsent(
+                        InvalidStrategyFactory.class.getName(),
+                        key -> new InvalidStrategyFactory(new FieldInvalidationService(new FieldInvalidatorRegistry())), InvalidStrategyFactory.class
+                );
+    }
 
     protected static boolean isAnnotatedWith(ParameterContext context, Class<? extends Annotation> annotation) {
         return context.isAnnotated(annotation);
