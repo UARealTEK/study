@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 //TODO: work with it. Need to adjust everything for BorrowRecordDTO
-// TestData provider probably does not know how to produce BorrowRecordResponseDto just yet
+// make sure Im correctly working with my annotation markers
 public class RandomBorrowRecordDtoResolver extends BaseParameterResolver {
 
     @Override
@@ -25,6 +25,10 @@ public class RandomBorrowRecordDtoResolver extends BaseParameterResolver {
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         ValidStrategyFactory validStrategyFactory = getValidFactory(extensionContext);
         if (isAnnotatedWith(parameterContext, RandomBorrowRecordResponseDTO.class)) {
+            RandomBorrowRecordResponseDTO annotation = parameterContext.getParameter().getAnnotation(RandomBorrowRecordResponseDTO.class);
+            boolean isBorrowed = annotation.isBorrowed();
+            boolean isReturned = annotation.isReturned();
+
             return validStrategyFactory
                     .getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
                     .generateValidObject(BorrowRecordResponseDto.class);

@@ -2,6 +2,7 @@ package org.example.study.testData;
 
 import net.datafaker.Faker;
 import org.example.study.DTOs.BookDto;
+import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.Entities.BorrowRecordEntity;
 import org.example.study.DTOs.PageResponseDTO;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -41,7 +43,8 @@ public class TestData {
             BookDto.class, TestData::getSingleValidBookDto,
             UserEntity.class, TestData::getSingleValidEntity,
             BookEntity.class, TestData::getSingleValidBook,
-            BorrowRecordEntity.class, TestData::getSingleValidRecordEntity
+            BorrowRecordEntity.class, TestData::getSingleValidRecordEntity,
+            BorrowRecordResponseDto.class, TestData::getSingleValidRecordDto
     );
 
     // Generate a list of valid UserDto using Faker
@@ -174,6 +177,16 @@ public class TestData {
                 .user(getSingleValidEntity())
                 .book(getSingleValidBook())
                 .build();
+    }
+
+    public static Object getSingleValidRecordDto() {
+        var borrowedAtDateTime = faker.timeAndDate().birthday().atStartOfDay();
+        var returnedAtDateTime = borrowedAtDateTime.plusDays(ThreadLocalRandom.current().nextInt(1, 10));
+        return BorrowRecordResponseDto.builder()
+                .book(getSingleValidBookDto())
+                .userName(faker.name().fullName())
+                .borrowedAt(borrowedAtDateTime)
+                .returnedAt(returnedAtDateTime);
     }
 
     // Single UserEntity with empty name
