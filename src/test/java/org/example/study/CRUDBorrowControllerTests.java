@@ -53,4 +53,18 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
                 .usingRecursiveComparison()
                 .isEqualTo(borrowRecords);
     }
+
+    @Test
+    @Story(
+            "Get Record by ID"
+    )
+    @Description(
+            "Should fetch proper borrow record using provided ID"
+    )
+    //TODO: TBD -> create resolver for Borrow Record
+    void checkGetRecordById() {
+        //given
+        //when
+        //then
+    }
 }
