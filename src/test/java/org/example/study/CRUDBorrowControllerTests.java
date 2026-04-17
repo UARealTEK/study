@@ -4,6 +4,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.example.study.Annotations.RandomBorrowRecordResponseDTO;
 import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.Annotations.Smoke;
 import org.example.study.BaseTestPages.BaseBorrowingControllerTest;
@@ -64,7 +65,7 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
             "Should fetch proper borrow record using provided ID"
     )
     //TODO: TBD -> create resolver for Borrow Record
-    void checkGetRecordById() {
+    void checkGetRecordById(@RandomBorrowRecordResponseDTO BorrowRecordResponseDto dto) {
         //given
         //when
         //then
