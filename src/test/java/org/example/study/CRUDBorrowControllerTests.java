@@ -9,6 +9,7 @@ import org.example.study.Annotations.Smoke;
 import org.example.study.BaseTestPages.BaseBorrowingControllerTest;
 import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.PageResponseDTO;
+import org.example.study.testData.DTOResolvers.RandomBorrowRecordDtoResolver;
 import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Epic("Borrow Management")
 @Feature("Borrowing CRUD Operations")
 @Smoke
-@ExtendWith(
+@ExtendWith({
+        RandomBorrowRecordDtoResolver.class,
         RandomPageResponseDTOResolver.class
-)
+})
 public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
 
     @Test
