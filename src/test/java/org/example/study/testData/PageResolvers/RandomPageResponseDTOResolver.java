@@ -27,6 +27,7 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
         // Check if it's a parameterized type (e.g., Page<SomeDao>)
         if (!hasParametrizedType(parameterContext)) return false;
 
+        //TODO: why Object?
         return isParametrizedTypeOf(Object.class, parameterContext);
     }
 

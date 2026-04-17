@@ -7,6 +7,7 @@ import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalida
 import org.example.study.controller.UserController;
 import org.example.study.enums.Endpoints;
 import org.example.study.service.UserService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -36,6 +37,7 @@ public abstract class BaseUserControllerTest extends BaseTest {
         steps = new Steps(mvc, usersEndpoint);
     }
 
+    @AfterEach
     protected void cleanUp() {
         steps = null;
     }

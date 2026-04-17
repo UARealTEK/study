@@ -2,7 +2,7 @@ package org.example.study;
 
 import io.qameta.allure.*;
 import org.example.study.Annotations.Smoke;
-import org.example.study.BaseTestPages.BaseBorrowingTest;
+import org.example.study.BaseTestPages.BaseBorrowingServiceTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,8 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @Feature("Book Service Operations")
 @ExtendWith({
         MockitoExtension.class
+        //TODO: complete param resolvers here
 })
-public class BorrowLogicTests extends BaseBorrowingTest {
+public class BorrowLogicTests extends BaseBorrowingServiceTest {
 
     @Test
     @Story("Retrieve All records with pagination")
