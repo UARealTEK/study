@@ -13,9 +13,13 @@ import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //TODO: work on it!
 @Epic("Borrow Management")
@@ -33,10 +37,20 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
     @Description(
             "Should fetch all available borrowing records at the moment"
     )
-    void checkGetAllBorrowRecords(@RandomPageResponseDto PageResponseDTO<BorrowRecordResponseDto> borrowRecords) {
+    void checkGetAllBorrowRecords(@RandomPageResponseDto PageResponseDTO<BorrowRecordResponseDto> borrowRecords) throws Exception {
         //given
         when(service.getAllBorrowRecords(any(Pageable.class))).thenReturn(borrowRecords);
         //when
+        MvcResult result = mvc.perform(get("/borrows"))
+                .andExpect(status().isOk()).andReturn();
+        BorrowRecordResponseDto dto = mapper.readValue(result.getResponse().getContentAsString(), BorrowRecordResponseDto.class);
         //then
+
+        verify(service).getAllBorrowRecords(any(Pageable.class));
+        verifyNoMoreInteractions(service);
+
+        assertThat(dto)
+                .usingRecursiveComparison()
+                .isEqualTo(borrowRecords);
     }
 }
