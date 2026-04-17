@@ -1,6 +1,7 @@
 package org.example.study.testData.PageResolvers;
 
 import org.example.study.Annotations.RandomPageImplObj;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
@@ -34,7 +35,9 @@ public class RandomPageImplResolver extends BaseParameterResolver {
     }
 
     @Override
-    public @Nullable Page<?> resolveParameter(ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+    public @Nullable Page<?> resolveParameter(ParameterContext parameterContext, @NonNull ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        ValidStrategyFactory factories = getValidFactory(extensionContext);
         RandomPageImplObj annotation = parameterContext.findAnnotation(RandomPageImplObj.class).
                 orElseThrow(() -> new ParameterResolutionException("Missing @PageImplObj annotation"));
         int page = annotation.page();
@@ -44,7 +47,7 @@ public class RandomPageImplResolver extends BaseParameterResolver {
         int start = page * size;
         int remaining = Math.max(0, totalElements - start);
         int currentPageSize = Math.min(size,remaining);
-        ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+        ValidDTOGenerationStrategy strategy = factories.getValidDTOGenerationStrategy(annotation.strategy());
 
         validateStrategyType(annotation.strategy(), totalElements);
 

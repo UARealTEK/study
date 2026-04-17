@@ -1,9 +1,5 @@
 package org.example.study.StrategyEngine.interfaces;
 
-import org.jspecify.annotations.Nullable;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.List;
 
 //TODO: Create concrete implementations for this interface
@@ -18,9 +14,7 @@ public interface ValidDTOGenerationStrategy {
      * @param count number of instances to generate
      * @return list of valid instances
      */
-    <T> List<T> generateValidList(Class<T> clazz, int count);
+    List<?> generateValidList(Class<?> clazz, int count);
 
     Object generateValidObject(Class<?> clazz);
-
-    //TODO: probably will need generate() method to generate a single Object
 }

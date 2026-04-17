@@ -2,6 +2,7 @@ package org.example.study.testData.PageResolvers;
 
 import org.example.study.Annotations.RandomPageResponseDto;
 import org.example.study.DTOs.PageResponseDTO;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
@@ -31,6 +32,7 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
 
     @Override
     public @Nullable PageResponseDTO<?> resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+        ValidStrategyFactory factory = getValidFactory(extensionContext);
         RandomPageResponseDto annotation = parameterContext.findAnnotation(RandomPageResponseDto.class)
                 .orElseThrow(() -> new ParameterResolutionException("Missing @RandomPageResponseDto annotation"));
         int page = annotation.number();
@@ -41,7 +43,7 @@ public class RandomPageResponseDTOResolver extends BaseParameterResolver {
         int remaining = Math.max(0, totalElements - start);
         int currentPageSize = Math.min(size,remaining);
         int totalPages = (int) Math.ceil((double) totalElements / size); // manually calculate totalPages to ensure consistency with the provided totalElements and size
-        ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+        ValidDTOGenerationStrategy strategy = factory.getValidDTOGenerationStrategy(annotation.strategy());
 
         validateStrategyType(annotation.strategy(), totalElements);
         Class<?> elementType = getGenericType(parameterContext);

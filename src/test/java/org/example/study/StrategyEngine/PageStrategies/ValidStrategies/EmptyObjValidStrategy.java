@@ -5,16 +5,16 @@ import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
 import java.util.List;
 
 
-//TODO: implement it
 public class EmptyObjValidStrategy implements ValidDTOGenerationStrategy {
 
     @Override
-    public <T> List<T> generateValidList(Class<T> clazz, int count) {
+    public List<?> generateValidList(Class<?> clazz, int count) {
         return List.of();
     }
 
+    //TODO: Im not sure that throwing an exception is a correct approach
     @Override
     public Object generateValidObject(Class<?> clazz) {
-        return null;
+        throw new UnsupportedOperationException("EmptyStrategy does not support generating objects.");
     }
 }

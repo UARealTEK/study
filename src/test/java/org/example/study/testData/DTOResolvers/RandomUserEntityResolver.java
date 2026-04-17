@@ -3,7 +3,9 @@ package org.example.study.testData.DTOResolvers;
 import org.example.study.Annotations.RandomUserEntity;
 import org.example.study.Annotations.RandomUserEntityList;
 import org.example.study.DTOs.Entities.UserEntity;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
+import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.util.List;
 
-import static org.example.study.testData.TestData.getSingleValidEntity;
 
 public class RandomUserEntityResolver extends BaseParameterResolver {
 
@@ -32,13 +33,14 @@ public class RandomUserEntityResolver extends BaseParameterResolver {
 
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+        ValidStrategyFactory factory = getValidFactory(extensionContext);
         if (isAnnotatedWith(parameterContext, RandomUserEntity.class)) {
-            return getSingleValidEntity();
+            return factory.getValidDTOGenerationStrategy(PageStrategyType.RANDOM).generateValidObject(UserEntity.class);
         } else if (isAnnotatedWith(parameterContext, RandomUserEntityList.class)) {
             RandomUserEntityList annotation = parameterContext.findAnnotation(RandomUserEntityList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomUserEntityList annotation"));
             int count = annotation.count();
-            ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+            ValidDTOGenerationStrategy strategy = factory.getValidDTOGenerationStrategy(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
 
             return strategy.generateValidList(UserEntity.class, count);

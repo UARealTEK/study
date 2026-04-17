@@ -3,7 +3,9 @@ package org.example.study.testData.DTOResolvers;
 import org.example.study.Annotations.RandomUserDto;
 import org.example.study.Annotations.RandomUserDtoList;
 import org.example.study.DTOs.UserDto;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
+import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.util.List;
 
-import static org.example.study.testData.TestData.getSingleValidUser;
 
 public class RandomUserDtoResolver extends BaseParameterResolver {
 
@@ -32,13 +33,15 @@ public class RandomUserDtoResolver extends BaseParameterResolver {
 
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+        ValidStrategyFactory factory = getValidFactory(extensionContext);
         if (isAnnotatedWith(parameterContext, RandomUserDto.class)) {
-            return getSingleValidUser();
+            return factory.getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
+                    .generateValidObject(UserDto.class);
         } else if (isAnnotatedWith(parameterContext, RandomUserDtoList.class)) {
             RandomUserDtoList annotation = parameterContext.findAnnotation(RandomUserDtoList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomUserDtoList annotation"));
             int count = annotation.count();
-            ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+            ValidDTOGenerationStrategy strategy = factory.getValidDTOGenerationStrategy(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
 
             return strategy.generateValidList(UserDto.class, count);

@@ -3,7 +3,9 @@ package org.example.study.testData.DTOResolvers;
 import org.example.study.Annotations.RandomBookEntity;
 import org.example.study.Annotations.RandomBookEntityList;
 import org.example.study.DTOs.Entities.BookEntity;
+import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.ValidDTOGenerationStrategy;
+import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -12,8 +14,6 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.util.List;
-
-import static org.example.study.testData.TestData.getSingleValidBook;
 
 public class RandomBookEntityResolver extends BaseParameterResolver {
 
@@ -31,14 +31,18 @@ public class RandomBookEntityResolver extends BaseParameterResolver {
     }
 
     @Override
-    public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+    public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        ValidStrategyFactory factory = getValidFactory(extensionContext);
         if (isAnnotatedWith(parameterContext, RandomBookEntity.class)) {
-            return getSingleValidBook();
+            return factory
+                    .getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
+                    .generateValidObject(BookEntity.class);
         } else if (isAnnotatedWith(parameterContext, RandomBookEntityList.class)) {
             RandomBookEntityList annotation = parameterContext.findAnnotation(RandomBookEntityList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomBookEntityList annotation"));
             int count = annotation.count();
-            ValidDTOGenerationStrategy strategy = pageStrategyMap.get(annotation.strategy());
+            ValidDTOGenerationStrategy strategy = factory.getValidDTOGenerationStrategy(annotation.strategy());
             validateStrategyType(annotation.strategy(), count);
 
             return strategy.generateValidList(BookEntity.class, count);

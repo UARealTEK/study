@@ -1,13 +1,8 @@
 package org.example.study.BaseTestPages;
 
 import org.example.study.DTOs.Entities.BookEntity;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.InvalidStrategyFactory;
-import org.example.study.StrategyEngine.FieldInvalidators.Registries.FieldInvalidatorRegistry;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
-import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalidationService;
 import org.example.study.repository.BookRepository;
 import org.example.study.service.BookService;
-import org.example.study.testData.DTOResolvers.RandomBookDtoResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;

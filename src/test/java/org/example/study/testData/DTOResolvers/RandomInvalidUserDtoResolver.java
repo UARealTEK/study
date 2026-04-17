@@ -4,7 +4,6 @@ import org.example.study.Annotations.RandomInvalidUserDto;
 import org.example.study.Annotations.RandomInvalidUserDtoList;
 import org.example.study.StrategyEngine.FieldInvalidators.Factories.InvalidStrategyFactory;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
-import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.BaseParameterResolver;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -43,7 +42,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             String fieldName = annotation.fieldName();
 
             try {
-                InvalidDTOGenerationStrategy strategy = factory.getInvalidDTOGenerationStrategy(PageStrategyType.RANDOM);
+                InvalidDTOGenerationStrategy strategy = factory.getInvalidDTOGenerationStrategy(annotation.strategy());
                 Field field = findField(rawType, fieldName);
                 return strategy.generateInvalidObj(rawType, field, constraintToBreak);
             } catch (NoSuchFieldException e) {
