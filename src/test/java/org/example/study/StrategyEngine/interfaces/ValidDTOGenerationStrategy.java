@@ -14,7 +14,7 @@ public interface ValidDTOGenerationStrategy {
      * @param count number of instances to generate
      * @return list of valid instances
      */
-    List<?> generateValidList(Class<?> clazz, int count);
+    <T> List<T> generateValidList(Class<T> clazz, int count);
 
-    Object generateValidObject(Class<?> clazz);
+    <T> T generateValidObject(Class<T> clazz);
 }

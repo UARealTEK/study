@@ -9,8 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RandomBorrowRecordResponseDTO {
-
-    boolean isBorrowed() default false;
-    boolean isReturned() default false;
+    boolean isReturned();
 
 }

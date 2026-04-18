@@ -24,15 +24,15 @@ public class SameObjInvalidStrategy implements InvalidDTOGenerationStrategy {
     }
 
     @Override
-    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws IllegalAccessException {
-        Object dao = getSingleValidForType(clazz);
+    public <T> T generateInvalidObj(Class<T> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws IllegalAccessException {
+        T dao = getSingleValidForType(clazz);
         service.invalidateField(dao, field, annotationToBreak);
         return dao;
     }
 
     @Override
-    public List<?> generateInvalidList(Class<?> clazz, int count) throws IllegalAccessException {
-        List<?> list = getValidListForType(clazz, count);
+    public <T> List<T> generateInvalidList(Class<T> clazz, int count) throws IllegalAccessException {
+        List<T> list = getValidListForType(clazz, count);
         for (Object o : list) {
             service.invalidateRandomField(o);
         }

@@ -11,12 +11,12 @@ import static org.example.study.testData.TestData.getValidListForType;
 public class RandomObjValidStrategy implements ValidDTOGenerationStrategy {
 
     @Override
-    public List<?> generateValidList(Class<?> clazz, int count) {
+    public <T> List<T> generateValidList(Class<T> clazz, int count) {
         return getValidListForType(clazz,count);
     }
 
     @Override
-    public Object generateValidObject(Class<?> clazz) {
+    public <T> T generateValidObject(Class<T> clazz) {
         return getSingleValidForType(clazz);
     }
 }

@@ -1,5 +1,6 @@
 package org.example.study.testData;
 
+import net.datafaker.Faker;
 import org.example.study.StrategyEngine.FieldInvalidators.Factories.InvalidStrategyFactory;
 import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
 import org.example.study.StrategyEngine.FieldInvalidators.Registries.FieldInvalidatorRegistry;
@@ -19,6 +20,8 @@ import java.lang.reflect.Type;
 public abstract class BaseParameterResolver implements ParameterResolver {
 
     protected static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(BaseParameterResolver.class);
+    protected static final Faker faker = new Faker();
+
 
     protected ValidStrategyFactory getValidFactory(ExtensionContext context) {
         return context.getStore(NAMESPACE)

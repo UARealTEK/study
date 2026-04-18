@@ -12,12 +12,12 @@ import java.util.List;
 public class EmptyObjInvalidStrategy implements InvalidDTOGenerationStrategy {
 
     @Override
-    public Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) {
+    public <T> T generateInvalidObj(Class<T> clazz, Field field, Class<? extends Annotation> annotationToBreak) {
         throw new UnsupportedOperationException("EmptyStrategy does not support generating invalid objects.");
     }
 
     @Override
-    public List<?> generateInvalidList(Class<?> clazz, int count) {
+    public <T> List<T> generateInvalidList(Class<T> clazz, int count) {
         throw new UnsupportedOperationException("EmptyStrategy does not support generating invalid objects.");
     }
 

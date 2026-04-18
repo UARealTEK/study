@@ -11,8 +11,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 
-//TODO: work with it. Need to adjust everything for BorrowRecordDTO
-// make sure Im correctly working with my annotation markers
+import java.util.concurrent.ThreadLocalRandom;
+
+//TODO: have a look at it. Refactor my resolvers and remove redundant isAnnotatedWith check inside resolveParameter method()
 public class RandomBorrowRecordDtoResolver extends BaseParameterResolver {
 
     @Override
@@ -24,21 +25,23 @@ public class RandomBorrowRecordDtoResolver extends BaseParameterResolver {
     @Override
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         ValidStrategyFactory validStrategyFactory = getValidFactory(extensionContext);
-        if (isAnnotatedWith(parameterContext, RandomBorrowRecordResponseDTO.class)) {
             RandomBorrowRecordResponseDTO annotation = parameterContext.getParameter().getAnnotation(RandomBorrowRecordResponseDTO.class);
-            boolean isBorrowed = annotation.isBorrowed();
             boolean isReturned = annotation.isReturned();
 
-            return validStrategyFactory
+            var borrowedAtDateTime = faker.timeAndDate().birthday().atStartOfDay();
+            var returnedAtDateTime = borrowedAtDateTime.plusDays(ThreadLocalRandom.current().nextInt(1, 10));
+
+            BorrowRecordResponseDto obj = validStrategyFactory
                     .getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
                     .generateValidObject(BorrowRecordResponseDto.class);
+            obj.setBorrowedAt(borrowedAtDateTime);
+
+            if (isReturned) {
+                obj.setReturnedAt(returnedAtDateTime);
+            } else  {
+                obj.setReturnedAt(null);
+            }
+
+            return obj;
         }
-
-        throw new ParameterResolutionException(
-                "Unsupported parameter type or missing annotation for parameter: " +
-                        parameterContext.getParameter().getName()
-        );
     }
-
-
-}

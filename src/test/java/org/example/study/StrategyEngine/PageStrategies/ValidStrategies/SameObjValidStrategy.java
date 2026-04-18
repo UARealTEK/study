@@ -11,15 +11,13 @@ import static org.example.study.testData.TestData.getValidListForType;
 public class SameObjValidStrategy implements ValidDTOGenerationStrategy {
 
     @Override
-    public List<?> generateValidList(Class<?> clazz, int count) {
-        List<?> list = getValidListForType(clazz,count);
+    public <T> List<T> generateValidList(Class<T> clazz, int count) {
+        List<T> list = getValidListForType(clazz,count);
         return Stream.generate(list::getFirst).limit(count).toList();
     }
 
     @Override
-    public Object generateValidObject(Class<?> clazz) {
+    public <T> T generateValidObject(Class<T> clazz) {
         return getSingleValidForType(clazz);
     }
 }
-
-

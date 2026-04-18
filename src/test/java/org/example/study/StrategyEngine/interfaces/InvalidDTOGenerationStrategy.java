@@ -24,7 +24,7 @@ public interface InvalidDTOGenerationStrategy {
      * @throws NoSuchFieldException if the field cannot be found on the class
      * @throws IllegalAccessException if the field cannot be accessed for modification
      */
-    Object generateInvalidObj(Class<?> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException;
+    <T> T generateInvalidObj(Class<T> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException;
 
     /**
      * Generates a list of invalid DTO instances.
@@ -37,6 +37,6 @@ public interface InvalidDTOGenerationStrategy {
      * @throws NoSuchFieldException if required fields cannot be found on the class
      * @throws IllegalAccessException if fields cannot be accessed for modification
      */
-    List<?> generateInvalidList(Class<?> clazz, int count) throws NoSuchFieldException, IllegalAccessException;
+    <T> List<T> generateInvalidList(Class<T> clazz, int count) throws NoSuchFieldException, IllegalAccessException;
 
 }
