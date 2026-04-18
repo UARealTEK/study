@@ -36,7 +36,7 @@ public class RandomBookDtoResolver extends BaseParameterResolver {
             return validStrategyFactory
                     .getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
                     .generateValidObject(BookDto.class);
-        } else if (isAnnotatedWith(parameterContext, RandomBookDtoList.class)) {
+        } else {
             RandomBookDtoList annotation = parameterContext.findAnnotation(RandomBookDtoList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomBookDtoList annotation"));
             int count = annotation.count();
@@ -45,11 +45,6 @@ public class RandomBookDtoResolver extends BaseParameterResolver {
 
             return strategy.generateValidList(BookDto.class, count);
         }
-
-        throw new ParameterResolutionException(
-                "Unsupported parameter type or missing annotation for parameter: " +
-                        parameterContext.getParameter().getName()
-        );
     }
 
 

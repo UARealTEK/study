@@ -50,7 +50,7 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Invalid Class provided for object generation: " + e.getMessage(), e);
             }
-        } else if (isAnnotatedWith(parameterContext, RandomInvalidUserDtoList.class)) {
+        } else {
             RandomInvalidUserDtoList annotation = parameterContext.getParameter().getAnnotation(RandomInvalidUserDtoList.class);
 
             int count = annotation.count();
@@ -64,10 +64,5 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
                 throw new RuntimeException("Error generating invalid a list due to field mismatch: " + e.getMessage(), e);
             }
         }
-
-        throw new ParameterResolutionException(
-                "Unsupported parameter type or missing annotation for parameter: " +
-                        parameterContext.getParameter().getName()
-        );
     }
 }

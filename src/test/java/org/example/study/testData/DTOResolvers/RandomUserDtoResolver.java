@@ -37,7 +37,7 @@ public class RandomUserDtoResolver extends BaseParameterResolver {
         if (isAnnotatedWith(parameterContext, RandomUserDto.class)) {
             return factory.getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
                     .generateValidObject(UserDto.class);
-        } else if (isAnnotatedWith(parameterContext, RandomUserDtoList.class)) {
+        } else {
             RandomUserDtoList annotation = parameterContext.findAnnotation(RandomUserDtoList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomUserDtoList annotation"));
             int count = annotation.count();
@@ -46,11 +46,6 @@ public class RandomUserDtoResolver extends BaseParameterResolver {
 
             return strategy.generateValidList(UserDto.class, count);
         }
-
-        throw new ParameterResolutionException(
-                "Unsupported parameter type or missing annotation for parameter: " +
-                        parameterContext.getParameter().getName()
-        );
     }
 
 
