@@ -6,6 +6,7 @@ import org.example.study.StrategyEngine.FieldInvalidators.Registries.FieldInvali
 import org.example.study.StrategyEngine.interfaces.FieldInvalidator;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
     //TODO: have a look at invalidateField and invalidateRandomField methods. Need to make sure that these are valid
 public class FieldInvalidationService {
 
-    private FieldInvalidatorRegistry fieldInvalidatorRegistry;
+    private final FieldInvalidatorRegistry fieldInvalidatorRegistry;
 
     public FieldInvalidationService(FieldInvalidatorRegistry fieldInvalidatorRegistry) {
         this.fieldInvalidatorRegistry = fieldInvalidatorRegistry;
@@ -31,6 +32,9 @@ public class FieldInvalidationService {
             throw new IllegalArgumentException("Cannot invalidate an ID field.");
         }
         field.setAccessible(true);
+        for (Annotation annotation1: field.getAnnotations()) {
+            System.out.println("annotation for the passed in field" + annotation1);
+        }
         if (annotation == NoConstraint.class) {
             List<? extends Annotation> annotations = getMatchedAnnotations(field);
             if (annotations.isEmpty()) {

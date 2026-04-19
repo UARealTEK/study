@@ -1,11 +1,9 @@
 package org.example.study.BaseTestPages;
 
 import org.example.study.DTOs.UserDto;
-import org.example.study.StrategyEngine.FieldInvalidators.Registries.FieldInvalidatorRegistry;
-import org.example.study.StrategyEngine.FieldInvalidators.Factories.ValidStrategyFactory;
-import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalidationService;
 import org.example.study.controller.UserController;
 import org.example.study.enums.Endpoints;
+import org.example.study.service.BorrowService;
 import org.example.study.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +25,8 @@ public abstract class BaseUserControllerTest extends BaseTest {
     protected MockMvc mvc;
     @MockitoBean
     protected UserService service;
+    @MockitoBean
+    protected BorrowService borrowService;
     protected final Endpoints usersEndpoint = Endpoints.USERS;
     protected Steps steps;
 

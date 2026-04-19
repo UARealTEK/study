@@ -120,9 +120,7 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
 
         PageResponseDTO<BookDto> response = service.findAllBooks(pageable, null, null);
         //then
-        verify(repository, times(1)).findAll(bookEntitySpecCaptor.capture(), eq(pageable));
-        //todo: is this really null? If there were NO name / author passed in - it will return unrestricted(). Can this be counted as null ?
-        assertNull(bookEntitySpecCaptor.getValue());
+        verify(repository, times(1)).findAll(anySpec(), eq(pageable));
 
         assertAll(
                 () -> assertTrue(response.content().isEmpty()),

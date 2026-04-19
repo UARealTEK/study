@@ -4,6 +4,7 @@ import org.example.study.StrategyEngine.FieldInvalidators.Services.FieldInvalida
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.List;
 

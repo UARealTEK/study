@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -75,7 +76,19 @@ public abstract class BaseParameterResolver implements ParameterResolver {
      * @return the Field object
      * @throws NoSuchFieldException if the field is not found in this class or any superclass
      */
-    protected Field findField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+    protected AnnotatedElement findAnnotatedElement(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        try {
+            return findGetter(clazz,fieldName);
+        } catch (NoSuchMethodException e) {
+            try {
+                return findField(clazz, fieldName);
+            } catch (NoSuchFieldException ex) {
+                throw new NoSuchFieldException("Neither field nor getter found for '" + fieldName + "' in class " + clazz.getName() + " or its superclasses");
+            }
+        }
+    }
+
+    private Field findField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
         if (clazz == null) {
             throw new IllegalArgumentException("Class cannot be null");
         }
@@ -91,6 +104,25 @@ public abstract class BaseParameterResolver implements ParameterResolver {
         }
 
         throw new NoSuchFieldException("Field '" + fieldName + "' not found in class " + clazz.getName() + " or its superclasses");
+    }
+
+    private AnnotatedElement findGetter(Class<?> clazz, String fieldName) throws NoSuchMethodException {
+        if (clazz == null) {
+            throw new IllegalArgumentException("Class cannot be null");
+        }
+        String getterName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+
+        Class<?> current = clazz;
+
+        while (current != null && current != Object.class) {
+            try {
+                return current.getDeclaredMethod(getterName);
+            } catch (NoSuchMethodException e) {
+                current = current.getSuperclass();
+            }
+        }
+        
+        throw new NoSuchMethodException("Getter for field '" + fieldName + "' not found in class " + clazz.getName() + " or its superclasses");
     }
 
     protected Class<?> getGenericType(ParameterContext parameterContext) {

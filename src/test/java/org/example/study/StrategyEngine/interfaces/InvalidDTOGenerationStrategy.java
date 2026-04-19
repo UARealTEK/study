@@ -1,9 +1,12 @@
 package org.example.study.StrategyEngine.interfaces;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
+
+//TODO: I need to make sure that AnnotatedElement works in this case
+// Since both Field and Method implement AnnotatedElement - I need to somehow pull the field out of it and invalidate it
 /**
  * Generic strategy interface for generating invalid DTOs.
  * Implementations can create invalid instances by violating specific constraints on fields.
@@ -21,7 +24,7 @@ public interface InvalidDTOGenerationStrategy {
      * @throws NoSuchFieldException if the field cannot be found on the class
      * @throws IllegalAccessException if the field cannot be accessed for modification
      */
-    <T> T generateInvalidObj(Class<T> clazz, Field field, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException;
+    <T> T generateInvalidObj(Class<T> clazz, AnnotatedElement annotatedElement, Class<? extends Annotation> annotationToBreak) throws NoSuchFieldException, IllegalAccessException;
 
     /**
      * Generates a list of invalid DTO instances.

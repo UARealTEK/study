@@ -40,7 +40,7 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
     @Description(
             "Should fetch all available borrowing records at the moment"
     )
-    void checkGetAllBorrowRecords(@RandomPageResponseDto PageResponseDTO<BorrowRecordResponseDto> borrowRecords) throws Exception {
+    void checkGetAllBorrowRecords(@RandomPageResponseDto(totalElements = 5) PageResponseDTO<BorrowRecordResponseDto> borrowRecords) throws Exception {
         //given
         when(service.getAllBorrowRecords(any(Pageable.class))).thenReturn(borrowRecords);
         //when
@@ -65,7 +65,7 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
             "Should fetch proper borrow record using provided ID"
     )
     //TODO: TBD -> create resolver for Borrow Record
-    void checkGetRecordById(@RandomBorrowRecordResponseDTO BorrowRecordResponseDto dto) {
+    void checkGetRecordById(@RandomBorrowRecordResponseDTO(isReturned = false) BorrowRecordResponseDto dto) {
         //given
         //when
         //then

@@ -3,6 +3,7 @@ package org.example.study.StrategyEngine.PageStrategies.InvalidStrategies;
 import org.example.study.StrategyEngine.interfaces.InvalidDTOGenerationStrategy;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.List;
 

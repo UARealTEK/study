@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+import java.lang.reflect.AnnotatedElement;
 import java.util.List;
 
 /**
@@ -41,9 +41,13 @@ public class RandomInvalidUserDtoResolver extends BaseParameterResolver {
             Class<? extends Annotation> constraintToBreak = annotation.constraintToBreak();
             String fieldName = annotation.fieldName();
 
+            System.out.println("Resolving parameter for type: " + rawType.getName());
+            System.out.println("Constraint to break: " + constraintToBreak.getSimpleName());
+            System.out.println("Field name: " + fieldName);
+
             try {
                 InvalidDTOGenerationStrategy strategy = factory.getInvalidDTOGenerationStrategy(annotation.strategy());
-                Field field = findField(rawType, fieldName);
+                AnnotatedElement field = findAnnotatedElement(rawType, fieldName);
                 return strategy.generateInvalidObj(rawType, field, constraintToBreak);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException("Error generating invalid UserDto due to field mismatch: " + e.getMessage(), e);
