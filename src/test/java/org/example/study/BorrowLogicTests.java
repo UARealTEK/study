@@ -6,6 +6,8 @@ import org.example.study.Annotations.Smoke;
 import org.example.study.BaseTestPages.BaseBorrowingServiceTest;
 import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.PageResponseDTO;
+import org.example.study.testData.DTOResolvers.RandomBorrowRecordDtoResolver;
+import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,8 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @Epic("Library Management")
 @Feature("Book Service Operations")
 @ExtendWith({
-        MockitoExtension.class
-        //TODO: complete param resolvers here
+        MockitoExtension.class,
+        RandomPageResponseDTOResolver.class,
+        RandomBorrowRecordDtoResolver.class
 })
 public class BorrowLogicTests extends BaseBorrowingServiceTest {
 
