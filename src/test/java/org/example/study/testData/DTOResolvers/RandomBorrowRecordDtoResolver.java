@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-//TODO: have a look at it. Refactor my resolvers and remove redundant isAnnotatedWith check inside resolveParameter method()
 public class RandomBorrowRecordDtoResolver extends BaseParameterResolver {
 
     @Override

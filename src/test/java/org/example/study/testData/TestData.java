@@ -35,7 +35,8 @@ public class TestData {
             BookDto.class, TestData::getValidBooks,
             UserEntity.class, TestData::getValidEntities,
             BookEntity.class, TestData::getValidBookEntities,
-            BorrowRecordEntity.class, TestData::getValidRecordEntities
+            BorrowRecordEntity.class, TestData::getValidRecordEntities,
+            BorrowRecordResponseDto.class, TestData::getValidBorrowRecordDTOs
     );
 
     private static final Map<Class<?>, Supplier<?>> singleGenerators = Map.of(
@@ -89,12 +90,13 @@ public class TestData {
     }
 
     private static List<BorrowRecordEntity> getValidRecordEntities(int count) {
-        return Stream.generate(() -> BorrowRecordEntity.builder()
-                        .id(faker.number().numberBetween(0L, 10L))
-                        .user(getSingleValidEntity())
-                        .book(getSingleValidBook())
-                        .build()
-                )
+        return Stream.generate(TestData::getSingleValidRecordEntity)
+                .limit(count)
+                .toList();
+    }
+
+    private static List<BorrowRecordResponseDto> getValidBorrowRecordDTOs(int count) {
+        return Stream.generate(TestData::getSingleValidRecordDto)
                 .limit(count)
                 .toList();
     }
@@ -179,14 +181,15 @@ public class TestData {
                 .build();
     }
 
-    public static Object getSingleValidRecordDto() {
+    public static BorrowRecordResponseDto getSingleValidRecordDto() {
         var borrowedAtDateTime = faker.timeAndDate().birthday().atStartOfDay();
         var returnedAtDateTime = borrowedAtDateTime.plusDays(ThreadLocalRandom.current().nextInt(1, 10));
         return BorrowRecordResponseDto.builder()
                 .book(getSingleValidBookDto())
                 .userName(faker.name().fullName())
                 .borrowedAt(borrowedAtDateTime)
-                .returnedAt(returnedAtDateTime);
+                .returnedAt(returnedAtDateTime)
+                .build();
     }
 
     // Single UserEntity with empty name
