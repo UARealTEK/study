@@ -39,6 +39,7 @@ public class BorrowController {
         return borrowService.getAllBorrowRecords(pageable);
     }
 
+    //GET borrow record by its ID
     @GetMapping("/{id}")
     public BorrowRecordResponseDto getBorrowRecordById(@PathVariable Long id) {
         return borrowService.getRecordById(id);

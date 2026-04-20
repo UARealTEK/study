@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RandomBorrowRecordResponseDTO {
+public @interface RandomBorrowRecordEntity {
     boolean isReturned();
 
 }

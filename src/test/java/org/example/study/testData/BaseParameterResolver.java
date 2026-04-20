@@ -88,7 +88,7 @@ public abstract class BaseParameterResolver implements ParameterResolver {
         }
     }
 
-    private Field findField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+    protected Field findField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
         if (clazz == null) {
             throw new IllegalArgumentException("Class cannot be null");
         }
@@ -106,7 +106,7 @@ public abstract class BaseParameterResolver implements ParameterResolver {
         throw new NoSuchFieldException("Field '" + fieldName + "' not found in class " + clazz.getName() + " or its superclasses");
     }
 
-    private AnnotatedElement findGetter(Class<?> clazz, String fieldName) throws NoSuchMethodException {
+    protected AnnotatedElement findGetter(Class<?> clazz, String fieldName) throws NoSuchMethodException {
         if (clazz == null) {
             throw new IllegalArgumentException("Class cannot be null");
         }
