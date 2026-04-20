@@ -113,7 +113,6 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
         BorrowRecordRequestDto requestDto = new BorrowRecordRequestDto(book.getId(), user.getId());
         when(borrowService.borrowBook(eq(requestDto.bookId()), eq(requestDto.userId()))).thenReturn(borrowRecord);
         //when
-        //TODO: should I also verify the response here using jsonPath? can be tricky
         MvcResult result = mvc.perform(
                 post(Endpoints.BORROWS.getEndpoint())
                         .contentType(MediaType.APPLICATION_JSON)
