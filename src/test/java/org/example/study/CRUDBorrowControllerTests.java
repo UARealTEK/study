@@ -4,13 +4,12 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.example.study.Annotations.RandomBorrowRecordEntity;
-import org.example.study.Annotations.RandomBorrowRecordResponseDTO;
-import org.example.study.Annotations.RandomPageResponseDto;
-import org.example.study.Annotations.Smoke;
+import org.example.study.Annotations.*;
 import org.example.study.BaseTestPages.BaseBorrowingControllerTest;
 import org.example.study.DTOs.BorrowRecordResponseDto;
+import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.Entities.BorrowRecordEntity;
+import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.testData.DTOResolvers.RandomBorrowRecordDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomBorrowRecordEntityResolver;
@@ -22,8 +21,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -50,15 +47,15 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
     )
     void checkGetAllBorrowRecords(@RandomPageResponseDto(totalElements = 5) PageResponseDTO<BorrowRecordResponseDto> borrowRecords) throws Exception {
         //given
-        when(service.getAllBorrowRecords(any(Pageable.class))).thenReturn(borrowRecords);
+        when(borrowService.getAllBorrowRecords(any(Pageable.class))).thenReturn(borrowRecords);
         //when
         MvcResult result = mvc.perform(get("/borrows"))
                 .andExpect(status().isOk()).andReturn();
         BorrowRecordResponseDto dto = mapper.readValue(result.getResponse().getContentAsString(), BorrowRecordResponseDto.class);
         //then
 
-        verify(service).getAllBorrowRecords(any(Pageable.class));
-        verifyNoMoreInteractions(service);
+        verify(borrowService).getAllBorrowRecords(any(Pageable.class));
+        verifyNoMoreInteractions(borrowService);
 
         assertThat(dto)
                 .usingRecursiveComparison()
@@ -75,7 +72,7 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
     void checkGetRecordById(@RandomBorrowRecordEntity(isReturned = false) BorrowRecordEntity entity) throws Exception {
         //given
         BorrowRecordResponseDto dto = borrowRecordMapper.toDto(entity);
-        when(service.getRecordById(eq(entity.getId()))).thenReturn(dto);
+        when(borrowService.getRecordById(eq(entity.getId()))).thenReturn(dto);
         //when
 
         MvcResult result = mvc.perform(get("/borrows/" + entity.getId()))
@@ -91,9 +88,26 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
         BorrowRecordResponseDto resultDto = mapper.readValue(result.getResponse().getContentAsString(), BorrowRecordResponseDto.class);
 
         //then
-        verify(service).getRecordById(eq(entity.getId()));
-        verifyNoMoreInteractions(service);
+        verify(borrowService).getRecordById(eq(entity.getId()));
+        verifyNoMoreInteractions(borrowService);
 
         assertThat(resultDto).usingRecursiveComparison().isEqualTo(dto);
+    }
+
+    @Test
+    @Story(
+            "Book borrowing logic"
+    )
+    @Description(
+            "Should successfully borrow an existing book for an existing user"
+    )
+    void checkBorrowBook(@RandomBookEntity BookEntity book,
+                         @RandomUserEntity UserEntity user,
+                         @RandomBorrowRecordResponseDTO(isReturned = false ) BorrowRecordResponseDto borrowRecord
+    ) {
+        //given
+        when(borrowService.borrowBook(eq(book.getId()), eq(user.getId()))).thenReturn(borrowRecord);
+        //when
+        //then
     }
 }

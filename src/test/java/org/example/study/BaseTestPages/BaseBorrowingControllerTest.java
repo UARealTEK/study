@@ -2,7 +2,9 @@ package org.example.study.BaseTestPages;
 
 import org.example.study.controller.BorrowController;
 
+import org.example.study.service.BookService;
 import org.example.study.service.BorrowService;
+import org.example.study.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -14,5 +16,10 @@ public abstract class BaseBorrowingControllerTest extends BaseTest {
     @Autowired
     protected MockMvc mvc;
     @MockitoBean
-    protected BorrowService service;
+    protected BorrowService borrowService;
+    @MockitoBean
+    protected BookService bookService;
+    @MockitoBean
+    protected UserService userService;
+
 }
