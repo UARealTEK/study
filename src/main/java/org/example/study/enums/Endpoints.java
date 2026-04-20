@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 public enum Endpoints {
     USERS("/users"),
+    BORROWS("/borrows"),
     DUMMY_ENDPOINT("/dummy"); // for Testing purposes
 
     private final String endpoint;

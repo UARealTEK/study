@@ -6,17 +6,20 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.example.study.Annotations.*;
 import org.example.study.BaseTestPages.BaseBorrowingControllerTest;
+import org.example.study.DTOs.BorrowRecordRequestDto;
 import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.Entities.BookEntity;
 import org.example.study.DTOs.Entities.BorrowRecordEntity;
 import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.DTOs.PageResponseDTO;
+import org.example.study.enums.Endpoints;
 import org.example.study.testData.DTOResolvers.RandomBorrowRecordDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomBorrowRecordEntityResolver;
 import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +27,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,7 +53,7 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
         //given
         when(borrowService.getAllBorrowRecords(any(Pageable.class))).thenReturn(borrowRecords);
         //when
-        MvcResult result = mvc.perform(get("/borrows"))
+        MvcResult result = mvc.perform(get(Endpoints.BORROWS.getEndpoint()))
                 .andExpect(status().isOk()).andReturn();
         BorrowRecordResponseDto dto = mapper.readValue(result.getResponse().getContentAsString(), BorrowRecordResponseDto.class);
         //then
@@ -75,7 +79,7 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
         when(borrowService.getRecordById(eq(entity.getId()))).thenReturn(dto);
         //when
 
-        MvcResult result = mvc.perform(get("/borrows/" + entity.getId()))
+        MvcResult result = mvc.perform(get(Endpoints.BORROWS.getEndpoint() + entity.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.book").exists())
                 .andExpect(jsonPath("$.book.name").value(dto.getBook().getName()))
@@ -103,11 +107,29 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
     )
     void checkBorrowBook(@RandomBookEntity BookEntity book,
                          @RandomUserEntity UserEntity user,
-                         @RandomBorrowRecordResponseDTO(isReturned = false ) BorrowRecordResponseDto borrowRecord
-    ) {
+                         @RandomBorrowRecordResponseDTO(isReturned = false) BorrowRecordResponseDto borrowRecord
+    ) throws Exception {
         //given
-        when(borrowService.borrowBook(eq(book.getId()), eq(user.getId()))).thenReturn(borrowRecord);
+        BorrowRecordRequestDto requestDto = new BorrowRecordRequestDto(book.getId(), user.getId());
+        when(borrowService.borrowBook(eq(requestDto.bookId()), eq(requestDto.userId()))).thenReturn(borrowRecord);
         //when
+        //TODO: should I also verify the response here using jsonPath? can be tricky
+        MvcResult result = mvc.perform(
+                post(Endpoints.BORROWS.getEndpoint())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.book.name").value(borrowRecord.getBook().getName()))
+                .andExpect(jsonPath("$.userName").value(borrowRecord.getUserName()))
+                .andExpect(jsonPath("$.borrowedAt").value(borrowRecord.getBorrowedAt().toString()))
+                .andExpect(jsonPath("$.returnedAt").value(nullValue()))
+                .andReturn();
+        BorrowRecordResponseDto responseDto = mapper.readValue(result.getResponse().getContentAsString(), BorrowRecordResponseDto.class);
         //then
+        assertThat(responseDto)
+                .usingRecursiveComparison()
+                .isEqualTo(borrowRecord);
+        verify(borrowService).borrowBook(eq(requestDto.bookId()), eq(requestDto.userId()));
+        verifyNoMoreInteractions(borrowService);
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+//TODO: Think about injecting ResponseEntity<T>
+// adjust tests after it is there
 @RequestMapping("/borrows")
 @RestController
 @AllArgsConstructor
