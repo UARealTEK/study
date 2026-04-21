@@ -131,4 +131,17 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
         verify(borrowService).borrowBook(eq(requestDto.bookId()), eq(requestDto.userId()));
         verifyNoMoreInteractions(borrowService);
     }
+
+    @Test
+    @Story(
+            "Book borrowing logic"
+    )
+    @Description(
+            "Should successfully returned an existing book that is borrowed by an existing user"
+    )
+    void checkReturnBook(@RandomBorrowRecordResponseDTO(isReturned = false) BorrowRecordResponseDto borrowRecord) throws Exception {
+        //given
+        //when
+        //then
+    }
 }
