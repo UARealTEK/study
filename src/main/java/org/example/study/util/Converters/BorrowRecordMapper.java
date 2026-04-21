@@ -6,9 +6,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @SuppressWarnings("unused")
-@Mapper(componentModel = "spring", uses = {BookMapper.class, UserMapper.class})
+@Mapper(componentModel = "spring")
 public interface BorrowRecordMapper extends BaseMapper {
 
-    @Mapping(source = "user", target = "userName")
+    @Mapping(source = "user.fullName", target = "userName")
     BorrowRecordResponseDto toDto(BorrowRecordEntity dto);
 }

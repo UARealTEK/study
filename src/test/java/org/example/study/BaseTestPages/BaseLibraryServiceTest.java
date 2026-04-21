@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.springframework.data.jpa.domain.Specification;
 
 
-//TODO: look into it. Make sure that I correctly use strategyFactories once they are developed
 public abstract class BaseLibraryServiceTest extends BaseTest {
 
     @Mock

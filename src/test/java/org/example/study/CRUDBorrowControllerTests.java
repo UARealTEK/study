@@ -16,8 +16,12 @@ import org.example.study.enums.Endpoints;
 import org.example.study.testData.DTOResolvers.RandomBorrowRecordDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomBorrowRecordEntityResolver;
 import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
+import org.example.study.util.Converters.BookMapper;
+import org.example.study.util.Converters.BorrowRecordMapper;
+import org.example.study.util.Converters.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -39,6 +43,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         RandomBorrowRecordDtoResolver.class,
         RandomPageResponseDTOResolver.class,
         RandomBorrowRecordEntityResolver.class
+})
+@Import({
+        UserMapper.class,
+        BookMapper.class,
+        BorrowRecordMapper.class
 })
 public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
 
@@ -132,16 +141,16 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
         verifyNoMoreInteractions(borrowService);
     }
 
-    @Test
-    @Story(
-            "Book borrowing logic"
-    )
-    @Description(
-            "Should successfully returned an existing book that is borrowed by an existing user"
-    )
-    void checkReturnBook(@RandomBorrowRecordResponseDTO(isReturned = false) BorrowRecordResponseDto borrowRecord) throws Exception {
-        //given
-        //when
-        //then
-    }
+//    @Test
+//    @Story(
+//            "Book borrowing logic"
+//    )
+//    @Description(
+//            "Should successfully returned an existing book that is borrowed by an existing user"
+//    )
+//    void checkReturnBook(@RandomBorrowRecordResponseDTO(isReturned = false) BorrowRecordResponseDto borrowRecord) throws Exception {
+//        //given
+//        //when
+//        //then
+//    }
 }

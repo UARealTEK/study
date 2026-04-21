@@ -8,9 +8,13 @@ import org.example.study.DTOs.BorrowRecordResponseDto;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.testData.DTOResolvers.RandomBorrowRecordDtoResolver;
 import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
+import org.example.study.util.Converters.BookMapper;
+import org.example.study.util.Converters.BorrowRecordMapper;
+import org.example.study.util.Converters.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
 
 //todo: start working on it
 @Smoke
