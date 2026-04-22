@@ -51,8 +51,7 @@ public class BorrowController {
 
     //GET borrow record by its ID
     @GetMapping("/{id}")
-    public ResponseEntity<BorrowRecordResponseDto> getBorrowRecordById(@PathVariable Long id) {
-        BorrowRecordResponseDto responseDto = borrowService.getRecordById(id);
-        return ResponseEntity.ok().body(responseDto);
+    public BorrowRecordResponseDto getBorrowRecordById(@PathVariable Long id) {
+        return borrowService.getRecordById(id);
     }
 }
