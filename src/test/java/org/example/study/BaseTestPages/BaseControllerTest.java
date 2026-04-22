@@ -9,7 +9,6 @@ import tools.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 
-//TODO: SPLIT into BaseSpringTest and BaseServiceTest (so I have separate Mappers. Autowired ones for WebMvc Tests and simple DI for Service Tests)
 @SuppressWarnings("unused")
 public abstract class BaseControllerTest {
 

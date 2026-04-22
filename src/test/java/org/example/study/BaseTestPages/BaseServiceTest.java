@@ -10,7 +10,6 @@ import tools.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 
-//TODO: SPLIT into BaseSpringTest and BaseServiceTest (so I have separate Mappers. Autowired ones for WebMvc Tests and simple DI for Service Tests)
 @SuppressWarnings("unused")
 public abstract class BaseServiceTest {
 
@@ -18,8 +17,6 @@ public abstract class BaseServiceTest {
     protected final BookMapper bookMapper = Mappers.getMapper(BookMapper.class);
     protected final BorrowRecordMapper borrowRecordMapper = Mappers.getMapper(BorrowRecordMapper.class);
 
-    @Autowired
-    protected ObjectMapper mapper;
     protected void init(){}
     protected void cleanUp(){}
 

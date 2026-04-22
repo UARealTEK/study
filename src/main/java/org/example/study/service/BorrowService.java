@@ -8,6 +8,7 @@ import org.example.study.DTOs.Entities.UserEntity;
 import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.repository.BorrowRecordsRepository;
 import org.example.study.util.Converters.BorrowRecordMapper;
+import org.example.study.util.Exceptions.CustomExceptions.BookAlreadyBorrowedException;
 import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordDoesntExistsException;
 import org.example.study.util.Exceptions.CustomExceptions.BorrowRecordExistsException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -55,6 +56,9 @@ public class BorrowService extends BaseService{
     public BorrowRecordResponseDto borrowBook(Long bookId, Long userID) {
         UserEntity user = userService.findEntityById(userID);
         BookEntity book = bookService.findEntityById(bookId);
+        if (isBookBorrowed(book)) {
+            throw new BookAlreadyBorrowedException(book.getName(),book.getAuthor());
+        }
 
         try {
             BorrowRecordEntity entity = borrowRecordsRepository.save(
@@ -88,6 +92,10 @@ public class BorrowService extends BaseService{
         BookEntity bookEntity = bookService.findEntityById(bookId);
         return borrowRecordsRepository.findByUserAndBookAndReturnedAtIsNull(userEntity, bookEntity)
                 .orElseThrow(BorrowRecordDoesntExistsException::new);
+    }
+
+    private boolean isBookBorrowed(BookEntity bookEntity) {
+        return borrowRecordsRepository.existsByBookAndReturnedAtIsNull(bookEntity);
     }
 
 }
