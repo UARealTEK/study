@@ -8,11 +8,13 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.service.BorrowService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-//TODO: Think about injecting ResponseEntity<T>
-// adjust tests after it is there
+import java.net.URI;
+
 @RequestMapping("/borrows")
 @RestController
 @AllArgsConstructor
@@ -22,13 +24,19 @@ public class BorrowController {
     private final BorrowService borrowService;
 
     @PostMapping(value = {"/", ""})
-    public BorrowRecordResponseDto borrowBook(@Valid @RequestBody BorrowRecordRequestDto requestDto) {
-        return borrowService.borrowBook(requestDto.bookId(), requestDto.userId());
+    public ResponseEntity<BorrowRecordResponseDto> borrowBook(@Valid @RequestBody BorrowRecordRequestDto requestDto) {
+        BorrowRecordResponseDto responseDto = borrowService.borrowBook(requestDto.bookId(), requestDto.userId());
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(responseDto);
     }
 
     @PatchMapping(value = {"/", ""})
-    public BorrowRecordResponseDto returnBook(@Valid @RequestBody BorrowRecordRequestDto requestDto) {
-        return borrowService.returnBook(requestDto.bookId(), requestDto.userId());
+    public ResponseEntity<BorrowRecordResponseDto> returnBook(@Valid @RequestBody BorrowRecordRequestDto requestDto) {
+        BorrowRecordResponseDto responseDto = borrowService.returnBook(requestDto.bookId(), requestDto.userId());
+        return ResponseEntity.ok().body(responseDto);
     }
 
     /*
@@ -43,7 +51,8 @@ public class BorrowController {
 
     //GET borrow record by its ID
     @GetMapping("/{id}")
-    public BorrowRecordResponseDto getBorrowRecordById(@PathVariable Long id) {
-        return borrowService.getRecordById(id);
+    public ResponseEntity<BorrowRecordResponseDto> getBorrowRecordById(@PathVariable Long id) {
+        BorrowRecordResponseDto responseDto = borrowService.getRecordById(id);
+        return ResponseEntity.ok().body(responseDto);
     }
 }

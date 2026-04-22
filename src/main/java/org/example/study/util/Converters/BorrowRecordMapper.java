@@ -10,5 +10,5 @@ import org.mapstruct.Mapping;
 public interface BorrowRecordMapper extends BaseMapper {
 
     @Mapping(source = "user.fullName", target = "userName")
-    BorrowRecordResponseDto toDto(BorrowRecordEntity dto);
+    BorrowRecordResponseDto toDto(BorrowRecordEntity entity);
 }

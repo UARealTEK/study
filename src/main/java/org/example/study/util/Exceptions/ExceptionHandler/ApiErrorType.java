@@ -17,6 +17,7 @@ public enum ApiErrorType {
     NO_SUCH_FIELD_EXCEPTION(HttpStatus.NOT_FOUND, "Field was not Found", "The specified field was not found"),
     BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "Not found", "Book was not found"),
     DUPLICATE_BOOK(HttpStatus.CONFLICT, "Conflict", "Book with the same title and author already exists"),
+    BOOK_ALREADY_BORROWED(HttpStatus.CONFLICT, "Conflict", "Provided Book is already borrowed"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", "Something went wrong on the server side"),
     ILLEGAL_ARGUMENT_EXCEPTION(HttpStatus.BAD_REQUEST, "Illegal Argument Exception", "Incorrect argument was passed to the method");
 

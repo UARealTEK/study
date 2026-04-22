@@ -93,6 +93,12 @@ public class ExceptionWorker {
                 List.of(new FieldErrorDto(e.getParameterName(), e.getMessage())));
     }
 
+    @ExceptionHandler(BookAlreadyBorrowedException.class)
+    public ResponseEntity<ExceptionDto> handleBookAlreadyBorrowedException(BookAlreadyBorrowedException e) {
+        ApiErrorType errorType = ApiErrorType.BOOK_ALREADY_BORROWED;
+        return exceptionResponseBuilder(errorType, null);
+    }
+
     @ExceptionHandler(InvalidConstraintConfigurationException.class)
     public ResponseEntity<ExceptionDto> handleInvalidConstraintConfigurationException(InvalidConstraintConfigurationException e) {
         ApiErrorType errorType = ApiErrorType.ANNOTATION_CONSTRAINT_VIOLATION;

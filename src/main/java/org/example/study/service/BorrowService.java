@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static java.time.LocalDateTime.now;
 
+//TODO: make sure that everything is consistent since I have added ID to BorrowRecordResponseDTO
 @SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor

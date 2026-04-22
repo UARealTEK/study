@@ -19,6 +19,7 @@ import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Converters.BorrowRecordMapper;
 import org.example.study.util.Converters.UserMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.annotation.Import;
@@ -31,10 +32,9 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//TODO: work on it!
+//TODO: adapt tests to ResponseEntity (since Im returning it in Controller instead of raw DTO)
 @Epic("Borrow Management")
 @Feature("Borrowing CRUD Operations")
 @Smoke
@@ -125,7 +125,9 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
                 post(Endpoints.BORROWS.getEndpoint())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", Matchers.endsWith("/borrows/" + borrowRecord.getId())))
+                .andExpect(jsonPath("$.id").value(borrowRecord.getId()))
                 .andExpect(jsonPath("$.book.name").value(borrowRecord.getBook().getName()))
                 .andExpect(jsonPath("$.userName").value(borrowRecord.getUserName()))
                 .andExpect(jsonPath("$.borrowedAt").value(borrowRecord.getBorrowedAt().toString()))

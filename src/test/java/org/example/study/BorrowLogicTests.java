@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class BorrowLogicTests extends BaseBorrowingServiceTest {
 
     @Test
-    @Story("Retrieve All records with pagination")
+    @Story("Retrieve All records")
     @Description("Test aimed to check that service is able to fetch all available borrow records ")
     @Severity(SeverityLevel.CRITICAL)
     void checkGetAllBorrowRecords(@RandomPageResponseDto PageResponseDTO<BorrowRecordResponseDto> page) {
