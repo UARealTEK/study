@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WebMvcTest(UserController.class)
-public abstract class BaseUserControllerTest extends BaseTest {
+public abstract class BaseUserControllerTest extends BaseControllerTest {
 
     @Autowired
     protected MockMvc mvc;

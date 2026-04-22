@@ -12,14 +12,11 @@ import static org.mockito.ArgumentMatchers.any;
 
 //TODO: SPLIT into BaseSpringTest and BaseServiceTest (so I have separate Mappers. Autowired ones for WebMvc Tests and simple DI for Service Tests)
 @SuppressWarnings("unused")
-public abstract class BaseTest {
+public abstract class BaseServiceTest {
 
-    @Autowired
-    protected UserMapper userMapper;
-    @Autowired
-    protected BookMapper bookMapper;
-    @Autowired
-    protected BorrowRecordMapper borrowRecordMapper;
+    protected final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    protected final BookMapper bookMapper = Mappers.getMapper(BookMapper.class);
+    protected final BorrowRecordMapper borrowRecordMapper = Mappers.getMapper(BorrowRecordMapper.class);
 
     @Autowired
     protected ObjectMapper mapper;

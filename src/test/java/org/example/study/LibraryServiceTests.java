@@ -18,16 +18,12 @@ import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.DTOResolvers.RandomBookDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomBookEntityResolver;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
-import org.example.study.util.Converters.BookMapper;
-import org.example.study.util.Converters.BorrowRecordMapper;
-import org.example.study.util.Converters.UserMapper;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

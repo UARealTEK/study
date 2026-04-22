@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 
-public abstract class BaseUserServiceTest extends BaseTest {
+public abstract class BaseUserServiceTest extends BaseControllerTest {
 
     @Mock
     protected UserRepository repository;
