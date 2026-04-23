@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface UserMapper extends BaseMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "borrowRecords", ignore = true)
     UserEntity toEntity(UserDto dto);
 
     UserDto toDto(UserEntity dto);
