@@ -37,6 +37,7 @@ import static org.mockito.Mockito.*;
 })
 public class BorrowLogicTests extends BaseBorrowingServiceTest {
 
+    //TODO: this needs some work on Mappers first (changing to Spring everywhere)
     @Test
     @Story("Retrieve All records")
     @Description("Test aimed to check that service is able to fetch all available borrow records ")
