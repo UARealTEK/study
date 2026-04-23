@@ -20,8 +20,7 @@ import org.springframework.data.domain.Pageable;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 //todo: start working on it
 @Smoke
@@ -47,6 +46,7 @@ public class BorrowLogicTests extends BaseBorrowingServiceTest {
         PageResponseDTO<BorrowRecordResponseDto> response = service.getAllBorrowRecords(pageable);
         //then
         verify(repository).findAll(any(Pageable.class));
+        verifyNoMoreInteractions(repository);
         assertAll(
                 () -> assertEquals(response.size(), page.getSize()),
                 () -> assertEquals(response.number(), page.getNumber()),
