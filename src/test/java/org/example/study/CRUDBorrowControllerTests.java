@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.core.type.TypeReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
@@ -62,16 +63,22 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
         when(borrowService.getAllBorrowRecords(any(Pageable.class))).thenReturn(borrowRecords);
         //when
         MvcResult result = mvc.perform(get(Endpoints.BORROWS.getEndpoint()))
+                .andExpect(jsonPath("$.content", Matchers.hasSize(borrowRecords.content().size())))
+                .andExpect(jsonPath("$.content[0].id").value(borrowRecords.content().getFirst().getId()))
+                .andExpect(jsonPath("$.content[0].book.name").value(borrowRecords.content().getFirst().getBook().getName()))
+                .andExpect(jsonPath("$.content[0].userName").value(borrowRecords.content().getFirst().getUserName()))
+                .andExpect(jsonPath("$.content[0].borrowedAt").value(borrowRecords.content().getFirst().getBorrowedAt()))
+                .andExpect(jsonPath("$.content[0].returnedAt").value(borrowRecords.content().getFirst().getReturnedAt()))
                 .andExpect(status().isOk()).andReturn();
-        BorrowRecordResponseDto dto = mapper.readValue(result.getResponse().getContentAsString(), BorrowRecordResponseDto.class);
+        PageResponseDTO<BorrowRecordResponseDto> dto = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
         //then
 
         verify(borrowService).getAllBorrowRecords(any(Pageable.class));
         verifyNoMoreInteractions(borrowService);
 
-        assertThat(dto)
-                .usingRecursiveComparison()
-                .isEqualTo(borrowRecords);
+        assertThat(dto.content())
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(borrowRecords.content());
     }
 
     @Test
