@@ -8,6 +8,7 @@ import org.example.study.DTOs.PageResponseDTO;
 import org.example.study.service.BorrowService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
