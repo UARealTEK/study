@@ -4,7 +4,9 @@ import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Converters.BorrowRecordMapper;
 import org.example.study.util.Converters.UserMapper;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import tools.jackson.databind.ObjectMapper;
 
@@ -21,6 +23,7 @@ public abstract class BaseTest {
     protected BorrowRecordMapper borrowRecordMapper;
     @Autowired
     protected ObjectMapper mapper;
+    protected ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
     protected void init(){}
     protected void cleanUp(){}
 

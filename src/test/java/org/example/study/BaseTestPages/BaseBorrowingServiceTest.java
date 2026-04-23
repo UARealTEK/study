@@ -19,6 +19,7 @@ public abstract class BaseBorrowingServiceTest extends BaseTest {
     protected UserService userService;
     protected BorrowService service;
 
+
     @BeforeEach
     protected void init() {
         service = new BorrowService(bookService, userService,repository,borrowRecordMapper);
