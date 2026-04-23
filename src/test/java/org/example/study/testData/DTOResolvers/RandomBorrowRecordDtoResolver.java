@@ -27,17 +27,11 @@ public class RandomBorrowRecordDtoResolver extends BaseParameterResolver {
             RandomBorrowRecordResponseDTO annotation = parameterContext.getParameter().getAnnotation(RandomBorrowRecordResponseDTO.class);
             boolean isReturned = annotation.isReturned();
 
-            var borrowedAtDateTime = faker.timeAndDate().birthday().atStartOfDay();
-            var returnedAtDateTime = borrowedAtDateTime.plusDays(ThreadLocalRandom.current().nextInt(1, 10));
-
             BorrowRecordResponseDto obj = validStrategyFactory
                     .getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
                     .generateValidObject(BorrowRecordResponseDto.class);
-            obj.setBorrowedAt(borrowedAtDateTime);
 
-            if (isReturned) {
-                obj.setReturnedAt(returnedAtDateTime);
-            } else  {
+            if (!isReturned) {
                 obj.setReturnedAt(null);
             }
 

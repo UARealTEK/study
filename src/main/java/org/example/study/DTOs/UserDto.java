@@ -6,7 +6,7 @@ import org.example.study.enums.Gender;
 
 @NoArgsConstructor
 @Setter
-@ToString
+@ToString(callSuper = true)
 public class UserDto extends BaseUser {
 
     public UserDto(Integer age, String fullName, Gender gender) {

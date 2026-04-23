@@ -15,18 +15,23 @@ import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.DTOResolvers.RandomInvalidUserDtoResolver;
 import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.example.study.testData.DTOResolvers.RandomUserDtoResolver;
+import org.example.study.util.Converters.BookMapperImpl;
+import org.example.study.util.Converters.BorrowRecordMapperImpl;
+import org.example.study.util.Converters.UserMapperImpl;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ApiErrorType;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -45,6 +50,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 RandomUserDtoResolver.class,
                 RandomPageResponseDTOResolver.class,
                 RandomInvalidUserDtoResolver.class
+        }
+)
+@Import(
+        {
+                UserMapperImpl.class,
+                BookMapperImpl.class,
+                BorrowRecordMapperImpl.class,
+                ObjectMapper.class
         }
 )
 class CRUDUserUserControllerTests extends BaseUserControllerTest {
@@ -171,8 +184,8 @@ class CRUDUserUserControllerTests extends BaseUserControllerTest {
                 "age", String.valueOf(dto.getFirst().getAge()),
                 "fullName", dto.getFirst().getFullName(),
                 "gender", dto.getFirst().getGender().name().toLowerCase(),
-                "page", String.valueOf(pageResponseDTO.number()),
-                "size", String.valueOf(pageResponseDTO.size())
+                "size", String.valueOf(pageResponseDTO.size()),
+                "page", String.valueOf(pageResponseDTO.number())
         );
 
         //when

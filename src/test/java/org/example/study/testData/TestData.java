@@ -50,7 +50,7 @@ public class TestData {
 
     // Generate a list of valid UserDto using Faker
     private static List<UserDto> getValidUsers(int count) {
-        return Stream.generate(() -> new UserDto(faker.number().numberBetween(1, 200), faker.funnyName().name(), random()))
+        return Stream.generate(() -> new UserDto(faker.number().numberBetween(1, 100), faker.funnyName().name(), random()))
                 .limit(count)
                 .toList();
     }
@@ -189,6 +189,7 @@ public class TestData {
         var borrowedAtDateTime = faker.timeAndDate().birthday().atStartOfDay();
         var returnedAtDateTime = borrowedAtDateTime.plusDays(ThreadLocalRandom.current().nextInt(1, 10));
         return BorrowRecordResponseDto.builder()
+                .id(faker.number().numberBetween(0L, 10L))
                 .book(getSingleValidBookDto())
                 .userName(faker.name().fullName())
                 .borrowedAt(borrowedAtDateTime)

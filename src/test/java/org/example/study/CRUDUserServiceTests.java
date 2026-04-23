@@ -168,14 +168,18 @@ public class CRUDUserServiceTests extends BaseUserServiceTest {
     void checkSaveUser(@RandomUserEntity UserEntity entity) {
         //given
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
-        when(repository.save(eq(entity))).thenReturn(entity);
+        when(repository.save(any(UserEntity.class))).thenReturn(entity);
         UserDto dto = userMapper.toDto(entity);
+
+        System.out.println("This is my dto" + dto);
 
         //when
         UserDto userDto = service.saveUser(dto);
 
         verify(repository, times(1)).save(captor.capture());
         UserEntity captorValue = captor.getValue();
+
+        System.out.println("This is my captor " + captorValue);
 
         //then
         assertAll(

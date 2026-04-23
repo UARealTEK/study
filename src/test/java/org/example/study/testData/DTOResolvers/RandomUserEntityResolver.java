@@ -35,7 +35,8 @@ public class RandomUserEntityResolver extends BaseParameterResolver {
     public @Nullable Object resolveParameter(@NonNull ParameterContext parameterContext, @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
         ValidStrategyFactory factory = getValidFactory(extensionContext);
         if (isAnnotatedWith(parameterContext, RandomUserEntity.class)) {
-            return factory.getValidDTOGenerationStrategy(PageStrategyType.RANDOM).generateValidObject(UserEntity.class);
+            return factory.getValidDTOGenerationStrategy(PageStrategyType.RANDOM)
+                    .generateValidObject(UserEntity.class);
         } else {
             RandomUserEntityList annotation = parameterContext.findAnnotation(RandomUserEntityList.class).
                     orElseThrow(() -> new ParameterResolutionException("Missing @RandomUserEntityList annotation"));

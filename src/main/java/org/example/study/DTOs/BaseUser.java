@@ -6,11 +6,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.example.study.enums.Gender;
 
 @Getter
 @Setter
 @MappedSuperclass
+@ToString
 public abstract class BaseUser {
 
     private Integer age;

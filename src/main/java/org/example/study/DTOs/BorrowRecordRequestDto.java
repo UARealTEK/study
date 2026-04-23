@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotNull;
 
 public record BorrowRecordRequestDto(
         @NotNull
-        @Min(1)
+        @Min(0)
         Long userId,
         @NotNull
-        @Min(1)
+        @Min(0)
         Long bookId
 )
 {}

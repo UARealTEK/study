@@ -11,6 +11,9 @@ public interface UserMapper extends BaseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "borrowRecords", ignore = true)
+    @Mapping(source = "age", target = "age")
+    @Mapping(source = "fullName", target = "fullName")
+    @Mapping(source = "gender", target = "gender")
     UserEntity toEntity(UserDto dto);
 
     UserDto toDto(UserEntity dto);

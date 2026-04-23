@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Map;
 
@@ -30,8 +31,6 @@ public abstract class BaseUserControllerTest extends BaseTest {
     protected final Endpoints usersEndpoint = Endpoints.USERS;
     protected Steps steps;
 
-    //TODO: look into this chain of initialization. make sure it works
-    // Look into how JUnit works with ParameterResolver and how it uses declared fields in those custom resolvers
     @BeforeEach
     protected void init() {
         steps = new Steps(mvc, usersEndpoint);
@@ -71,11 +70,8 @@ public abstract class BaseUserControllerTest extends BaseTest {
         }
 
         public ResultActions mvcGet(Map<String,String> params) throws Exception {
-            var request = get(usersEndpoint.getEndpoint());
-
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                request.param(entry.getKey(),entry.getValue());
-            }
+            MockHttpServletRequestBuilder request = get(usersEndpoint.getEndpoint());
+            params.forEach(request::param);
             return mvc.perform(request);
         }
 
