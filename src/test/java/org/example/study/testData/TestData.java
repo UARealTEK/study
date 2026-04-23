@@ -172,12 +172,16 @@ public class TestData {
                 .build();
     }
 
-    //generates a record with NULL borrowedAt / returnedAt variables
+    //generates a record with FILLED borrowedAt / returnedAt variables
     public static BorrowRecordEntity getSingleValidRecordEntity() {
+        var borrowedAtDateTime = faker.timeAndDate().birthday().atStartOfDay();
+        var returnedAtDateTime = borrowedAtDateTime.plusDays(ThreadLocalRandom.current().nextInt(1, 10));
         return BorrowRecordEntity.builder()
                 .id(faker.number().numberBetween(0L, 10L))
                 .user(getSingleValidEntity())
                 .book(getSingleValidBook())
+                .borrowedAt(borrowedAtDateTime)
+                .returnedAt(returnedAtDateTime)
                 .build();
     }
 

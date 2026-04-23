@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
 public @interface RandomPageImplObj {
     int size() default 5;
     int page() default 0;
-    int totalElements() default 0;
+    int totalElements();
     PageStrategyType strategy() default PageStrategyType.RANDOM;
 }

@@ -178,6 +178,8 @@ public class CRUDBorrowControllerTests extends BaseBorrowingControllerTest {
         //then
         verify(borrowService).returnBook(eq(requestDto.bookId()), eq(requestDto.userId()));
         verifyNoMoreInteractions(borrowService);
-        assertThat(responseDto).usingRecursiveComparison().isEqualTo(borrowRecord);
+        assertThat(responseDto)
+                .usingRecursiveComparison()
+                .isEqualTo(borrowRecord);
     }
 }

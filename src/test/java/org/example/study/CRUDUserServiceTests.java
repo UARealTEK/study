@@ -98,10 +98,11 @@ public class CRUDUserServiceTests extends BaseUserServiceTest {
         }
     }
 
+    //TODO: test it. Need to make sure that it works consistently
     @Test
     @Story("Empty Results")
     @Description("Should handle empty repository")
-    void checkGetAllUsersWhenRepositoryIsEmpty(@RandomPageImplObj(strategy = PageStrategyType.EMPTY) Page<UserEntity> page) {
+    void checkGetAllUsersWhenRepositoryIsEmpty(@RandomPageImplObj(strategy = PageStrategyType.EMPTY, totalElements = 0) Page<UserEntity> page) {
         Pageable pageable = page.getPageable();
 
         //when
@@ -111,10 +112,13 @@ public class CRUDUserServiceTests extends BaseUserServiceTest {
 
         //then
         verify(repository, times(1)).findAll(anySpec(),eq(pageable));
-        assertThat(result.number()).isEqualTo(pageable.getPageNumber());
-        assertThat(result.size()).isEqualTo(pageable.getPageSize());
-        assertThat(result.totalElements()).isZero();
-        assertThat(result.content()).isEmpty();
+
+        assertAll(
+                () -> assertThat(result.number()).isEqualTo(pageable.getPageNumber()),
+                () -> assertThat(result.size()).isEqualTo(pageable.getPageSize()),
+                () -> assertThat(result.totalElements()).isZero(),
+                () -> assertThat(result.content()).isEmpty()
+        );
     }
 
     @Test
