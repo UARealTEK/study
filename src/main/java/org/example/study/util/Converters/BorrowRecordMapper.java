@@ -5,8 +5,10 @@ import org.example.study.DTOs.Entities.BorrowRecordEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+//TODO: fix it after changing everything to Spring context in Service tests
+// provide proper mapping methods
 @SuppressWarnings("unused")
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class, BookMapper.class})
 public interface BorrowRecordMapper extends BaseMapper {
 
     @Mapping(source = "user.fullName", target = "userName")

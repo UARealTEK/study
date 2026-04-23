@@ -12,7 +12,7 @@ public interface UserMapper extends BaseMapper {
     @Mapping(target = "id", ignore = true)
     UserEntity toEntity(UserDto dto);
 
-    UserDto toUserDto(UserEntity dto);
+    UserDto toDto(UserEntity dto);
 
     default String toUserName(UserEntity dto) {
         return dto.getFullName() != null ? dto.getFullName() : "Unknown User";

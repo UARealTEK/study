@@ -10,15 +10,11 @@ import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
 import org.example.study.testData.DTOResolvers.RandomUserDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomUserEntityResolver;
-import org.example.study.util.Converters.BookMapper;
-import org.example.study.util.Converters.BorrowRecordMapper;
-import org.example.study.util.Converters.UserMapper;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -160,7 +156,7 @@ public class CRUDUserServiceTests extends BaseUserServiceTest {
         //given
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         when(repository.save(eq(entity))).thenReturn(entity);
-        UserDto dto = userMapper.toUserDto(entity);
+        UserDto dto = userMapper.toDto(entity);
 
         //when
         UserDto userDto = service.saveUser(dto);
