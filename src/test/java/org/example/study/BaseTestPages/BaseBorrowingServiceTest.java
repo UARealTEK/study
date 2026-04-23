@@ -9,7 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
-public abstract class BaseBorrowingServiceTest extends BaseServiceTest {
+public abstract class BaseBorrowingServiceTest extends BaseTest {
 
     @Mock
     protected BorrowRecordsRepository repository;

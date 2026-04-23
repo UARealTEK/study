@@ -18,6 +18,9 @@ import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.DTOResolvers.RandomBookDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomBookEntityResolver;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
+import org.example.study.util.Converters.BookMapperImpl;
+import org.example.study.util.Converters.BorrowRecordMapperImpl;
+import org.example.study.util.Converters.UserMapperImpl;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
 import org.junit.jupiter.api.Test;
@@ -26,6 +29,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
 
@@ -37,12 +43,19 @@ import static org.mockito.Mockito.*;
 @Epic("Library Management")
 @Feature("Book Service Operations")
 @ExtendWith({
+        SpringExtension.class,
         MockitoExtension.class,
         RandomPageImplResolver.class,
         RandomBookDtoResolver.class,
         RandomBookEntityResolver.class,
         }
 )
+@ContextConfiguration(classes = {
+        BookMapperImpl.class,
+        UserMapperImpl.class,
+        BorrowRecordMapperImpl.class,
+        ObjectMapper.class
+})
 public class LibraryServiceTests extends BaseLibraryServiceTest {
 
     @Test
@@ -107,12 +120,13 @@ public class LibraryServiceTests extends BaseLibraryServiceTest {
         );
     }
 
+    //TODO: look how it behaves with totalElements = 0
     @Test
     @Story("Handle empty repository")
     @Description("Test behavior when the repository is empty. " +
             "Verifies that the service returns an empty page with correct metadata when no books exist.")
     @Severity(SeverityLevel.NORMAL)
-    void checkGetAllBooksWhenRepositoryIsEmpty(@RandomPageImplObj(strategy = PageStrategyType.EMPTY) Page<BookEntity> entityPage) {
+    void checkGetAllBooksWhenRepositoryIsEmpty(@RandomPageImplObj(totalElements = 0, strategy = PageStrategyType.EMPTY) Page<BookEntity> entityPage) {
         //given
         Pageable pageable = entityPage.getPageable();
         when(repository.findAll(anySpec(), eq(pageable))).thenReturn(entityPage);

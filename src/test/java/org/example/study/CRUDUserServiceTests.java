@@ -10,6 +10,9 @@ import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.PageResolvers.RandomPageImplResolver;
 import org.example.study.testData.DTOResolvers.RandomUserDtoResolver;
 import org.example.study.testData.DTOResolvers.RandomUserEntityResolver;
+import org.example.study.util.Converters.BookMapperImpl;
+import org.example.study.util.Converters.BorrowRecordMapperImpl;
+import org.example.study.util.Converters.UserMapperImpl;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +20,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
 
@@ -29,12 +35,19 @@ import static org.mockito.Mockito.*;
 @Unit
 @ExtendWith(
         {
+                SpringExtension.class,
                 MockitoExtension.class,
                 RandomUserDtoResolver.class,
                 RandomPageImplResolver.class,
                 RandomUserEntityResolver.class
         }
 )
+@ContextConfiguration(classes = {
+        BookMapperImpl.class,
+        UserMapperImpl.class,
+        BorrowRecordMapperImpl.class,
+        ObjectMapper.class
+})
 public class CRUDUserServiceTests extends BaseUserServiceTest {
 
     @Test

@@ -1,6 +1,5 @@
 package org.example.study.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.study.DTOs.BookDto;
 import org.example.study.DTOs.Entities.BookEntity;
@@ -9,14 +8,11 @@ import org.example.study.repository.BookRepository;
 import org.example.study.util.Converters.BookMapper;
 import org.example.study.util.Exceptions.CustomExceptions.BookNotFoundException;
 import org.example.study.util.Exceptions.CustomExceptions.DuplicateBookException;
-import org.example.study.util.Exceptions.CustomExceptions.IllegalRequestParameter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 import static org.example.study.util.Filtering.LibrarySpecification.byAllFields;
 

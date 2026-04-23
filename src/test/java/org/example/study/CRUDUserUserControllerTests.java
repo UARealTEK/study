@@ -15,16 +15,12 @@ import org.example.study.enums.PageStrategyType;
 import org.example.study.testData.DTOResolvers.RandomInvalidUserDtoResolver;
 import org.example.study.testData.PageResolvers.RandomPageResponseDTOResolver;
 import org.example.study.testData.DTOResolvers.RandomUserDtoResolver;
-import org.example.study.util.Converters.BookMapper;
-import org.example.study.util.Converters.BorrowRecordMapper;
-import org.example.study.util.Converters.UserMapper;
 import org.example.study.util.Exceptions.CustomExceptions.UserNotFoundException;
 import org.example.study.util.Exceptions.ExceptionHandler.ApiErrorType;
 import org.example.study.util.Exceptions.ExceptionHandler.ExceptionDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -52,11 +48,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 RandomInvalidUserDtoResolver.class
         }
 )
-@Import({
-        UserMapper.class,
-        BookMapper.class,
-        BorrowRecordMapper.class
-})
 class CRUDUserUserControllerTests extends BaseUserControllerTest {
 
     @Test

@@ -8,15 +8,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 
-public abstract class BaseUserServiceTest extends BaseControllerTest {
+public abstract class BaseUserServiceTest extends BaseTest {
 
     @Mock
     protected UserRepository repository;
     protected UserService service;
-
-    //TODO: move this one to BaseServiceTest
-    protected UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-
 
     @BeforeEach
     protected void init() {

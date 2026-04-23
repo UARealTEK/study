@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.springframework.data.jpa.domain.Specification;
 
 
-public abstract class BaseLibraryServiceTest extends BaseServiceTest {
+public abstract class BaseLibraryServiceTest extends BaseTest {
 
     @Mock
     protected BookRepository repository;

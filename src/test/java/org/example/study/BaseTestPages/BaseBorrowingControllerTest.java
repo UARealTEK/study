@@ -11,7 +11,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(BorrowController.class)
-public abstract class BaseBorrowingControllerTest extends BaseControllerTest {
+public abstract class BaseBorrowingControllerTest extends BaseTest {
 
     @Autowired
     protected MockMvc mvc;
