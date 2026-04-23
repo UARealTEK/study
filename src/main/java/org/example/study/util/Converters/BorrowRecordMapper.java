@@ -11,6 +11,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {UserMapper.class, BookMapper.class})
 public interface BorrowRecordMapper extends BaseMapper {
 
-    @Mapping(source = "user.fullName", target = "userName")
+    @Mapping(source = "user", target = "userName")
     BorrowRecordResponseDto toDto(BorrowRecordEntity entity);
 }
