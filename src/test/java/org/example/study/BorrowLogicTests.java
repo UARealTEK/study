@@ -158,4 +158,23 @@ public class BorrowLogicTests extends BaseBorrowingServiceTest {
                 () -> assertEquals(responseDto.getUserName(), userEntity.getFullName())
         );
     }
+
+    @Test
+    @Story("Borrow records logic")
+    @Description("Test aimed to check that service method correctly fetches a record by ID")
+    @Severity(SeverityLevel.CRITICAL)
+    void checkReturnBook(@RandomBorrowRecordEntity(isReturned = false) BorrowRecordEntity borrowRecordEntity) {
+        //given
+        when(repository.findById(eq(borrowRecordEntity.getId()))).thenReturn(Optional.of(borrowRecordEntity));
+        //when
+        BorrowRecordResponseDto responseDto = service.getRecordById(borrowRecordEntity.getId());
+        //then
+
+        verify(repository).findById(eq(borrowRecordEntity.getId()));
+        verifyNoMoreInteractions(repository);
+        assertThat(responseDto)
+                .usingRecursiveComparison()
+                .isEqualTo(borrowRecordMapper.toDto(borrowRecordEntity));
+
+    }
 }
