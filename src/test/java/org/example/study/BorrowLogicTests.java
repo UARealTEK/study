@@ -27,6 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,7 +111,7 @@ public class BorrowLogicTests extends BaseBorrowingServiceTest {
         BorrowRecordResponseDto responseDto = service.borrowBook(userEntity.getId(), bookEntity.getId());
 
         //then
-        verify(repository).save(borrowRecordEntityArgumentCaptor.capture());// meaningless?
+        verify(repository).save(borrowRecordEntityArgumentCaptor.capture());
         BorrowRecordEntity mappedEntity = borrowRecordEntityArgumentCaptor.getValue();
 
         //Check that correct data was passed to the repository
@@ -126,6 +127,35 @@ public class BorrowLogicTests extends BaseBorrowingServiceTest {
                 () -> assertEquals(responseDto.getId(), borrowRecordEntity.getId()),
                 () -> assertEquals(responseDto.getBook().getName(), bookEntity.getName()),
                 () -> assertEquals(responseDto.getUserName(), borrowRecordEntity.getUser().getFullName())
+        );
+    }
+
+    @Test
+    @Story("Borrowing Book logic")
+    @Description("Test aimed to check that service method correctly RETURNS a book")
+    @Severity(SeverityLevel.CRITICAL)
+    void checkReturnBook(@RandomBookEntity BookEntity bookEntity,
+                         @RandomUserEntity UserEntity userEntity,
+                         @RandomBorrowRecordEntity(isReturned = false) BorrowRecordEntity borrow) {
+        borrow.setBook(bookEntity);
+        borrow.setUser(userEntity);
+
+        //given
+        when(userService.findEntityById(eq(userEntity.getId()))).thenReturn(userEntity);
+        when(bookService.findEntityById(eq(bookEntity.getId()))).thenReturn(bookEntity);
+        when(repository.findByUserAndBookAndReturnedAtIsNull(userEntity, bookEntity)).thenReturn(Optional.of(borrow));
+        //when
+
+        BorrowRecordResponseDto responseDto = service.returnBook(bookEntity.getId(), userEntity.getId());
+        //then
+        assertNotNull(responseDto.getBorrowedAt());
+        verify(repository).findByUserAndBookAndReturnedAtIsNull(eq(userEntity), eq(bookEntity));
+        //Check that response matches the input
+        assertAll(
+                () -> assertEquals(responseDto.getId(), borrow.getId()),
+                () -> assertEquals(responseDto.getBook().getName(), bookEntity.getName()),
+                () -> assertEquals(responseDto.getBook().getAuthor(), bookEntity.getAuthor()),
+                () -> assertEquals(responseDto.getUserName(), userEntity.getFullName())
         );
     }
 }
