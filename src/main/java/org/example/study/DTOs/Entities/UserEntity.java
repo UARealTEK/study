@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@Table(name = "user_entity")
 public class UserEntity extends BaseUser {
 
     @Id

@@ -13,6 +13,7 @@ Represents an event. Meaning that user borrows a book at a certain time and retu
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@Table(name = "borrow_record_entity")
 @SuppressWarnings("JpaDataSourceORMInspection")
 public class BorrowRecordEntity {
 
