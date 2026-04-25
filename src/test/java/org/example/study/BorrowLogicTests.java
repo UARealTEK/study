@@ -163,7 +163,7 @@ public class BorrowLogicTests extends BaseBorrowingServiceTest {
     @Story("Borrow records logic")
     @Description("Test aimed to check that service method correctly fetches a record by ID")
     @Severity(SeverityLevel.CRITICAL)
-    void checkReturnBook(@RandomBorrowRecordEntity(isReturned = false) BorrowRecordEntity borrowRecordEntity) {
+    void checkFetchRecordById(@RandomBorrowRecordEntity(isReturned = false) BorrowRecordEntity borrowRecordEntity) {
         //given
         when(repository.findById(eq(borrowRecordEntity.getId()))).thenReturn(Optional.of(borrowRecordEntity));
         //when
